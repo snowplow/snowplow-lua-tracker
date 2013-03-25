@@ -1,6 +1,4 @@
-UNFINISHED
-
-# SnowPlow Lua Tracker
+# UNFINISHED SnowPlow Lua Tracker
 
 ## Overview
 
