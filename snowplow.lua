@@ -26,7 +26,7 @@ function track_struct_event(category, action, label, property, value)
   assert(type(action) == "string", "action is required and must be a string")
   assert(type(label) == "string", "label must be a string or nil")
   assert(type(property) == "string", "property must be a string or nil")
-  assert(type(value) == "number", "value must be a number")
+  assert(type(value) == "number", "value must be a number or nil")
 
   -- Now let's build the table
   pairs = {
@@ -42,7 +42,7 @@ function track_struct_event(category, action, label, property, value)
   track(pairs)
 end
 
-function track(event_pairs, mock)
+function track(event_pairs)
   --[[--
   Tracks any given SnowPlow event, by sending the specific
   event_pairs to the SnowPlow collector.
@@ -50,9 +50,6 @@ function track(event_pairs, mock)
   @Parameter: event_pairs
     A table containing all of the name-value pairs
     to be tracked as part of this event
-  @Parameter: mock
-    If mock is set, then rather than making an actual HTTP GET,
-    track() simply returns the full URL which should have been GETted.
   --]]--
 
   -- TODO
