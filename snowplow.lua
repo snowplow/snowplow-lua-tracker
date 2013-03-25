@@ -36,17 +36,20 @@ function track_struct_event(category, action, label, property, value)
   -- TODO
 
   -- Now let's build the table
-  "e" = "se"
-  "ev_ca" = category
-  "ev_ac" = action
-  "ev_la" = label
-  "ev_pr" = property
-  "ev_va" = numeric_value 
+  pairs = {
+    {"e", "se"},
+    {"ev_ca", category},
+    {"ev_ac", action},
+    {"ev_la", label},
+    {"ev_pr", property},
+    {"ev_va", numeric_value}
+  } 
 
-  -- TODO: check that value is a float/double
+  -- Finally call track
+  track(pairs)
 end
 
-function track(event_pairs)
+function track(event_pairs, mock)
   --[[--
   Tracks any SnowPlow event, by sending the event_pairs
   to the SnowPlow collector.
@@ -54,6 +57,9 @@ function track(event_pairs)
   @Parameter: event_pairs
     A table containing all of the name-value pairs
     to be tracked as part of this event
+  @Parameter: mock
+    If mock is set, then rather than making an actual HTTP GET,
+    track() simply returns the full URL which should have been GETted.
   --]]--
 
   -- TODO
