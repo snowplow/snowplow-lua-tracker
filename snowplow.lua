@@ -22,8 +22,39 @@ function track_struct_event(category, action, label, property, value)
     numerical data about the user event
   --]]--
 
-  -- TODO: 1. Check category and action are set
+  -- Check category is set
+  if category ~= nil or category == "" then
+    -- Throw an error?
+  end
+
+  -- Check action is set
+  if action ~= nil or action == "" then
+    -- Throw an error?
+  end
+
+  -- Now check that value is numeric
+  -- TODO
+
+  -- Now let's build the table
+  "e" = "se"
+  "ev_ca" = category
+  "ev_ac" = action
+  "ev_la" = label
+  "ev_pr" = property
+  "ev_va" = numeric_value 
 
   -- TODO: check that value is a float/double
 end
 
+function track(event_pairs)
+  --[[--
+  Tracks any SnowPlow event, by sending the event_pairs
+  to the SnowPlow collector.
+
+  @Parameter: event_pairs
+    A table containing all of the name-value pairs
+    to be tracked as part of this event
+  --]]--
+
+  -- TODO
+end
