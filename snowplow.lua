@@ -43,7 +43,7 @@ function track_struct_event(category, action, label, property, value)
     {"ev_ac", action},
     {"ev_la", label},
     {"ev_pr", property},
-    {"ev_va", numeric_value}
+    {"ev_va", value}
   } 
 
   -- Finally call track
