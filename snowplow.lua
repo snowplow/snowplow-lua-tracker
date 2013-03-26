@@ -1,3 +1,5 @@
+module("snowplow")
+
 function track_struct_event(category, action, label, property, value)
   --[[--
   Sends a custom structured event to SnowPlow.
@@ -22,11 +24,17 @@ function track_struct_event(category, action, label, property, value)
   --]]--
 
   -- Type and value checks
-  assert(type(category) == "string" and category ~= nil and category <> "", "category is required and must be a string")
-  assert(type(action) == "string", "action is required and must be a string")
-  assert(type(label) == "string", "label must be a string or nil")
-  assert(type(property) == "string", "property must be a string or nil")
-  assert(type(value) == "number", "value must be a number or nil")
+  if type(category) ~= "string" or category == "" then
+    error("category is required and must be a string")
+  elseif type(action) ~= "string" or action == "" then
+    error("action is required and must be a string")
+  elseif type(label) ~= "string" and label ~= nil then
+    error("label must be a string or nil")
+  elseif type(property) ~= "string" and property ~= nil then
+    error("property must be a string or nil")
+  elseif type(value) ~= "number" and value ~= nil then
+    "value must be a number or nil")
+  end
 
   -- Now let's build the table
   pairs = {
@@ -42,7 +50,7 @@ function track_struct_event(category, action, label, property, value)
   track(pairs)
 end
 
-function track(event_pairs)
+local function track(event_pairs)
   --[[--
   Tracks any given SnowPlow event, by sending the specific
   event_pairs to the SnowPlow collector.
