@@ -1,5 +1,12 @@
 module("snowplow")
 
+-- Syntax for constants in Lua?
+TRACKER_USER_AGENT = "Lua"
+TRACKER_VERSION = "lua-0.1.0"
+TRACKER_DEFAULT_PLATFORM = "pc"
+
+ALL_PLATFORMS = {"pc", "tv", "mob", "con", "iot"}
+
 function track_struct_event(category, action, label, property, value)
   --[[--
   Sends a custom structured event to SnowPlow.
@@ -50,6 +57,54 @@ function track_struct_event(category, action, label, property, value)
   track(pairs)
 end
 
+function track_struct_event(name, properties)
+
+  --[[--
+  Sends a custom unstructured event to SnowPlow.
+
+  @Parameter: name
+    TODO
+  @Parameter: properties
+    TODO
+  --]]--
+
+  -- Type and value checks
+  if type(name) ~= string or name == "" then
+    error("name is required and must be a string")
+    -- TODO: validate properties
+  end
+end
+
+function set_platform(platform)
+  --[[--
+  The default platform for Lua is "pc". If you are using Lua on
+  another platform (e.g. as part of a console videogame), you
+  can overwrite the platform here.
+
+  @Parameter: platform
+    The short-form name of the platform to set. Can be "pc",
+    "tv", "mob", "con", "iot"
+  --]]--
+end
+
+function set_user_id(user_id)
+  --[[--
+  Sets the business user_id.
+
+  @Parameter; user_id
+    The business user_id to set.
+  --]]--
+end
+
+local function get_transaction_id()
+  --[[--
+  Generates a moderately-unique transaction ID - essentially
+  a nonce to make sure this event isn't recorded twice.
+  --]]--
+
+  return "TODO"
+end
+
 local function track(event_pairs)
   --[[--
   Tracks any given SnowPlow event, by sending the specific
@@ -60,5 +115,15 @@ local function track(event_pairs)
     to be tracked as part of this event
   --]]--
 
+  -- Standard pairs
+  pairs = {
+    {"tid", get_transaction_id()},
+    {"p",   platform},
+    {"uid", user_id},
+    {"aid", application_id},
+    {"tv",  TRACKER_VERSION}
+  }
+
+  -- Concatenate with event_pairs
   -- TODO
 end
