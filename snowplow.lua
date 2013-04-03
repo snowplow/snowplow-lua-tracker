@@ -1,3 +1,7 @@
+local os_time = os.time
+local math_random = math.random
+local math_randomseed = math.randomseed
+
 module("snowplow")
 
 -- Syntax for constants in Lua?
@@ -103,8 +107,8 @@ local function get_transaction_id()
   recorded twice.
   --]]--
 
-  math.randomseed( os.time() )
-  rand = math.random(100000, 999999)
+  math_randomseed( os_time() )
+  rand = math_random(100000, 999999)
   return tostring(rand)
 end
 
@@ -113,7 +117,7 @@ local function get_timestamp()
   Returns the current timestamp as total milliseconds
   since epoch.
   --]]--
-  return (os.time() * 1000)
+  return (os_time() * 1000)
 end
 
 local function track(event_pairs)
