@@ -65,18 +65,19 @@ function set_colordepth()
 -- -------------------------------
 -- Track functions
 
-function track_screen_view(screen_name, screen_id)
+function track_screen_view(name, id)
   --[[--
   Sends a screen view event to SnowPlow. A screen view
-  must have a screen name or screen id attached (or both).
+  must have a `name` and can have an optional `id`.
 
-  @Parameter: screen_name
+  @Parameter: name
     Human-readable name for this screen (e.g.
     "HUD > Save Game")
-  @Parameter: screen_id
-    
-
+  @Parameter: id
+    Unique identifier for this screen. Could be e.g. a GUID or
+    identifier from a game CMS.
   --]]--
+end
 
 function track_struct_event(category, action, label, property, value)
   --[[--
