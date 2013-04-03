@@ -74,9 +74,16 @@ function track_screen_view(name, id)
     Human-readable name for this screen (e.g.
     "HUD > Save Game")
   @Parameter: id
-    Unique identifier for this screen. Could be e.g. a GUID or
-    identifier from a game CMS.
+    Optional unique identifier for this screen. Could be e.g.
+    a GUID or identifier from a game CMS.
   --]]--
+
+  -- Type and value checks
+  if type(name) ~= string or name == "" then
+    error("name is required and must be a string")
+  elseif type(id) ~= string and id ~= nil then
+    error("id must be a string or nil")
+  end
 end
 
 function track_struct_event(category, action, label, property, value)
@@ -130,7 +137,7 @@ function track_struct_event(category, action, label, property, value)
   track(pairs)
 end
 
-function track_struct_event(name, properties)
+function track_unstruct_event(name, properties)
 
   --[[--
   Sends a custom unstructured event to SnowPlow.
