@@ -13,7 +13,30 @@ local DEFAULT_TRACKER_PLATFORM = "pc"
 local SUPPORTED_TRACKER_PLATFORMS = {"pc", "tv", "mob", "con", "iot"}
 
 -- -------------------------------
--- Setters
+-- "Static" module functions
+
+local function get_transaction_id()
+  --[[--
+  Generates a moderately-unique six-digit transaction ID
+  - essentially a nonce to make sure this event isn't
+  recorded twice.
+  --]]--
+
+  math_randomseed( os_time() )
+  local rand = math_random(100000, 999999)
+  return tostring(rand)
+end
+
+local function get_timestamp()
+  --[[--
+  Returns the current timestamp as total milliseconds
+  since epoch.
+  --]]--
+  return (os_time() * 1000)
+end
+
+-- -------------------------------
+-- Setters. All public
 
 function set_platform(platform)
   --[[--
@@ -61,9 +84,11 @@ function set_screen_resolution(width, height)
 end
 
 function set_colordepth()
+  -- TODO
+end
 
 -- -------------------------------
--- Track functions
+-- Track methods. All public
 
 function track_screen_view(name, id)
   --[[--
@@ -156,27 +181,7 @@ function track_unstruct_event(name, properties)
 end
 
 -- -------------------------------
--- "Static" module functions below
-
-local function get_transaction_id()
-  --[[--
-  Generates a moderately-unique six-digit transaction ID
-  - essentially a nonce to make sure this event isn't
-  recorded twice.
-  --]]--
-
-  math_randomseed( os_time() )
-  local rand = math_random(100000, 999999)
-  return tostring(rand)
-end
-
-local function get_timestamp()
-  --[[--
-  Returns the current timestamp as total milliseconds
-  since epoch.
-  --]]--
-  return (os_time() * 1000)
-end
+-- Private methods
 
 local function track(event_pairs)
   --[[--
