@@ -4,10 +4,16 @@ local math_randomseed = math.randomseed
 
 module("snowplow")
 
+-- -------------------------------
+-- Constants
+
 -- Syntax for constants in Lua?
 local TRACKER_VERSION = "lua-0.1.0"
 local DEFAULT_TRACKER_PLATFORM = "pc"
 local SUPPORTED_TRACKER_PLATFORMS = {"pc", "tv", "mob", "con", "iot"}
+
+-- -------------------------------
+-- Setters
 
 function set_platform(platform)
   --[[--
@@ -17,7 +23,9 @@ function set_platform(platform)
 
   @Parameter: platform
     The short-form name of the platform to set. Can be "pc",
-    "tv", "mob", "con", "iot"
+    "tv", "mob", "con" or "iot".
+    For details see:
+    XXX
   --]]--
 end
 
@@ -29,6 +37,46 @@ function set_user_id(user_id)
     The business user_id to set.
   --]]--
 end
+
+function set_screen_resolution(width, height)
+  --[[--
+  If you have access to a graphics library which can
+  tell you screen width and height, then set it here.
+
+  @Parameter: width
+    The screen width as a number
+  @Parameter: height
+    The screen height as a number
+  --]]--
+
+  -- Type and value checks
+  if type(width) ~= "number" then
+    error("width is required and must be a number")
+  elseif type(height) ~= "number" then
+    error("height is required and must be a number")
+  end
+
+  -- TODO
+  -- TODO
+end
+
+function set_colordepth()
+
+-- -------------------------------
+-- Track functions
+
+function track_screen_view(screen_name, screen_id)
+  --[[--
+  Sends a screen view event to SnowPlow. A screen view
+  must have a screen name or screen id attached (or both).
+
+  @Parameter: screen_name
+    Human-readable name for this screen (e.g.
+    "HUD > Save Game")
+  @Parameter: screen_id
+    
+
+  --]]--
 
 function track_struct_event(category, action, label, property, value)
   --[[--
@@ -67,6 +115,7 @@ function track_struct_event(category, action, label, property, value)
   end
 
   -- Now let's build the table
+  -- TODO: we should use a QuerystringBuilder instead
   pairs = {
     { "e", "se" },
     { "ev_ca", category },
@@ -98,6 +147,7 @@ function track_struct_event(name, properties)
   end
 end
 
+-- -------------------------------
 -- "Static" module functions below
 
 local function get_transaction_id()
@@ -108,7 +158,7 @@ local function get_transaction_id()
   --]]--
 
   math_randomseed( os_time() )
-  rand = math_random(100000, 999999)
+  local rand = math_random(100000, 999999)
   return tostring(rand)
 end
 
@@ -131,7 +181,8 @@ local function track(event_pairs)
   --]]--
 
   -- Standard pairs
-  pairs = {
+  -- TODO: we should use a QuerystringBuilder instead
+  local pairs = {
     { "tid", get_transaction_id() },
     { "p",   platform },
     { "uid", user_id },
