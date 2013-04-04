@@ -7,18 +7,18 @@ function newPayloadBuilder (initial_value)
   local payload
 
   -- Type and value checks
-  if type(initial_value) ~= "string" and initial_value ~= nil then
+  if type(initialValue) ~= "string" and initialValue ~= nil then
     error("initial_value must be a string or nil")
   end
 
   -- Initialize
-  if initial_value then
-    payload = initial_value
+  if initialValue then
+    payload = initialValue
   else
     payload = ""
   end
 
-  local add_nv_pair = function (key, value, encode)
+  local addNvPair = function (key, value, encode)
     --[[--
     Helper to add a &name=value pair to our payload
     aka querystring. Closure around payload
@@ -43,15 +43,15 @@ function newPayloadBuilder (initial_value)
             --[[--
             Add a &name=value pair with the value encoded,
             --]]--
-            add_nv_pair(key, value, true)
+            addNvPair(key, value, true)
           end,
 
-    add_raw = function (key, value)
+    addRaw = function (key, value)
                 --[[--
                 Add a &name=value pair with the value
                 not encoded.
                 --]]--
-                add_nv_pair(key, value, false)
+                addNvPair(key, value, false)
               end,
 
     build = function ()
