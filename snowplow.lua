@@ -15,7 +15,7 @@ local SUPPORTED_TRACKER_PLATFORMS = {"pc", "tv", "mob", "con", "iot"}
 -- -------------------------------
 -- "Static" module functions
 
-local function get_transaction_id()
+local function getTransactionId()
   --[[--
   Generates a moderately-unique six-digit transaction ID
   - essentially a nonce to make sure this event isn't
@@ -27,7 +27,7 @@ local function get_transaction_id()
   return tostring(rand)
 end
 
-local function get_timestamp()
+local function getTimestamp()
   --[[--
   Returns the current timestamp as total milliseconds
   since epoch.
@@ -38,7 +38,7 @@ end
 -- -------------------------------
 -- Setters. All public
 
-function set_platform(platform)
+function setPlatform(platform)
   --[[--
   The default platform for Lua is "pc". If you are using Lua on
   another platform (e.g. as part of a console videogame), you
@@ -52,7 +52,7 @@ function set_platform(platform)
   --]]--
 end
 
-function set_user_id(user_id)
+function setUserId(user_id)
   --[[--
   Sets the business user_id.
 
@@ -61,7 +61,7 @@ function set_user_id(user_id)
   --]]--
 end
 
-function set_screen_resolution(width, height)
+function setScreenResolution(width, height)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -83,14 +83,14 @@ function set_screen_resolution(width, height)
   -- TODO
 end
 
-function set_colordepth()
+function setColordepth()
   -- TODO
 end
 
 -- -------------------------------
 -- Track methods. All public
 
-function track_screen_view(name, id)
+function trackScreenView(name, id)
   --[[--
   Sends a screen view event to SnowPlow. A screen view
   must have a `name` and can have an optional `id`.
@@ -111,7 +111,7 @@ function track_screen_view(name, id)
   end
 end
 
-function track_struct_event(category, action, label, property, value)
+function trackStructEvent(category, action, label, property, value)
   --[[--
   Sends a custom structured event to SnowPlow.
 
@@ -147,22 +147,19 @@ function track_struct_event(category, action, label, property, value)
     "value must be a number or nil")
   end
 
-  -- Now let's build the table
-  -- TODO: we should use a QuerystringBuilder instead
-  pairs = {
-    { "e", "se" },
-    { "ev_ca", category },
-    { "ev_ac", action },
-    { "ev_la", label },
-    { "ev_pr", property },
-    { "ev_va", value }
-  } 
+  local pb = newPayloadBuilder()
+  pb.addRaw( "e", "se" )
+  pb.add( "ev_ca", category )
+  pb.add( "ev_ac", action )
+  pb.add( "ev_la", label )
+  pb.add( "ev_pr", property )
+  pb.add( "ev_va", value)
 
   -- Finally call track
   track(pairs)
 end
 
-function track_unstruct_event(name, properties)
+function trackUnstructEvent(name, properties)
 
   --[[--
   Sends a custom unstructured event to SnowPlow.
@@ -183,27 +180,27 @@ end
 -- -------------------------------
 -- Private methods
 
-local function track(event_pairs)
+local function track(pb)
   --[[--
   Tracks any given SnowPlow event, by sending the specific
   event_pairs to the SnowPlow collector.
 
-  @Parameter: event_pairs
-    A table containing all of the name-value pairs
-    to be tracked as part of this event
+  @Parameter: payloadBuilder
+    A partially populated payloadBuilder closure. We will
+    finish populating it in this method, then build() it
   --]]--
 
-  -- Standard pairs
-  -- TODO: we should use a QuerystringBuilder instead
-  local pairs = {
-    { "tid", get_transaction_id() },
-    { "p",   platform },
-    { "uid", user_id },
-    { "aid", application_id },
-    { "dtm", get_timestamp() },
-    { "tv",  TRACKER_VERSION }
-  }
+  -- Add the standard name-value pairs
+  pb.add( "tid", getTransactionId() )
+  pb.add( "p", self.platform )
+  pb.add( "uid", self.businessUserId )
+  pb.add( "aid", self.applicationId )
+  pb.add( "dtm", getTimestamp() )
+  pb.add( "tv", TRACKER_VERSION )
 
-  -- Concatenate with event_pairs
+  -- Now build the payloadBuilder
+  local payload = pb.build()
+
+  -- Finally send to Snowplow
   -- TODO
 end

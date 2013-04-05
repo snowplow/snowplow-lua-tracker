@@ -1,8 +1,6 @@
-
-
 module("snowplow-payload")
 
-function newPayloadBuilder (initial_value)
+function newPayloadBuilder (initialValue)
 
   local payload
 
@@ -21,7 +19,7 @@ function newPayloadBuilder (initial_value)
   local addNvPair = function (key, value, encode)
     --[[--
     Helper to add a &name=value pair to our payload
-    aka querystring. Closure around payload
+    aka querystring. Closes around payload
     --]]--
 
     local a, v
