@@ -15,7 +15,7 @@ With this tracker you can collect event data from your Lua-based applications - 
 
 ## Copyright and license
 
-The SnowPlow Arduino Tracker is copyright 2013 SnowPlow Analytics Ltd.
+The SnowPlow Lua Tracker is copyright 2013 SnowPlow Analytics Ltd.
 
 Licensed under the **[Apache License, Version 2.0] [license]** (the "License");
 you may not use this software except in compliance with the License.
