@@ -83,7 +83,7 @@ function setScreenResolution(width, height)
   -- TODO
 end
 
-function setColordepth()
+function setColorDepth()
   -- TODO
 end
 
