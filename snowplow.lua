@@ -1,6 +1,6 @@
-local os_time = os.time
-local math_random = math.random
-local math_randomseed = math.randomseed
+local osTime = os.time
+local mathRandom = math.random
+local mathRandomseed = math.randomseed
 
 module("snowplow")
 
@@ -9,8 +9,8 @@ module("snowplow")
 
 -- Syntax for constants in Lua?
 local TRACKER_VERSION = "lua-0.1.0"
-local DEFAULT_TRACKER_PLATFORM = "pc"
-local SUPPORTED_TRACKER_PLATFORMS = {"pc", "tv", "mob", "con", "iot"}
+local DEFAULT_PLATFORM = "pc"
+local SUPPORTED_PLATFORMS = {"pc", "tv", "mob", "con", "iot"}
 
 -- -------------------------------
 -- "Static" module functions
@@ -22,8 +22,8 @@ local function getTransactionId()
   recorded twice.
   --]]--
 
-  math_randomseed( os_time() )
-  local rand = math_random(100000, 999999)
+  math_randomseed( osTime() )
+  local rand = mathRandom(100000, 999999)
   return tostring(rand)
 end
 
@@ -32,7 +32,7 @@ local function getTimestamp()
   Returns the current timestamp as total milliseconds
   since epoch.
   --]]--
-  return (os_time() * 1000)
+  return (osTime() * 1000)
 end
 
 -- -------------------------------
@@ -50,15 +50,21 @@ function setPlatform(platform)
     For details see:
     XXX
   --]]--
+
+  Validate.isStringFromList(SUPPORTED_PLATFORMS, "platform", platform)
+  self.platform = platform
 end
 
-function setUserId(user_id)
+function setUserId(userId)
   --[[--
-  Sets the business user_id.
+  Sets the business user ID.
 
-  @Parameter; user_id
-    The business user_id to set.
+  @Parameter; userId
+    The business user ID to set.
   --]]--
+
+  Validate.isNonEmptyString(userId)
+  self.businessUserId = userId
 end
 
 function setScreenResolution(width, height)
@@ -72,19 +78,23 @@ function setScreenResolution(width, height)
     The screen height as a number
   --]]--
 
-  -- Type and value checks
-  if type(width) ~= "number" then
-    error("width is required and must be a number")
-  elseif type(height) ~= "number" then
-    error("height is required and must be a number")
-  end
-
-  -- TODO
-  -- TODO
+  Validate.isPositiveInt(value, "width", width)
+  Validate.isPositiveInt(value, "height", height)
+  self.width = width
+  self.height = height
 end
 
-function setColorDepth()
-  -- TODO
+function setColorDepth(depth)
+  --[[--
+  If you have access to a graphics library which can
+  tell you screen width and height, then set it here.
+  
+  @Parameter: depth
+    The color depth on this computer
+  --]]--
+
+  Validate.isPositiveInt(value, "color depth", depth)
+  self.colorDepth = depth
 end
 
 -- -------------------------------
@@ -97,18 +107,18 @@ function trackScreenView(name, id)
 
   @Parameter: name
     Human-readable name for this screen (e.g.
-    "HUD > Save Game")
+    "HUD > Save Game"). String
   @Parameter: id
     Optional unique identifier for this screen. Could be e.g.
-    a GUID or identifier from a game CMS.
+    a GUID or identifier from a game CMS. String
   --]]--
 
-  -- Type and value checks
-  if type(name) ~= string or name == "" then
-    error("name is required and must be a string")
-  elseif type(id) ~= string and id ~= nil then
-    error("id must be a string or nil")
-  end
+  local pb = newPayloadBuilder()
+  pb.addRaw( "e", "sv" )
+  pb.add( "sv_na", name, Validate.isNonEmptyString )
+  pb.add( "sv_id", id, Validate.isStringOrNil )
+
+  self:track(pb)
 end
 
 function trackStructEvent(category, action, label, property, value)
@@ -134,29 +144,15 @@ function trackStructEvent(category, action, label, property, value)
     numerical data about the user event
   --]]--
 
-  -- Type and value checks
-  if type(category) ~= "string" or category == "" then
-    error("category is required and must be a string")
-  elseif type(action) ~= "string" or action == "" then
-    error("action is required and must be a string")
-  elseif type(label) ~= "string" and label ~= nil then
-    error("label must be a string or nil")
-  elseif type(property) ~= "string" and property ~= nil then
-    error("property must be a string or nil")
-  elseif type(value) ~= "number" and value ~= nil then
-    "value must be a number or nil")
-  end
-
   local pb = newPayloadBuilder()
   pb.addRaw( "e", "se" )
-  pb.add( "ev_ca", category )
-  pb.add( "ev_ac", action )
-  pb.add( "ev_la", label )
-  pb.add( "ev_pr", property )
-  pb.add( "ev_va", value)
+  pb.add( "ev_ca", category, Validate.isNonEmptyString )
+  pb.add( "ev_ac", action, Validate.isNonEmptyString )
+  pb.add( "ev_la", label, Validate.isStringOrNil )
+  pb.add( "ev_pr", property, Validate.isStringOrNil )
+  pb.add( "ev_va", value, isNumberOrNil )
 
-  -- Finally call track
-  track(pairs)
+  self:track(pb)
 end
 
 function trackUnstructEvent(name, properties)
@@ -175,6 +171,13 @@ function trackUnstructEvent(name, properties)
     error("name is required and must be a string")
     -- TODO: validate properties
   end
+
+  local pb = newPayloadBuilder()
+  pb.addRaw("e", "ue")
+  pb.add( "ue_na", name, Validate.isNonEmptyString )
+  -- TODO: add in "ue_pr"/"ue_px"
+
+  self:track(pb)
 end
 
 -- -------------------------------
