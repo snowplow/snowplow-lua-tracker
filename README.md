@@ -1,4 +1,4 @@
-# UNFINISHED SnowPlow Lua Tracker
+# UNFINISHED Snowplow Analytics for Lua
 
 ## Overview
 
