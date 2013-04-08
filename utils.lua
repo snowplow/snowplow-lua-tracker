@@ -1,4 +1,3 @@
-
 local string = require ("string")
 
 local Utils = {}
@@ -6,11 +5,9 @@ local Utils = {}
 function Utils.escapeURI(s)
   --[[--
   Escapes a URI (or URI fragment). Example:
-
   Utils.escapeURI("John Smith") => "John%20Smith"
-
   Source: https://github.com/radare/luvit-Connect/blob/master/modules/querystring.lua
-
+  
   @Parameter: s
     The string to escape
   --]]--
