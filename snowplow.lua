@@ -1,6 +1,4 @@
-local osTime = os.time
-local mathRandom = math.random
-local mathRandomseed = math.randomseed
+
 
 module("snowplow")
 
@@ -10,33 +8,40 @@ module("snowplow")
 -- Syntax for constants in Lua?
 local TRACKER_VERSION = "lua-0.1.0"
 local DEFAULT_PLATFORM = "pc"
-local SUPPORTED_PLATFORMS = {"pc", "tv", "mob", "con", "iot"}
+local SUPPORTED_PLATFORMS = Utils.Set { "pc", "tv", "mob", "con", "iot" }
+
+-- Config constants
+local ENCODE_UNSTRUCT_EVENTS = "encode-unstruct-events"
 
 -- -------------------------------
 -- "Static" module functions
 
-local function getTransactionId()
+
+-- -------------------------------
+-- Public configuration methods, plus
+-- private convenience ? methods to
+-- use in our code.
+
+function encodeUnstructEvents(encode)
   --[[--
-  Generates a moderately-unique six-digit transaction ID
-  - essentially a nonce to make sure this event isn't
-  recorded twice.
+  Configuration setting: whether to Base64-encode the
+  properties of unstructured events.
+  Encoding means a circa 25% space saving.
+
+  @Parameter: encode
+    Boolean: whether to base64-encode or not
   --]]--
 
-  math_randomseed( osTime() )
-  local rand = mathRandom(100000, 999999)
-  return tostring(rand)
+  Validate.isBoolean(encode)
+  self.config[ENCODE_UNSTRUCT_EVENTS] = encode
 end
 
-local function getTimestamp()
-  --[[--
-  Returns the current timestamp as total milliseconds
-  since epoch.
-  --]]--
-  return (osTime() * 1000)
+local function encodeUnstructEvents? ()
+  return self.config[ENCODE_UNSTRUCT_EVENTS]
 end
 
 -- -------------------------------
--- Setters. All public
+-- Data setters. All public
 
 function setPlatform(platform)
   --[[--
@@ -51,7 +56,7 @@ function setPlatform(platform)
     XXX
   --]]--
 
-  Validate.isStringFromList(SUPPORTED_PLATFORMS, "platform", platform)
+  Validate.isStringFromSet(SUPPORTED_PLATFORMS, "platform", platform)
   self.platform = platform
 end
 
@@ -158,7 +163,7 @@ end
 function trackUnstructEvent(name, properties)
 
   --[[--
-  Sends a custom unstructured event to SnowPlow.
+  Sends a custom unstructured event to Snowplow.
 
   @Parameter: name
     TODO
@@ -175,7 +180,13 @@ function trackUnstructEvent(name, properties)
   local pb = newPayloadBuilder()
   pb.addRaw("e", "ue")
   pb.add( "ue_na", name, Validate.isNonEmptyString )
-  -- TODO: add in "ue_pr"/"ue_px"
+
+  local props = Helpers.toPropertyJSON( properties )
+  if self:encodeUnstructEvents? then
+    pb.add( "ue_px", Utils.base64Encode( props ) )
+  else
+    pb.add( "ue_pr", props )
+  end
 
   self:track(pb)
 end
