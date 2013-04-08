@@ -1,3 +1,4 @@
+local math = require ("math")
 
 local Validate = {}
 
