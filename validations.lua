@@ -19,7 +19,6 @@ function Validate.isStringOrNil(name, value)
 end
 
 function Validate.isStringFromList(list, name, value)
-
   --[[--
   xxx.
   Note that list is the first argument to support
