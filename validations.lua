@@ -47,7 +47,7 @@ end
 
 function Validate.isPositiveInt(name, value)
 
-  if type(value) ~= "number" then
+  if type(value) ~= "number" or value ~= math.abs(value) or value < 0 then
     error(name .. "is required and must be a positive integer")
   end
 
