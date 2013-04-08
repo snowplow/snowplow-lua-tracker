@@ -2,7 +2,13 @@ local string = require ("string")
 
 local Utils = {}
 
-function Utils.escapeURI(s)
+function Utils.Set (list)
+  local set = {}
+  for _, l in ipairs(list) do set[l] = true end
+  return set
+end
+
+function Utils.escapeURI (s)
   --[[--
   Escapes a URI (or URI fragment). Example:
   Utils.escapeURI("John Smith") => "John%20Smith"
@@ -19,13 +25,13 @@ function Utils.escapeURI(s)
   return s
 end
 
-function Utils.generateUUID()
+function Utils.generateUUID ()
   --[[--
 
   --]]--
 end
 
-function Utils.encodeBase64(s)
+function Utils.encodeBase64 (s)
   --[[--
 
   --]]--
