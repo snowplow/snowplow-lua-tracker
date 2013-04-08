@@ -1,11 +1,12 @@
 
+-- TODO: how to import these via a module statement?
 local osTime = os.time
 local mathRandom = math.random
 local mathRandomseed = math.randomseed
 
-Helpers = {}
+module(...)
 
-function Helpers.newPayloadBuilder (initialValue)
+function newPayloadBuilder (initialValue)
 
   local payload
 
@@ -67,7 +68,7 @@ function Helpers.newPayloadBuilder (initialValue)
   }
 end
 
-function Helpers.getTransactionId()
+function getTransactionId ()
   --[[--
   Generates a moderately-unique six-digit transaction ID
   - essentially a nonce to make sure this event isn't
@@ -79,7 +80,7 @@ function Helpers.getTransactionId()
   return tostring(rand)
 end
 
-function Helpers.getTimestamp()
+function getTimestamp ()
   --[[--
   Returns the current timestamp as total milliseconds
   since epoch.
@@ -87,11 +88,14 @@ function Helpers.getTimestamp()
   return (osTime() * 1000)
 end
 
-function Helpers.toPropertyJSON()
-  -- TODO
+function toPropertiesJSON ()
+  --[[--
+  Converts a _non-nested_ Lua table into a JSON
+  of properties.
+  --]]--
 end
 
-function Helpers.collectorURIFromCf(dist_subdomain)
+function collectorURIFromCf (dist_subdomain)
   --[[--
   Helper to generate the collector url from a
   CloudFront distribution subdomain.
@@ -104,10 +108,10 @@ function Helpers.collectorURIFromCf(dist_subdomain)
     distribution is hosted
   --]]--
 
-  return as_collector_url(dist_subdomain .. ".cloudfront.net")
+  return asCollectorURI(dist_subdomain .. ".cloudfront.net")
 end
 
-function Helpers.asCollectorURI(host)
+function asCollectorURI (host)
   --[[--
   Helper to generate the collector url from a
   collector host name.
@@ -117,4 +121,16 @@ function Helpers.asCollectorURI(host)
   --]]--
 
   return "http://" .. host .. "/i"
+end
+
+function getURI (uri)
+  --[[--
+  GETs the given URL: this is how our event data
+  is transmitted to the Snowplow collector.
+
+  @Parameter: uri
+    The URI (including querystring) to GET
+  --]]--
+
+  -- TODO: GET the URI
 end

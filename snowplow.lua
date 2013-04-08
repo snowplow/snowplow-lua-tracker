@@ -22,7 +22,7 @@ local ENCODE_UNSTRUCT_EVENTS = "encode-unstruct-events"
 -- private convenience ? methods to
 -- use in our code.
 
-function encodeUnstructEvents(encode)
+function encodeUnstructEvents (encode)
   --[[--
   Configuration setting: whether to Base64-encode the
   properties of unstructured events.
@@ -43,7 +43,7 @@ end
 -- -------------------------------
 -- Data setters. All public
 
-function setPlatform(platform)
+function setPlatform (platform)
   --[[--
   The default platform for Lua is "pc". If you are using Lua on
   another platform (e.g. as part of a console videogame), you
@@ -60,7 +60,7 @@ function setPlatform(platform)
   self.platform = platform
 end
 
-function setUserId(userId)
+function setUserId (userId)
   --[[--
   Sets the business user ID.
 
@@ -72,7 +72,7 @@ function setUserId(userId)
   self.businessUserId = userId
 end
 
-function setScreenResolution(width, height)
+function setScreenResolution (width, height)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -89,7 +89,7 @@ function setScreenResolution(width, height)
   self.height = height
 end
 
-function setColorDepth(depth)
+function setColorDepth (depth)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -105,7 +105,7 @@ end
 -- -------------------------------
 -- Track methods. All public
 
-function trackScreenView(name, id)
+function trackScreenView (name, id)
   --[[--
   Sends a screen view event to SnowPlow. A screen view
   must have a `name` and can have an optional `id`.
@@ -126,7 +126,7 @@ function trackScreenView(name, id)
   self:track(pb)
 end
 
-function trackStructEvent(category, action, label, property, value)
+function trackStructEvent (category, action, label, property, value)
   --[[--
   Sends a custom structured event to SnowPlow.
 
@@ -160,7 +160,7 @@ function trackStructEvent(category, action, label, property, value)
   self:track(pb)
 end
 
-function trackUnstructEvent(name, properties)
+function trackUnstructEvent (name, properties)
 
   --[[--
   Sends a custom unstructured event to Snowplow.
@@ -194,12 +194,12 @@ end
 -- -------------------------------
 -- Private methods
 
-local function track(pb)
+local function track (pb)
   --[[--
   Tracks any given SnowPlow event, by sending the specific
   event_pairs to the SnowPlow collector.
 
-  @Parameter: payloadBuilder
+  @Parameter: pb
     A partially populated payloadBuilder closure. We will
     finish populating it in this method, then build() it
   --]]--

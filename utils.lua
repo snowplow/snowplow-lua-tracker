@@ -1,14 +1,30 @@
+
+-- TODO: how to only import a single library into a module?
 local string = require ("string")
 
-local Utils = {}
+module(...)
 
-function Utils.Set (list)
+local Set = {}
+
+-- -------------------------------
+-- A simple Lua set
+
+local set_meta = { __index = Set }
+function newSet (list)
   local set = {}
   for _, l in ipairs(list) do set[l] = true end
-  return set
+  return setmetatable(set, set_meta)
 end
 
-function Utils.escapeURI (s)
+function Set.contains (set, key)
+  return set[key]
+end
+
+function Set.mkString (set, delim)
+  return "TODO"
+end
+
+function escapeURI (s)
   --[[--
   Escapes a URI (or URI fragment). Example:
   Utils.escapeURI("John Smith") => "John%20Smith"
@@ -25,13 +41,13 @@ function Utils.escapeURI (s)
   return s
 end
 
-function Utils.generateUUID ()
+function generateUUID ()
   --[[--
 
   --]]--
 end
 
-function Utils.encodeBase64 (s)
+function encodeBase64 (s)
   --[[--
 
   --]]--
