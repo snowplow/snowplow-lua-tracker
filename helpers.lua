@@ -1,5 +1,6 @@
 
--- TODO: how to import these via a module statement?
+local http = require( "socket.http" )
+
 local osTime = os.time
 local mathRandom = math.random
 local mathRandomseed = math.randomseed
@@ -136,5 +137,7 @@ function getURI (uri)
     The URI (including querystring) to GET
   --]]--
 
-  -- TODO: GET the URI
+  result, statuscode, content = http.request(uri)
+
+  -- TODO: add error handling
 end
