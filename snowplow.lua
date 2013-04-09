@@ -1,4 +1,7 @@
 
+-- TODO: check this assignment will work
+base64 = require ( "libs.base64" )
+
 module("snowplow")
 
 -- -------------------------------
@@ -182,7 +185,8 @@ function trackUnstructEvent (name, properties)
 
   local props = Helpers.toPropertyJSON( properties )
   if self:encodeUnstructEvents? then
-    pb.addRaw( "ue_px", Utils.base64Encode( props ) )
+    -- TODO: cross-check that JS tracker is moving to URL-safe format too
+    pb.addRaw( "ue_px", base64.encode( props ) )
   else
     pb.addRaw( "ue_pr", props )
   end

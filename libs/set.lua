@@ -12,6 +12,7 @@ function newSet (list)
     The list of values for this set
   --]]--
 
+  -- TODO: update with code from PIL
   local set = {}
   for _, v in ipairs(list) do set[v] = true end
   return setmetatable(set, set_meta)
@@ -42,6 +43,7 @@ function mkString (set, delimiter)
     in the set, e.g. ", "
   --]]--
 
+  -- TODO: replace with code from PIL
   if set == {} then return nil end
   
   local str = ""

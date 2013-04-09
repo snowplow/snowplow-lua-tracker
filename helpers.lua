@@ -88,10 +88,14 @@ function getTimestamp ()
   return (osTime() * 1000)
 end
 
-function toPropertiesJSON ()
+function toPropertiesJSON (properties)
   --[[--
   Converts a _non-nested_ Lua table into a JSON
   of properties.
+  
+  @Parameter: properties
+    A non-nested Lua table of properties, to be
+    converted to JSON format
   --]]--
 end
 
