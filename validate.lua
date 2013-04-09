@@ -2,7 +2,17 @@ local math = require ("math")
 
 -- TODO: how to specify importing only math in a module?
 
-module(...)
+module( "validate" )
+
+-- -------------------------------
+-- Boolean validations
+
+function isBool (name, value)
+
+  if type(value) ~= "boolean" then
+    error(name .. " is required and must be a boolean")
+  end
+end
 
 -- -------------------------------
 -- String validations
@@ -22,9 +32,8 @@ end
 
 function isStringFromList (list, name, value)
   --[[--
-  xxx.
-  Note that list is the first argument to support
-  partial application.
+  Note that list is the first argument, to support
+  partial application. TODO: does Lua support partial application?
   --]]--
 
   if type(value) ~= "string" then

@@ -1,5 +1,4 @@
 
-
 module("snowplow")
 
 -- -------------------------------
@@ -183,9 +182,9 @@ function trackUnstructEvent (name, properties)
 
   local props = Helpers.toPropertyJSON( properties )
   if self:encodeUnstructEvents? then
-    pb.add( "ue_px", Utils.base64Encode( props ) )
+    pb.addRaw( "ue_px", Utils.base64Encode( props ) )
   else
-    pb.add( "ue_pr", props )
+    pb.addRaw( "ue_pr", props )
   end
 
   self:track(pb)

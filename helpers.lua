@@ -4,7 +4,7 @@ local osTime = os.time
 local mathRandom = math.random
 local mathRandomseed = math.randomseed
 
-module(...)
+module( "helpers" )
 
 function newPayloadBuilder (initialValue)
 
@@ -75,7 +75,7 @@ function getTransactionId ()
   recorded twice.
   --]]--
 
-  math_randomseed( osTime() )
+  mathRandomseed( osTime() )
   local rand = mathRandom(100000, 999999)
   return tostring(rand)
 end
