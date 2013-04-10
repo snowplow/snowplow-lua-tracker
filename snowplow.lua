@@ -25,6 +25,25 @@ local config = {
 }
 
 -- -------------------------------
+-- Constructors
+
+function newTrackerForURI (host)
+
+  Validate.isNonEmptyString(userId)
+  self.collectorURL = helpers.asCollectorURI( host )
+
+  -- TODO: return all the public methods
+end function
+
+function newTrackerForCf (cfSubdomain)
+
+  Validate.isNonEmptyString(userId)
+  self.collectorURL = helpers
+
+  -- TODO: return all the public methods
+end function
+
+-- -------------------------------
 -- Public configuration methods, plus
 -- private convenience ? methods to
 -- use in our code.
@@ -45,10 +64,6 @@ function encodeUnstructEvents (encode)
   self.config[ENCODE_UNSTRUCT_EVENTS] = encode
 end
 
-local function configEncodeUnstructEvents ()
-  return self.config[ENCODE_UNSTRUCT_EVENTS]
-end
-
 function errorOnTrack (err)
   --[[--
   Configuration setting: whether to throw an error
@@ -64,10 +79,6 @@ function errorOnTrack (err)
 
   Validate.isBoolean(err)
   self.config[ERROR_ON_TRACK] = err
-end
-
-local function configErrorOnTrack ()
-  return self.config[ERROR_ON_TRACK]
 end
 
 function errorOnValidate (err)
@@ -252,6 +263,18 @@ end
 
 -- -------------------------------
 -- Private methods
+
+local function configEncodeUnstructEvents ()
+  return self.config[ENCODE_UNSTRUCT_EVENTS]
+end
+
+local function configErrorOnTrack ()
+  return self.config[ERROR_ON_TRACK]
+end
+
+local function configErrorOnValidate ()
+  return self.config[ERROR_ON_VALIDATE]
+end
 
 local function track (pb)
   --[[--
