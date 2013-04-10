@@ -7,7 +7,7 @@ local VERSION = 20111207.5  -- version history at end of file
 local OBJDEF = { VERSION = VERSION }
 
 --
--- Simple JSON encoding and decoding in pure Lua.
+-- Simple JSON encoding in pure Lua.
 -- http://www.json.org/
 --
 --
@@ -16,106 +16,6 @@ local OBJDEF = { VERSION = VERSION }
 --   local lua_value = JSON:decode(raw_json_text)
 --
 --   local raw_json_text    = JSON:encode(lua_table_or_value)
---   local pretty_json_text = JSON:encode_pretty(lua_table_or_value) -- "pretty printed" version for human readability
---
---
--- DECODING
---
---   JSON = (loadfile "JSON.lua")() -- one-time load of the routines
---
---   local lua_value = JSON:decode(raw_json_text)
---
---   If the JSON text is for an object or an array, e.g.
---     { "what": "books", "count": 3 }
---   or
---     [ "Larry", "Curly", "Moe" ]
---
---   the result is a Lua table, e.g.
---     { what = "books", count = 3 }
---   or
---     { "Larry", "Curly", "Moe" }
---
---
---   The encode and decode routines accept an optional second argument, "etc", which is not used
---   during encoding or decoding, but upon error is passed along to error handlers. It can be of any
---   type (including nil).
---
---   With most errors during decoding, this code calls
---
---      JSON:onDecodeError(message, text, location, etc)
---
---   with a message about the error, and if known, the JSON text being parsed and the byte count
---   where the problem was discovered. You can replace the default JSON:onDecodeError() with your
---   own function.
---
---   The default onDecodeError() merely augments the message with data about the text and the
---   location if known (and if a second 'etc' argument had been provided to decode(), its value is
---   tacked onto the message as well), and then calls JSON.assert(), which itself defaults to Lua's
---   built-in assert(), and can also be overridden.
---
---   For example, in an Adobe Lightroom plugin, you might use something like
---
---          function JSON:onDecodeError(message, text, location, etc)
---             LrErrors.throwUserError("Internal Error: invalid JSON data")
---          end
---
---   or even just
---
---          function JSON.assert(message)
---             LrErrors.throwUserError("Internal Error: " .. message)
---          end
---
---   If JSON:decode() is passed a nil, this is called instead:
---
---      JSON:onDecodeOfNilError(message, nil, nil, etc)
---
---   and if JSON:decode() is passed HTML instead of JSON, this is called:
---
---      JSON:onDecodeOfHTMLError(message, text, nil, etc)
---
---   The use of the fourth 'etc' argument allows stronger coordination between decoding and error
---   reporting, especially when you provide your own error-handling routines. Continuing with the
---   the Adobe Lightroom plugin example:
---
---          function JSON:onDecodeError(message, text, location, etc)
---             local note = "Internal Error: invalid JSON data"
---             if type(etc) = 'table' and etc.photo then
---                note = note .. " while processing for " .. etc.photo:getFormattedMetadata('fileName')
---             end
---             LrErrors.throwUserError(note)
---          end
---
---            :
---            :
---
---          for i, photo in ipairs(photosToProcess) do
---               :             
---               :             
---               local data = JSON:decode(someJsonText, { photo = photo })
---               :             
---               :             
---          end
---
---
---
---
-
--- DECODING AND STRICT TYPES
---
---   Because both JSON objects and JSON arrays are converted to Lua tables, it's not normally
---   possible to tell which a Lua table came from, or guarantee decode-encode round-trip
---   equivalency.
---
---   However, if you enable strictTypes, e.g.
---
---      JSON = (loadfile "JSON.lua")() --load the routines
---      JSON.strictTypes = true
---
---   then the Lua table resulting from the decoding of a JSON object or JSON array is marked via Lua
---   metatable, so that when re-encoded with JSON:encode() it ends up as the appropriate JSON type.
---
---   (This is not the default because other routines may not work well with tables that have a
---   metatable set, for example, Lightroom API calls.)
 --
 --
 -- ENCODING
@@ -123,7 +23,6 @@ local OBJDEF = { VERSION = VERSION }
 --   JSON = (loadfile "JSON.lua")() -- one-time load of the routines
 --
 --   local raw_json_text    = JSON:encode(lua_table_or_value)
---   local pretty_json_text = JSON:encode_pretty(lua_table_or_value) -- "pretty printed" version for human readability
 
 --   On error during encoding, this code calls:
 --
@@ -135,9 +34,6 @@ local OBJDEF = { VERSION = VERSION }
 -- SUMMARY OF METHODS YOU CAN OVERRIDE IN YOUR LOCAL LUA JSON OBJECT
 --
 --    assert
---    onDecodeError
---    onDecodeOfNilError
---    onDecodeOfHTMLError
 --    onEncodeError
 --
 --  If you want to create a separate Lua JSON object with its own error handlers,
@@ -221,28 +117,6 @@ local function unicode_codepoint_as_utf8(codepoint)
                          0x80 + lowpart)
    end
 end
-
-function OBJDEF:onDecodeError(message, text, location, etc)
-   if text then
-      if location then
-         message = string.format("%s at char %d of: %s", message, location, text)
-      else
-         message = string.format("%s: %s", message, text)
-      end
-   end
-   if etc ~= nil then
-      message = message .. " (" .. OBJDEF:encode(etc) .. ")"
-   end
-
-   if self.assert then
-      self.assert(false, message)
-   else
-      assert(false, message)
-   end
-end
-
-OBJDEF.onDecodeOfNilError  = OBJDEF.onDecodeError
-OBJDEF.onDecodeOfHTMLError = OBJDEF.onDecodeError
 
 function OBJDEF:onEncodeError(message, etc)
    if etc ~= nil then
@@ -488,45 +362,6 @@ grok_one = function(self, text, start, etc)
    end
 end
 
-function OBJDEF:decode(text, etc)
-   if type(self) ~= 'table' or self.__index ~= OBJDEF then
-      OBJDEF:onDecodeError("JSON:decode must be called in method format", nil, nil, etc)
-   end
-
-   if text == nil then
-      self:onDecodeOfNilError(string.format("nil passed to JSON:decode()"), nil, nil, etc)
-   elseif type(text) ~= 'string' then
-      self:onDecodeError(string.format("expected string argument to JSON:decode(), got %s", type(text)), nil, nil, etc)
-   end
-
-   if text:match('^%s*$') then
-      return nil
-   end
-
-   if text:match('^%s*<') then
-      -- Can't be JSON... we'll assume it's HTML
-      self:onDecodeOfHTMLError(string.format("html passed to JSON:decode()"), text, nil, etc)
-   end
-
-   --
-   -- Ensure that it's not UTF-32 or UTF-16.
-   -- Those are perfectly valid encodings for JSON (as per RFC 4627 section 3),
-   -- but this package can't handle them.
-   --
-   if text:sub(1,1):byte() == 0 or (text:len() >= 2 and text:sub(2,2):byte() == 0) then
-      self:onDecodeError("JSON package groks only UTF-8, sorry", text, nil, etc)
-   end
-
-   local success, value = pcall(grok_one, self, text, 1, etc)
-   if success then
-      return value
-   else
-      -- should never get here... JSON parse errors should have been caught earlier
-      assert(false, value)
-      return nil
-   end
-end
-
 local function backslash_replacement_function(c)
    if c == "\n" then
       return "\\n"
@@ -719,79 +554,6 @@ function encode_value(self, value, parents, etc)
    end
 end
 
-local encode_pretty_value -- must predeclare because it calls itself
-function encode_pretty_value(self, value, parents, indent, etc)
-
-   if type(value) == 'string' then
-      return json_string_literal(value)
-
-   elseif type(value) == 'number' then
-      return tostring(value)
-
-   elseif type(value) == 'boolean' then
-      return tostring(value)
-
-   elseif type(value) == 'nil' then
-      return 'null'
-
-   elseif type(value) ~= 'table' then
-      self:onEncodeError("can't convert " .. type(value) .. " to JSON", etc)
-
-   else
-      --
-      -- A table to be converted to either a JSON object or array.
-      --
-      local T = value
-
-      if parents[T] then
-         self:onEncodeError("table " .. tostring(T) .. " is a child of itself", etc)
-      end
-      parents[T] = true
-
-      local result_value
-
-      local object_keys = object_or_array(self, T, etc)
-      if not object_keys then
-         --
-         -- An array...
-         --
-         local ITEMS = { }
-         for i = 1, #T do
-            table.insert(ITEMS, encode_pretty_value(self, T[i], parents, indent, etc))
-         end
-
-         result_value = "[ " .. table.concat(ITEMS, ", ") .. " ]"
-
-      else
-
-         --
-         -- An object -- can keys be numbers?
-         --
-
-         local KEYS = { }
-         local max_key_length = 0
-         for _, key in ipairs(object_keys) do
-            local encoded = encode_pretty_value(self, tostring(key), parents, "", etc)
-            max_key_length = math.max(max_key_length, #encoded)
-            table.insert(KEYS, encoded)
-         end
-         local key_indent = indent .. "    "
-         local subtable_indent = indent .. string.rep(" ", max_key_length + 2 + 4)
-         local FORMAT = "%s%" .. tostring(max_key_length) .. "s: %s"
-
-         local COMBINED_PARTS = { }
-         for i, key in ipairs(object_keys) do
-            local encoded_val = encode_pretty_value(self, T[key], parents, subtable_indent, etc)
-            table.insert(COMBINED_PARTS, string.format(FORMAT, key_indent, KEYS[i], encoded_val))
-         end
-         result_value = "{\n" .. table.concat(COMBINED_PARTS, ",\n") .. "\n" .. indent .. "}"
-      end
-
-      parents[T] = false
-      return result_value
-   end
-end
-
 function OBJDEF:encode(value, etc)
    if type(self) ~= 'table' or self.__index ~= OBJDEF then
       OBJDEF:onEncodeError("JSON:encode must be called in method format", etc)
@@ -801,14 +563,8 @@ function OBJDEF:encode(value, etc)
    return encode_value(self, value, parents, etc)
 end
 
-function OBJDEF:encode_pretty(value, etc)
-   local parents = {}
-   local subtable_indent = ""
-   return encode_pretty_value(self, value, parents, subtable_indent, etc)
-end
-
 function OBJDEF.__tostring()
-   return "JSON encode/decode package"
+   return "JSON encode package"
 end
 
 OBJDEF.__index = OBJDEF
