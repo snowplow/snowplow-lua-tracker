@@ -10,14 +10,19 @@ module("snowplow")
 -- Syntax for constants in Lua?
 local TRACKER_VERSION = "lua-0.1.0"
 local DEFAULT_PLATFORM = "pc"
-local SUPPORTED_PLATFORMS = Utils.Set { "pc", "tv", "mob", "con", "iot" }
+local SUPPORTED_PLATFORMS = set.new { "pc", "tv", "mob", "con", "iot" }
 
 -- Config constants
-local ENCODE_UNSTRUCT_EVENTS = "encode-unstruct-events"
+-- TODO: how to do an enum in Lua?
+local ENCODE_UNSTRUCT_EVENTS = "eue"
+local ERROR_ON_TRACK = "eot"
+local ERROR_ON_VALIDATE = "eov"
 
--- -------------------------------
--- "Static" module functions
-
+local config = {
+  ENCODE_UNSTRUCT_EVENTS = true,
+  ERROR_ON_TRACK = false,
+  ERROR_ON_VALIDATE = true
+}
 
 -- -------------------------------
 -- Public configuration methods, plus
@@ -30,6 +35,8 @@ function encodeUnstructEvents (encode)
   properties of unstructured events.
   Encoding means a circa 25% space saving.
 
+  Defaults to true.
+
   @Parameter: encode
     Boolean: whether to base64-encode or not
   --]]--
@@ -38,8 +45,50 @@ function encodeUnstructEvents (encode)
   self.config[ENCODE_UNSTRUCT_EVENTS] = encode
 end
 
-local function encodeUnstructEvents? ()
+local function configEncodeUnstructEvents ()
   return self.config[ENCODE_UNSTRUCT_EVENTS]
+end
+
+function errorOnTrack (err)
+  --[[--
+  Configuration setting: whether to throw an error
+  if tracking an event fails.
+
+  Defaults to false. Recommend only setting to true
+  when testing.
+
+  @Parameter: err
+    Boolean: whether to throw an error on tracking
+    failure
+  --]]--
+
+  Validate.isBoolean(err)
+  self.config[ERROR_ON_TRACK] = err
+end
+
+local function configErrorOnTrack ()
+  return self.config[ERROR_ON_TRACK]
+end
+
+function errorOnValidate (err)
+  --[[--
+  Configuration setting: whether to throw an error
+  if validating an event fails.
+
+  Defaults to true. Assumption is that all validation
+  errors can be identified and fixed at development time.
+
+  @Parameter: err
+    Boolean: whether to throw an error on validation
+    failure.
+  --]]--
+
+  Validate.isBoolean(err)
+  self.config[ERROR_ON_VALIDATE] = err
+end
+
+local function configErrorOnTrack ()
+  return self.config[ERROR_ON_TRACK]
 end
 
 -- -------------------------------
@@ -62,6 +111,19 @@ function setPlatform (platform)
   self.platform = platform
 end
 
+function setAppId (appId)
+  --[[--
+  Sets the application ID to record against
+  each event.
+
+  @Parameter: appId
+    The application ID to set
+  --]]--
+
+  Validate.isNonEmptyString( appId )
+  self.appId = appId
+end
+
 function setUserId (userId)
   --[[--
   Sets the business user ID.
@@ -71,7 +133,7 @@ function setUserId (userId)
   --]]--
 
   Validate.isNonEmptyString(userId)
-  self.businessUserId = userId
+  self.userId = userId
 end
 
 function setScreenResolution (width, height)
@@ -120,7 +182,7 @@ function trackScreenView (name, id)
     a GUID or identifier from a game CMS. String
   --]]--
 
-  local pb = newPayloadBuilder()
+  local pb = helpers.newPayloadBuilder()
   pb.addRaw( "e", "sv" )
   pb.add( "sv_na", name, Validate.isNonEmptyString )
   pb.add( "sv_id", id, Validate.isStringOrNil )
@@ -151,7 +213,7 @@ function trackStructEvent (category, action, label, property, value)
     numerical data about the user event
   --]]--
 
-  local pb = newPayloadBuilder()
+  local pb = helpers.newPayloadBuilder()
   pb.addRaw( "e", "se" )
   pb.add( "ev_ca", category, Validate.isNonEmptyString )
   pb.add( "ev_ac", action, Validate.isNonEmptyString )
@@ -173,17 +235,11 @@ function trackUnstructEvent (name, properties)
     TODO
   --]]--
 
-  -- Type and value checks
-  if type(name) ~= string or name == "" then
-    error("name is required and must be a string")
-    -- TODO: validate properties
-  end
-
-  local pb = newPayloadBuilder()
+  local pb = helpers.newPayloadBuilder()
   pb.addRaw("e", "ue")
   pb.add( "ue_na", name, Validate.isNonEmptyString )
 
-  local props = Helpers.toPropertyJSON( properties )
+  local props = helpers.toPropertiesJSON( properties )
   if self:encodeUnstructEvents? then
     -- TODO: cross-check that JS tracker is moving to URL-safe format too
     pb.addRaw( "ue_px", base64.encode( props ) )
@@ -208,11 +264,11 @@ local function track (pb)
   --]]--
 
   -- Add the standard name-value pairs
-  pb.add( "tid", getTransactionId() )
+  pb.add( "tid", helpers.getTransactionId() )
   pb.add( "p", self.platform )
-  pb.add( "uid", self.businessUserId )
-  pb.add( "aid", self.applicationId )
-  pb.add( "dtm", getTimestamp() )
+  pb.add( "uid", self.userId )
+  pb.add( "aid", self.appId )
+  pb.add( "dtm", helpers.getTimestamp() )
   pb.add( "tv", TRACKER_VERSION )
 
   -- Now build the payloadBuilder
