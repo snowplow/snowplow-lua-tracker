@@ -12,12 +12,6 @@ local TRACKER_VERSION = "lua-0.1.0"
 local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.new { "pc", "tv", "mob", "con", "iot" }
 
--- Config constants
--- TODO: how to do an enum in Lua?
-local ENCODE_UNSTRUCT_EVENTS = "eue"
-local ERROR_ON_TRACK = "eot"
-local ERROR_ON_VALIDATE = "eov"
-
 local config = {
   ENCODE_UNSTRUCT_EVENTS = true,
   ERROR_ON_TRACK = false,
@@ -27,20 +21,34 @@ local config = {
 -- -------------------------------
 -- Constructors
 
-function newTrackerForURI (host)
+function Snowplow.newTrackerForURI (host)
+  --[[--
+  Create a new Snowplow tracker talking to a
+  URI-based collector on the given host.
 
-  Validate.isNonEmptyString(userId)
-  self.collectorURL = helpers.asCollectorURI( host )
+  @Parameter: host
+    The host (i.e. full domain) on which the
+    collector is running
+  --]]--
 
-  -- TODO: return all the public methods
+  Validate.isNonEmptyString( "host", host )
+  local uri = helpers.asCollectorURI( host )
+  return newTracker( uri )
 end function
 
-function newTrackerForCf (cfSubdomain)
+function Snowplow.newTrackerForCf (cfSubdomain)
+  --[[--
+  Create a new Snowplow tracker talking to a
+  CloudFront-based collector on the given subdomain.
 
-  Validate.isNonEmptyString(userId)
-  self.collectorURL = helpers
+  @Parameter: host
+    The CloudFront subdomain on which the
+    collector is running
+  --]]--
 
-  -- TODO: return all the public methods
+  Validate.isNonEmptyString( "cloudfront subdomain", cfSubdomain )
+  local uri = helpers.collectorURIFromCf( cfSubdomain )
+  return newTracker( uri )
 end function
 
 -- -------------------------------
@@ -48,7 +56,7 @@ end function
 -- private convenience ? methods to
 -- use in our code.
 
-function encodeUnstructEvents (encode)
+function Snowplow:encodeUnstructEvents (encode)
   --[[--
   Configuration setting: whether to Base64-encode the
   properties of unstructured events.
@@ -60,11 +68,11 @@ function encodeUnstructEvents (encode)
     Boolean: whether to base64-encode or not
   --]]--
 
-  Validate.isBoolean(encode)
+  Validate.isBoolean( "encode", encode )
   self.config[ENCODE_UNSTRUCT_EVENTS] = encode
 end
 
-function errorOnTrack (err)
+function Snowplow:errorOnTrack (err)
   --[[--
   Configuration setting: whether to throw an error
   if tracking an event fails.
@@ -77,11 +85,11 @@ function errorOnTrack (err)
     failure
   --]]--
 
-  Validate.isBoolean(err)
+  Validate.isBoolean( "err", err )
   self.config[ERROR_ON_TRACK] = err
 end
 
-function errorOnValidate (err)
+function Snowplow:errorOnValidate (err)
   --[[--
   Configuration setting: whether to throw an error
   if validating an event fails.
@@ -94,18 +102,14 @@ function errorOnValidate (err)
     failure.
   --]]--
 
-  Validate.isBoolean(err)
+  Validate.isBoolean( "err", err )
   self.config[ERROR_ON_VALIDATE] = err
-end
-
-local function configErrorOnTrack ()
-  return self.config[ERROR_ON_TRACK]
 end
 
 -- -------------------------------
 -- Data setters. All public
 
-function setPlatform (platform)
+function Snowplow:setPlatform (platform)
   --[[--
   The default platform for Lua is "pc". If you are using Lua on
   another platform (e.g. as part of a console videogame), you
@@ -122,7 +126,7 @@ function setPlatform (platform)
   self.platform = platform
 end
 
-function setAppId (appId)
+function Snowplow:setAppId (appId)
   --[[--
   Sets the application ID to record against
   each event.
@@ -135,7 +139,7 @@ function setAppId (appId)
   self.appId = appId
 end
 
-function setUserId (userId)
+function Snowplow:setUserId (userId)
   --[[--
   Sets the business user ID.
 
@@ -147,7 +151,7 @@ function setUserId (userId)
   self.userId = userId
 end
 
-function setScreenResolution (width, height)
+function Snowplow:setScreenResolution (width, height)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -164,7 +168,7 @@ function setScreenResolution (width, height)
   self.height = height
 end
 
-function setColorDepth (depth)
+function Snowplow:setColorDepth (depth)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -180,7 +184,7 @@ end
 -- -------------------------------
 -- Track methods. All public
 
-function trackScreenView (name, id)
+function Snowplow:trackScreenView (name, id)
   --[[--
   Sends a screen view event to SnowPlow. A screen view
   must have a `name` and can have an optional `id`.
@@ -201,7 +205,7 @@ function trackScreenView (name, id)
   self:track(pb)
 end
 
-function trackStructEvent (category, action, label, property, value)
+function Snowplow:trackStructEvent (category, action, label, property, value)
   --[[--
   Sends a custom structured event to SnowPlow.
 
@@ -235,7 +239,7 @@ function trackStructEvent (category, action, label, property, value)
   self:track(pb)
 end
 
-function trackUnstructEvent (name, properties)
+function Snowplow:trackUnstructEvent (name, properties)
 
   --[[--
   Sends a custom unstructured event to Snowplow.
@@ -264,19 +268,34 @@ end
 -- -------------------------------
 -- Private methods
 
-local function configEncodeUnstructEvents ()
+local function Snowplow.newTracker (uri)
+  --[[--
+  Builds our new tracker using the supplied URI.
+
+  @Parameter: uri
+    The full URI to the Snowplow collector
+  --]]--
+
+  Validate.isNonEmptyString( uri )
+  return {
+    config       = config,
+    collectorURI = uri
+  }
+end function
+
+local function Snowplow:configEncodeUnstructEvents ()
   return self.config[ENCODE_UNSTRUCT_EVENTS]
 end
 
-local function configErrorOnTrack ()
+local function Snowplow:configErrorOnTrack ()
   return self.config[ERROR_ON_TRACK]
 end
 
-local function configErrorOnValidate ()
+local function Snowplow:configErrorOnValidate ()
   return self.config[ERROR_ON_VALIDATE]
 end
 
-local function track (pb)
+local function Snowplow:track (pb)
   --[[--
   Tracks any given SnowPlow event, by sending the specific
   event_pairs to the SnowPlow collector.
