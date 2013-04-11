@@ -215,9 +215,7 @@ function Snowplow:trackUnstructEvent (name, properties)
   local pb = helpers.newPayloadBuilder( self:configEncodeBase64 )
   pb.addRaw("e", "ue")
   pb.add( "ue_na", name, validate.isNonEmptyString )
-
-  local props = helpers.toPropertiesJSON( properties )
-  pb.add( "ue_px", "ue_pr", props )
+  pb.addProps( "ue_px", "ue_pr", props, validate.isNonEmptyTable )
 
   self:track(pb)
 end

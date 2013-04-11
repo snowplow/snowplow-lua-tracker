@@ -15,6 +15,23 @@ function isBool (name, value)
 end
 
 -- -------------------------------
+-- Table validations
+
+function isNonEmptyTable (name, value)
+
+  if type(value) ~= "table" or value == {} then
+    error(name .. " is required and must be a non-empty table")
+  end
+end
+
+function isTableOrNil (name, value)
+
+  if type(value) ~= "table" and value ~= nil then
+    error(name .. " must be a table or nil")
+  end
+end
+
+-- -------------------------------
 -- String validations
 
 function isNonEmptyString (name, value)

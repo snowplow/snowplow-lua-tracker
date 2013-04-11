@@ -32,27 +32,31 @@ function newPayloadBuilder (encodeBase64)
   -- Return a table of closure functions to build
   -- our payload string.
   return {
-    add = function (key, value)
+    add = function (key, value, validate)
             --[[--
             Add a &name=value pair with the value encoded,
             --]]--
+            validate( key, value )
             addNvPair( key, value, true )
           end,
 
-    addRaw = function (key, value)
+    addRaw = function (key, value, validate)
                 --[[--
                 Add a &name=value pair with the value
                 not encoded.
                 --]]--
+                validate( key, value )
                 addNvPair( key, value, false )
               end,
 
-    addBase64 = function (key, value)
+    addProperties = function (key, value, validate)
                   --[[--
                   Add a &name=value pair with the value
                   base64 encoded, unless encodeBase64 is set
                   to false (in which case URI escape).
                   --]]--
+                  validate( key, value )
+
                   if encodeBase64 then
                     addNvPair( key, base64.encode( value ), false)
                   else
@@ -106,17 +110,17 @@ function collectorURIFromCf (dist_subdomain)
   CloudFront distribution subdomain.
 
   Example:
-  collectorURIFromCf("f3f77d9def5") => "http://f3f77d9def5.cloudfront.net/i"
+  collectorUriFromCf("f3f77d9def5") => "http://f3f77d9def5.cloudfront.net/i"
 
   @Parameter: dist_subdomain
     The CloudFront subdomain on which the collector's
     distribution is hosted
   --]]--
 
-  return asCollectorURI(dist_subdomain .. ".cloudfront.net")
+  return asCollectorUri(dist_subdomain .. ".cloudfront.net")
 end
 
-function asCollectorURI (host)
+function asCollectorUri (host)
   --[[--
   Helper to generate the collector url from a
   collector host name.
@@ -128,9 +132,9 @@ function asCollectorURI (host)
   return "http://" .. host .. "/i"
 end
 
-function getURI (uri)
+function getUri (uri)
   --[[--
-  GETs the given URL: this is how our event data
+  GETs the given URI: this is how our event data
   is transmitted to the Snowplow collector.
 
   @Parameter: uri
