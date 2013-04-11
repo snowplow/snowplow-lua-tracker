@@ -7,15 +7,12 @@ module("snowplow")
 -- -------------------------------
 -- Constants
 
--- Syntax for constants in Lua?
 local TRACKER_VERSION = "lua-0.1.0"
 local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.new { "pc", "tv", "mob", "con", "iot" }
 
 local config = {
-  ENCODE_UNSTRUCT_EVENTS = true,
-  ERROR_ON_TRACK = false,
-  ERROR_ON_VALIDATE = true
+  ENCODE_BASE64 = true
 }
 
 -- -------------------------------
@@ -31,7 +28,7 @@ function Snowplow.newTrackerForURI (host)
     collector is running
   --]]--
 
-  Validate.isNonEmptyString( "host", host )
+  validate.isNonEmptyString( "host", host )
   local uri = helpers.asCollectorURI( host )
   return newTracker( uri )
 end function
@@ -46,7 +43,7 @@ function Snowplow.newTrackerForCf (cfSubdomain)
     collector is running
   --]]--
 
-  Validate.isNonEmptyString( "cloudfront subdomain", cfSubdomain )
+  validate.isNonEmptyString( "cloudfront subdomain", cfSubdomain )
   local uri = helpers.collectorURIFromCf( cfSubdomain )
   return newTracker( uri )
 end function
@@ -68,42 +65,8 @@ function Snowplow:encodeUnstructEvents (encode)
     Boolean: whether to base64-encode or not
   --]]--
 
-  Validate.isBoolean( "encode", encode )
+  validate.isBoolean( "encode", encode )
   self.config[ENCODE_UNSTRUCT_EVENTS] = encode
-end
-
-function Snowplow:errorOnTrack (err)
-  --[[--
-  Configuration setting: whether to throw an error
-  if tracking an event fails.
-
-  Defaults to false. Recommend only setting to true
-  when testing.
-
-  @Parameter: err
-    Boolean: whether to throw an error on tracking
-    failure
-  --]]--
-
-  Validate.isBoolean( "err", err )
-  self.config[ERROR_ON_TRACK] = err
-end
-
-function Snowplow:errorOnValidate (err)
-  --[[--
-  Configuration setting: whether to throw an error
-  if validating an event fails.
-
-  Defaults to true. Assumption is that all validation
-  errors can be identified and fixed at development time.
-
-  @Parameter: err
-    Boolean: whether to throw an error on validation
-    failure.
-  --]]--
-
-  Validate.isBoolean( "err", err )
-  self.config[ERROR_ON_VALIDATE] = err
 end
 
 -- -------------------------------
@@ -122,7 +85,7 @@ function Snowplow:setPlatform (platform)
     XXX
   --]]--
 
-  Validate.isStringFromSet(SUPPORTED_PLATFORMS, "platform", platform)
+  validate.isStringFromSet(SUPPORTED_PLATFORMS, "platform", platform)
   self.platform = platform
 end
 
@@ -147,7 +110,7 @@ function Snowplow:setUserId (userId)
     The business user ID to set.
   --]]--
 
-  Validate.isNonEmptyString(userId)
+  validate.isNonEmptyString(userId)
   self.userId = userId
 end
 
@@ -162,8 +125,8 @@ function Snowplow:setScreenResolution (width, height)
     The screen height as a number
   --]]--
 
-  Validate.isPositiveInt(value, "width", width)
-  Validate.isPositiveInt(value, "height", height)
+  validate.isPositiveInt(value, "width", width)
+  validate.isPositiveInt(value, "height", height)
   self.width = width
   self.height = height
 end
@@ -177,7 +140,7 @@ function Snowplow:setColorDepth (depth)
     The color depth on this computer
   --]]--
 
-  Validate.isPositiveInt(value, "color depth", depth)
+  validate.isPositiveInt(value, "color depth", depth)
   self.colorDepth = depth
 end
 
@@ -199,8 +162,8 @@ function Snowplow:trackScreenView (name, id)
 
   local pb = helpers.newPayloadBuilder()
   pb.addRaw( "e", "sv" )
-  pb.add( "sv_na", name, Validate.isNonEmptyString )
-  pb.add( "sv_id", id, Validate.isStringOrNil )
+  pb.add( "sv_na", name, validate.isNonEmptyString )
+  pb.add( "sv_id", id, validate.isStringOrNil )
 
   self:track(pb)
 end
@@ -228,19 +191,18 @@ function Snowplow:trackStructEvent (category, action, label, property, value)
     numerical data about the user event
   --]]--
 
-  local pb = helpers.newPayloadBuilder()
+  local pb = helpers.newPayloadBuilder(self:configEncodeUnstructEvents)
   pb.addRaw( "e", "se" )
-  pb.add( "ev_ca", category, Validate.isNonEmptyString )
-  pb.add( "ev_ac", action, Validate.isNonEmptyString )
-  pb.add( "ev_la", label, Validate.isStringOrNil )
-  pb.add( "ev_pr", property, Validate.isStringOrNil )
-  pb.add( "ev_va", value, isNumberOrNil )
+  pb.add( "ev_ca", category, validate.isNonEmptyString )
+  pb.add( "ev_ac", action, validate.isNonEmptyString )
+  pb.add( "ev_la", label, validate.isStringOrNil )
+  pb.add( "ev_pr", property, validate.isStringOrNil )
+  pb.add( "ev_va", value, validate.isNumberOrNil )
 
   self:track(pb)
 end
 
 function Snowplow:trackUnstructEvent (name, properties)
-
   --[[--
   Sends a custom unstructured event to Snowplow.
 
@@ -250,17 +212,12 @@ function Snowplow:trackUnstructEvent (name, properties)
     TODO
   --]]--
 
-  local pb = helpers.newPayloadBuilder()
+  local pb = helpers.newPayloadBuilder( self:configEncodeBase64 )
   pb.addRaw("e", "ue")
-  pb.add( "ue_na", name, Validate.isNonEmptyString )
+  pb.add( "ue_na", name, validate.isNonEmptyString )
 
   local props = helpers.toPropertiesJSON( properties )
-  if self:encodeUnstructEvents? then
-    -- TODO: cross-check that JS tracker is moving to URL-safe format too
-    pb.addRaw( "ue_px", base64.encode( props ) )
-  else
-    pb.addRaw( "ue_pr", props )
-  end
+  pb.add( "ue_px", "ue_pr", props )
 
   self:track(pb)
 end
@@ -284,15 +241,11 @@ local function Snowplow.newTracker (uri)
 end function
 
 local function Snowplow:configEncodeUnstructEvents ()
-  return self.config[ENCODE_UNSTRUCT_EVENTS]
-end
-
-local function Snowplow:configErrorOnTrack ()
-  return self.config[ERROR_ON_TRACK]
-end
-
-local function Snowplow:configErrorOnValidate ()
-  return self.config[ERROR_ON_VALIDATE]
+  --[[--
+  Helper to wrap whether unstruct events should
+  be base64-encoded or not.
+  --]]--
+  return self.config[ENCODE_BASE64]
 end
 
 local function Snowplow:track (pb)

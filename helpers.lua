@@ -7,21 +7,12 @@ local mathRandomseed = math.randomseed
 
 module( "helpers" )
 
-function newPayloadBuilder (initialValue)
+function newPayloadBuilder (encodeBase64)
 
-  local payload
+  local payload = ""
 
   -- Type and value checks
-  if type(initialValue) ~= "string" and initialValue ~= nil then
-    error("initial_value must be a string or nil")
-  end
-
-  -- Initialize
-  if initialValue then
-    payload = initialValue
-  else
-    payload = ""
-  end
+  validate.isNonEmptyString( "initial value", initialValue )
 
   local addNvPair = function (key, value, encode)
     --[[--
@@ -33,10 +24,7 @@ function newPayloadBuilder (initialValue)
 
     if value ~= nil and value ~= "" then
       if payload:len() > 0 then a = "&" else a = "" end
-
-      -- TODO: add in encoding to the below
       if encode then v = value else v = value end
-
       payload = payload .. a .. key .. "=" .. v
     end
   end
@@ -48,7 +36,7 @@ function newPayloadBuilder (initialValue)
             --[[--
             Add a &name=value pair with the value encoded,
             --]]--
-            addNvPair(key, value, true)
+            addNvPair( key, value, true )
           end,
 
     addRaw = function (key, value)
@@ -56,8 +44,20 @@ function newPayloadBuilder (initialValue)
                 Add a &name=value pair with the value
                 not encoded.
                 --]]--
-                addNvPair(key, value, false)
+                addNvPair( key, value, false )
               end,
+
+    addBase64 = function (key, value)
+                  --[[--
+                  Add a &name=value pair with the value
+                  base64 encoded, unless encodeBase64 is set
+                  to false (in which case URI escape).
+                  --]]--
+                  if encodeBase64 then
+                    addNvPair( key, base64.encode( value ), false)
+                  else
+                    addNvPair( key, value, true )
+                  end,
 
     build = function ()
               --[[--
