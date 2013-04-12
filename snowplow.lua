@@ -221,7 +221,7 @@ end
 -- -------------------------------
 -- Private methods
 
-local function Snowplow:configEncodeBase64 ()
+local function configEncodeBase64 (self)
   --[[--
   Alias to wrap whether unstruct events should
   be base64-encoded or not.
