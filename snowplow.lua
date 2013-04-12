@@ -264,8 +264,6 @@ local function newTracker (uri)
   @Parameter: uri
     The full URI to the Snowplow collector
   --]]--
-
-  validate.isNonEmptyString( uri )
   return {
     config       = config,
     collectorURI = uri
