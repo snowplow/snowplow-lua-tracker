@@ -8,70 +8,68 @@ module( "payload" )
 
 function newPayloadBuilder (encodeBase64)
 
-  local payload = "?"
-
-  local addNvPair = function (key, value, encode)
-    --[[--
-    Helper to add a &name=value pair to our payload
-    aka querystring. Closes around payload
-    --]]--
-
-    local a, v
-
-    if value ~= nil and value ~= "" then
-      if payload:len() > 0 then a = "&" else a = "" end
-      if encode then v = value else v = value end
-      payload = payload .. a .. key .. "=" .. v
-    end
-  end
-
-  -- Return a table of closure functions to build
-  -- our payload string.
   return {
-    add = function (key, value, validate)
-            --[[--
-            Add a &name=value pair with the value encoded,
-            --]]--
-            validate( key, value )
-            addNvPair( key, value, true )
-          end,
-
-    addRaw = function (key, value, validate)
-                --[[--
-                Add a &name=value pair with the value
-                not encoded.
-                --]]--
-                validate( key, value )
-                addNvPair( key, value, false )
-              end,
-
-    addProperties = function (keyIfEnc, key, value, validate)
-                  --[[--
-                  Add a &name=value pair with the value
-                  base64 encoded, unless encodeBase64 is set
-                  to false (in which case URI escape).
-                  --]]--
-
-                  validate( key, value )
-                  props = toPropertiesJson( value )
-
-                  if encodeBase64 then
-                    addNvPair( keyIfEnc, base64.encode( value ), false) -- No URI escaping
-                  else
-                    addNvPair( key, value, true ) -- URI escaping
-                  end,
-
-    build = function ()
-              --[[--
-              Our "builder" returns the closed-over
-              payload string.
-              --]]--
-              return payload
-            end
+    payload = "?"
   }
 end
 
-function toPropertiesJson (properties)
+function add (self, key, value, validate)
+  --[[--
+  Add a &name=value pair with the value encoded,
+  --]]--
+  validate( key, value )
+  self:addNvPair( key, value, true )
+end
+
+function addRaw (key, value, validate)
+  --[[--
+  Add a &name=value pair with the value
+  not encoded.
+  --]]--
+  validate( key, value )
+  self:addNvPair( key, value, false )
+end
+
+function addProps (keyIfEnc, key, props, validate)
+  --[[--
+  Add a &name=value pair with the value
+  base64 encoded, unless encodeBase64 is set
+  to false (in which case URI escape).
+  --]]--
+
+  validate( key, props )
+  props = toPropertiesJson( value )
+
+  if encodeBase64 then
+    addNvPair( keyIfEnc, base64.encode( value ), false) -- Base64 encode, no URI escaping
+  else
+    addNvPair( key, value, true ) -- URI escaping
+  end
+end
+
+function build (self)
+  --[[--
+  Our "builder" returns the payload string.
+  --]]--
+  return self:payload
+end
+
+local function addNvPair (self, key, value, encode)
+  --[[--
+  Helper to add a &name=value pair to our payload
+  aka querystring. Closes around payload
+  --]]--
+
+  local a, v
+
+  if value ~= nil and value ~= "" then
+    if self.payload:len() > 0 then a = "&" else a = "" end
+    if encode then v = value else v = value end
+    self.payload = self.payload .. a .. key .. "=" .. v
+  end
+end
+
+local function toPropertiesJson (properties)
   --[[--
   Converts a _non-nested_ Lua table into a JSON
   of properties.
