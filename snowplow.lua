@@ -317,7 +317,7 @@ function getTimestamp ()
   Returns the current timestamp as total milliseconds
   since epoch.
   --]]--
-  return (osTime() * 1000)
+  return osTime() * 1000
 end
 
 function httpGet (uri)
