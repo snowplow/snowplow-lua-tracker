@@ -17,7 +17,7 @@ local config = {
 -- -------------------------------
 -- Constructors
 
-function Snowplow.newTrackerForUri (host)
+function newTrackerForUri (self, host)
   --[[--
   Create a new Snowplow tracker talking to a
   URI-based collector on the given host.
@@ -32,7 +32,7 @@ function Snowplow.newTrackerForUri (host)
   return newTracker( uri )
 end function
 
-function Snowplow.newTrackerForCf (cfSubdomain)
+function newTrackerForCf (self, cfSubdomain)
   --[[--
   Create a new Snowplow tracker talking to a
   CloudFront-based collector on the given subdomain.
@@ -50,7 +50,7 @@ end function
 -- -------------------------------
 -- Public configuration methods
 
-function Snowplow:encodeBase64 (encode)
+function encodeBase64 (self, encode)
   --[[--
   Configuration setting: whether to Base64-encode the
   properties of unstructured events and custom
@@ -70,7 +70,7 @@ end
 -- -------------------------------
 -- Data setters. All public
 
-function Snowplow:setPlatform (platform)
+function setPlatform (self, platform)
   --[[--
   The default platform for Lua is "pc". If you are using Lua on
   another platform (e.g. as part of a console videogame), you
@@ -87,7 +87,7 @@ function Snowplow:setPlatform (platform)
   self.platform = platform
 end
 
-function Snowplow:setAppId (appId)
+function setAppId (self, appId)
   --[[--
   Sets the application ID to record against
   each event.
@@ -100,7 +100,7 @@ function Snowplow:setAppId (appId)
   self.appId = appId
 end
 
-function Snowplow:setUserId (userId)
+function setUserId (self, userId)
   --[[--
   Sets the business user ID.
 
@@ -112,7 +112,7 @@ function Snowplow:setUserId (userId)
   self.userId = userId
 end
 
-function Snowplow:setScreenResolution (width, height)
+function setScreenResolution (self, width, height)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -129,7 +129,7 @@ function Snowplow:setScreenResolution (width, height)
   self.height = height
 end
 
-function Snowplow:setColorDepth (depth)
+function setColorDepth (self, depth)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -145,7 +145,7 @@ end
 -- -------------------------------
 -- Track methods. All public
 
-function Snowplow:trackScreenView (name, id)
+function trackScreenView (self, name, id)
   --[[--
   Sends a screen view event to SnowPlow. A screen view
   must have a `name` and can have an optional `id`.
@@ -166,7 +166,7 @@ function Snowplow:trackScreenView (name, id)
   return self:track( pb )
 end
 
-function Snowplow:trackStructEvent (category, action, label, property, value)
+function trackStructEvent (self, category, action, label, property, value)
   --[[--
   Sends a custom structured event to SnowPlow.
 
@@ -200,7 +200,7 @@ function Snowplow:trackStructEvent (category, action, label, property, value)
   return self:track( pb )
 end
 
-function Snowplow:trackUnstructEvent (name, properties)
+function trackUnstructEvent (self, name, properties)
   --[[--
   Sends a custom unstructured event to Snowplow.
 
