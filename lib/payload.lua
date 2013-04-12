@@ -1,4 +1,3 @@
-
 local http = require( "socket.http" )
 
 local osTime = os.time
@@ -8,9 +7,6 @@ local mathRandomseed = math.randomseed
 module( "payload" )
 
 function newPayloadBuilder (encodeBase64)
-
-  -- Type and value checks
-  validate.isBoolean( "initial value", initialValue )
 
   local payload = "?"
 
