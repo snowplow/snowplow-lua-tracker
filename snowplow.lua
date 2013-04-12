@@ -1,5 +1,5 @@
-validate = require( "libs.validate" )
-payload  = require( "libs.payload" )
+validate = require( "lib.validate" )
+payload  = require( "lib.payload" )
 
 module( "snowplow" )
 
