@@ -1,4 +1,3 @@
-
 validate = require( "libs.validate" )
 payload  = require( "libs.payload" )
 
@@ -139,7 +138,7 @@ function Snowplow:setColorDepth (depth)
     The color depth on this computer
   --]]--
 
-  validate.isPositiveInt(value, "color depth", depth)
+  validate.isPositiveInt( depth, "color depth" )
   self.colorDepth = depth
 end
 
