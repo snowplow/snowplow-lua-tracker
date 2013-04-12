@@ -2,10 +2,6 @@ local escape = require( "3rdparty.escape" )
 local json   = require( "3rdparty.JSON" )
 local base64 = require( "3rdparty.base64" )
 
-local osTime = os.time
-local mathRandom = math.random
-local mathRandomseed = math.randomseed
-
 module( "payload" )
 
 function newPayloadBuilder (encodeBase64)
