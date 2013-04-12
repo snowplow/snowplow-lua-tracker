@@ -1,6 +1,4 @@
-
 local escape = require ( "3rdparty.escape" )
-
 local http = require( "socket.http" )
 
 local osTime = os.time
@@ -57,7 +55,7 @@ function build (self)
   return self:payload
 end
 
-local function addNvPair (self, key, value, encode)
+local function addNvPair (self, key, value, esc)
   --[[--
   Helper to add a &name=value pair to our payload
   aka querystring. Closes around payload
@@ -67,7 +65,7 @@ local function addNvPair (self, key, value, encode)
 
   if value ~= nil and value ~= "" then
     if self.payload:len() > 0 then a = "&" else a = "" end
-    if encode then v = value else v = value end
+    if esc then v = escape.escapeUri( value ) else v = value end
     self.payload = self.payload .. a .. key .. "=" .. v
   end
 end
