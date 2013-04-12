@@ -221,21 +221,6 @@ end
 -- -------------------------------
 -- Private methods
 
-local function Snowplow.newTracker (uri)
-  --[[--
-  Builds our new tracker using the supplied URI.
-
-  @Parameter: uri
-    The full URI to the Snowplow collector
-  --]]--
-
-  validate.isNonEmptyString( uri )
-  return {
-    config       = config,
-    collectorURI = uri
-  }
-end function
-
 local function Snowplow:configEncodeBase64 ()
   --[[--
   Alias to wrap whether unstruct events should
@@ -272,7 +257,22 @@ end
 -- -------------------------------
 -- Private functions aka 'static' methods
 
-function collectorUriFromCf (dist_subdomain)
+local function newTracker (uri)
+  --[[--
+  Builds our new tracker using the supplied URI.
+
+  @Parameter: uri
+    The full URI to the Snowplow collector
+  --]]--
+
+  validate.isNonEmptyString( uri )
+  return {
+    config       = config,
+    collectorURI = uri
+  }
+end function
+
+local function collectorUriFromCf (dist_subdomain)
   --[[--
   Helper to generate the collector url from a
   CloudFront distribution subdomain.
@@ -288,7 +288,7 @@ function collectorUriFromCf (dist_subdomain)
   return asCollectorUri(dist_subdomain .. ".cloudfront.net")
 end
 
-function asCollectorUri (host)
+local function asCollectorUri (host)
   --[[--
   Helper to generate the collector url from a
   collector host name.
@@ -300,7 +300,7 @@ function asCollectorUri (host)
   return "http://" .. host .. "/i"
 end
 
-function getTransactionId ()
+local function getTransactionId ()
   --[[--
   Generates a moderately-unique six-digit transaction ID
   - essentially a nonce to make sure this event isn't
@@ -312,7 +312,7 @@ function getTransactionId ()
   return tostring(rand)
 end
 
-function getTimestamp ()
+local function getTimestamp ()
   --[[--
   Returns the current timestamp as total milliseconds
   since epoch.
@@ -320,7 +320,7 @@ function getTimestamp ()
   return osTime() * 1000
 end
 
-function httpGet (uri)
+local function httpGet (uri)
   --[[--
   GETs the given URI: this is how our event data
   is transmitted to the Snowplow collector.
