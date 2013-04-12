@@ -17,7 +17,7 @@ local config = {
 -- -------------------------------
 -- Constructors
 
-function newTrackerForUri (self, host)
+function newTrackerForUri (host)
   --[[--
   Create a new Snowplow tracker talking to a
   URI-based collector on the given host.
@@ -32,7 +32,7 @@ function newTrackerForUri (self, host)
   return newTracker( uri )
 end function
 
-function newTrackerForCf (self, cfSubdomain)
+function newTrackerForCf (cfSubdomain)
   --[[--
   Create a new Snowplow tracker talking to a
   CloudFront-based collector on the given subdomain.
