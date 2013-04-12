@@ -1,7 +1,7 @@
 validate = require( "libs.validate" )
 payload  = require( "libs.payload" )
 
-module("snowplow")
+module( "snowplow" )
 
 -- -------------------------------
 -- Constants
