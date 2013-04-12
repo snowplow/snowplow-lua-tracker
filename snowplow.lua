@@ -251,7 +251,7 @@ local function Snowplow:track (pb)
   local payload = pb.build()
 
   -- Finally send to Snowplow
-  return httpGet (self.collectorUri .. payload)
+  return httpGet( self.collectorUri .. payload )
 end
 
 -- -------------------------------
@@ -283,7 +283,7 @@ local function collectorUriFromCf (dist_subdomain)
     distribution is hosted
   --]]--
 
-  return asCollectorUri(dist_subdomain .. ".cloudfront.net")
+  return asCollectorUri( dist_subdomain .. ".cloudfront.net" )
 end
 
 local function asCollectorUri (host)
@@ -307,7 +307,7 @@ local function getTransactionId ()
 
   mathRandomseed( osTime() )
   local rand = mathRandom(100000, 999999)
-  return tostring(rand)
+  return tostring( rand )
 end
 
 local function getTimestamp ()
@@ -327,7 +327,7 @@ local function httpGet (uri)
     The URI (including querystring) to GET
   --]]--
 
-  result, statuscode, content = http.request(uri)
+  result, statuscode, content = http.request( uri )
 
   -- TODO: add error handling
 end
