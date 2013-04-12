@@ -1,5 +1,5 @@
 local escape = require( "3rdparty.escape" )
-local json   = require(  "3rdparty.JSON" )
+local json   = require( "3rdparty.JSON" )
 local base64 = require( "3rdparty.base64" )
 local http   = require( "socket.http" )
 
