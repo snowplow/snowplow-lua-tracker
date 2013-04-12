@@ -8,7 +8,6 @@ local mathRandomseed = math.randomseed
 module( "payload" )
 
 function newPayloadBuilder (encodeBase64)
-
   return {
     payload = "?"
   }
