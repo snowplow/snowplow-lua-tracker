@@ -36,7 +36,7 @@ function newTrackerForUri (host)
   validate.isNonEmptyString( "host", host )
   local uri = asCollectorUri( host )
   return newTracker( uri )
-end function
+end
 
 function newTrackerForCf (cfSubdomain)
   --[[--
@@ -51,7 +51,7 @@ function newTrackerForCf (cfSubdomain)
   validate.isNonEmptyString( "cloudfront subdomain", cfSubdomain )
   local uri = collectorURIFromCf( cfSubdomain )
   return newTracker( uri )
-end function
+end
 
 -- -------------------------------
 -- Public configuration methods
