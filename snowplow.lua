@@ -1,6 +1,6 @@
 
--- TODO: check this assignment will work
-base64 = require ( "libs.base64" )
+validate = require( "libs.validate" )
+payload  = require( "libs.payload" )
 
 module("snowplow")
 
@@ -18,7 +18,7 @@ local config = {
 -- -------------------------------
 -- Constructors
 
-function Snowplow.newTrackerForURI (host)
+function Snowplow.newTrackerForUri (host)
   --[[--
   Create a new Snowplow tracker talking to a
   URI-based collector on the given host.
@@ -29,7 +29,7 @@ function Snowplow.newTrackerForURI (host)
   --]]--
 
   validate.isNonEmptyString( "host", host )
-  local uri = helpers.asCollectorURI( host )
+  local uri = asCollectorUri( host )
   return newTracker( uri )
 end function
 
@@ -44,20 +44,19 @@ function Snowplow.newTrackerForCf (cfSubdomain)
   --]]--
 
   validate.isNonEmptyString( "cloudfront subdomain", cfSubdomain )
-  local uri = helpers.collectorURIFromCf( cfSubdomain )
+  local uri = collectorURIFromCf( cfSubdomain )
   return newTracker( uri )
 end function
 
 -- -------------------------------
--- Public configuration methods, plus
--- private convenience ? methods to
--- use in our code.
+-- Public configuration methods
 
-function Snowplow:encodeUnstructEvents (encode)
+function Snowplow:encodeBase64 (encode)
   --[[--
   Configuration setting: whether to Base64-encode the
-  properties of unstructured events.
-  Encoding means a circa 25% space saving.
+  properties of unstructured events and custom
+  variables.
+  Encoding means a circa~25% space saving.
 
   Defaults to true.
 
@@ -85,7 +84,7 @@ function Snowplow:setPlatform (platform)
     XXX
   --]]--
 
-  validate.isStringFromSet(SUPPORTED_PLATFORMS, "platform", platform)
+  validate.isStringFromSet( SUPPORTED_PLATFORMS, "platform", platform )
   self.platform = platform
 end
 
@@ -98,7 +97,7 @@ function Snowplow:setAppId (appId)
     The application ID to set
   --]]--
 
-  Validate.isNonEmptyString( appId )
+  validate.isNonEmptyString( "app id", appId )
   self.appId = appId
 end
 
@@ -110,7 +109,7 @@ function Snowplow:setUserId (userId)
     The business user ID to set.
   --]]--
 
-  validate.isNonEmptyString(userId)
+  validate.isNonEmptyString( "user id", userId )
   self.userId = userId
 end
 
@@ -125,8 +124,8 @@ function Snowplow:setScreenResolution (width, height)
     The screen height as a number
   --]]--
 
-  validate.isPositiveInt(value, "width", width)
-  validate.isPositiveInt(value, "height", height)
+  validate.isPositiveInt( width, "width" )
+  validate.isPositiveInt( height, "height" )
   self.width = width
   self.height = height
 end
@@ -160,12 +159,12 @@ function Snowplow:trackScreenView (name, id)
     a GUID or identifier from a game CMS. String
   --]]--
 
-  local pb = helpers.newPayloadBuilder()
+  local pb = payload.newPayloadBuilder( self:configEncodeBase64 )
   pb.addRaw( "e", "sv" )
   pb.add( "sv_na", name, validate.isNonEmptyString )
   pb.add( "sv_id", id, validate.isStringOrNil )
 
-  self:track(pb)
+  return self:track( pb )
 end
 
 function Snowplow:trackStructEvent (category, action, label, property, value)
@@ -191,7 +190,7 @@ function Snowplow:trackStructEvent (category, action, label, property, value)
     numerical data about the user event
   --]]--
 
-  local pb = helpers.newPayloadBuilder(self:configEncodeUnstructEvents)
+  local pb = payload.newPayloadBuilder( self:configEncodeBase64 )
   pb.addRaw( "e", "se" )
   pb.add( "ev_ca", category, validate.isNonEmptyString )
   pb.add( "ev_ac", action, validate.isNonEmptyString )
@@ -199,7 +198,7 @@ function Snowplow:trackStructEvent (category, action, label, property, value)
   pb.add( "ev_pr", property, validate.isStringOrNil )
   pb.add( "ev_va", value, validate.isNumberOrNil )
 
-  self:track(pb)
+  return self:track( pb )
 end
 
 function Snowplow:trackUnstructEvent (name, properties)
@@ -212,12 +211,12 @@ function Snowplow:trackUnstructEvent (name, properties)
     TODO
   --]]--
 
-  local pb = helpers.newPayloadBuilder( self:configEncodeBase64 )
+  local pb = payload.newPayloadBuilder( self:configEncodeBase64 )
   pb.addRaw("e", "ue")
   pb.add( "ue_na", name, validate.isNonEmptyString )
   pb.addProps( "ue_px", "ue_pr", props, validate.isNonEmptyTable )
 
-  self:track(pb)
+  return self:track( pb )
 end
 
 -- -------------------------------
@@ -231,16 +230,16 @@ local function Snowplow.newTracker (uri)
     The full URI to the Snowplow collector
   --]]--
 
-  Validate.isNonEmptyString( uri )
+  validate.isNonEmptyString( uri )
   return {
     config       = config,
     collectorURI = uri
   }
 end function
 
-local function Snowplow:configEncodeUnstructEvents ()
+local function Snowplow:configEncodeBase64 ()
   --[[--
-  Helper to wrap whether unstruct events should
+  Alias to wrap whether unstruct events should
   be base64-encoded or not.
   --]]--
   return self.config[ENCODE_BASE64]
@@ -257,16 +256,81 @@ local function Snowplow:track (pb)
   --]]--
 
   -- Add the standard name-value pairs
-  pb.add( "tid", helpers.getTransactionId() )
+  pb.add( "tid", getTransactionId() )
   pb.add( "p", self.platform )
   pb.add( "uid", self.userId )
   pb.add( "aid", self.appId )
-  pb.add( "dtm", helpers.getTimestamp() )
+  pb.add( "dtm", getTimestamp() )
   pb.add( "tv", TRACKER_VERSION )
 
   -- Now build the payloadBuilder
   local payload = pb.build()
 
   -- Finally send to Snowplow
-  -- TODO
+  return httpGet (self.collectorUri .. payload)
+end
+
+-- -------------------------------
+-- Private functions aka 'static' methods
+
+function collectorUriFromCf (dist_subdomain)
+  --[[--
+  Helper to generate the collector url from a
+  CloudFront distribution subdomain.
+
+  Example:
+  collectorUriFromCf("f3f77d9def5") => "http://f3f77d9def5.cloudfront.net/i"
+
+  @Parameter: dist_subdomain
+    The CloudFront subdomain on which the collector's
+    distribution is hosted
+  --]]--
+
+  return asCollectorUri(dist_subdomain .. ".cloudfront.net")
+end
+
+function asCollectorUri (host)
+  --[[--
+  Helper to generate the collector url from a
+  collector host name.
+
+  Example:
+  as_collector_url("snplow.myshop.com") => "http://snplow.myshop.com/i"
+  --]]--
+
+  return "http://" .. host .. "/i"
+end
+
+function getTransactionId ()
+  --[[--
+  Generates a moderately-unique six-digit transaction ID
+  - essentially a nonce to make sure this event isn't
+  recorded twice.
+  --]]--
+
+  mathRandomseed( osTime() )
+  local rand = mathRandom(100000, 999999)
+  return tostring(rand)
+end
+
+function getTimestamp ()
+  --[[--
+  Returns the current timestamp as total milliseconds
+  since epoch.
+  --]]--
+  return (osTime() * 1000)
+end
+
+function httpGet (uri)
+  --[[--
+  GETs the given URI: this is how our event data
+  is transmitted to the Snowplow collector.
+
+  @Parameter: uri
+    The URI (including querystring) to GET
+  --]]--
+
+  result, statuscode, content = http.request(uri)
+
+  -- TODO: add error handling
 end
