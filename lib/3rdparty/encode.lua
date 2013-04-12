@@ -2,7 +2,7 @@ local string = require ("string")
 
 module( "encode" )
 
-function escapeURI (s)
+function escapeUri (s)
   --[[--
   Escapes a URI (or URI fragment). Example:
   Utils.escapeURI("John Smith") => "John%20Smith"
