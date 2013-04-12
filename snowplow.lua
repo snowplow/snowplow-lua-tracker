@@ -1,5 +1,6 @@
-validate = require( "lib.validate" )
-payload  = require( "lib.payload" )
+local validate = require( "lib.validate" )
+local payload  = require( "lib.payload" )
+local http     = require( "socket.http" )
 
 module( "snowplow" )
 
