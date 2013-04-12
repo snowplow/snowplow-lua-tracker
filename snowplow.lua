@@ -3,6 +3,10 @@ local payload  = require( "lib.payload" )
 local set      = require( "lib.set" )
 local http     = require( "socket.http" )
 
+local osTime = os.time
+local mathRandom = math.random
+local mathRandomseed = math.randomseed
+
 module( "snowplow" )
 
 -- -------------------------------
