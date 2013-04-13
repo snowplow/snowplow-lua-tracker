@@ -1,13 +1,13 @@
-local validate = require( "lib.validate" )
-local payload  = require( "lib.payload" )
-local set      = require( "lib.3rdparty.set" )
+local validate = require( "validate" )
+local payload  = require( "payload" )
+local set      = require( "lib.set" )
 local http     = require( "socket.http" )
 
 local osTime = os.time
 local mathRandom = math.random
 local mathRandomseed = math.randomseed
 
-module( "snowplow" )
+module( "snowplow.tracker" )
 
 -- -------------------------------
 -- Constants & config

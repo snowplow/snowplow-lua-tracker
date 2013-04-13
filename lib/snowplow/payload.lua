@@ -1,6 +1,6 @@
-local escape = require( "lib.3rdparty.escape" )
-local json   = require( "lib.3rdparty.JSON" )
-local base64 = require( "lib.3rdparty.base64" )
+local escape = require( "lib.escape" )
+local json   = require( "lib.JSON" )
+local base64 = require( "lib.base64" )
 
 module( "payload" )
 

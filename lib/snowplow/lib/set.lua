@@ -1,10 +1,10 @@
 local setmetatable = setmetatable
 local pairs, ipairs = pairs, ipairs
 
-module( "set" )
+module( "snowplow.lua.set" )
 
--- local Set = {}
--- Set.mt = { __index = Set }
+local Set = {}
+Set.mt = { __index = Set }
 
 function newSet (t)
   --[[--
@@ -21,22 +21,22 @@ function newSet (t)
   return set
 end
 
---[[--
 Set.contains = function (self, value)
-
+  --[[--
   Does the set contain this value?
 
   @Parameter: key
     The value to look for in our set
+  --]]--
 
   return self[value]
 end
 
 Set.tostring = function (self, value)
-
+  --[[--
   Convert a set to a string representation
   Taken from: http://www.lua.org/pil/13.1.html
-
+  --]]--
 
   local s = "{"
   local sep = ""
@@ -48,4 +48,3 @@ Set.tostring = function (self, value)
 end
 
 return _M;
---]]--
