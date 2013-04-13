@@ -10,7 +10,7 @@ local mathRandomseed = math.randomseed
 module( "snowplow" )
 
 -- -------------------------------
--- Constants
+-- Constants & config
 
 local TRACKER_VERSION = "lua-0.1.0"
 local DEFAULT_PLATFORM = "pc"
