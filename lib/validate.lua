@@ -43,6 +43,7 @@ function isStringOrNil (name, value)
 
   if type(value) ~= "string" and value ~= nil then
     error(name .. " must be a string or nil")
+  end
 end
 
 function isStringFromSet (set, name, value)
