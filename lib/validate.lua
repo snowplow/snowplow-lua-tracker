@@ -1,6 +1,4 @@
-local math = require ("math")
-
--- TODO: how to specify importing only math in a module?
+local mathAbs = require ("math.abs")
 
 module( "validate" )
 
@@ -81,7 +79,7 @@ end
 
 function isPositiveInt (name, value)
 
-  if type(value) ~= "number" or value ~= math.abs(value) or value < 0 then
+  if type(value) ~= "number" or value ~= mathAbs(value) or value < 0 then
     error(name .. "is required and must be a positive integer")
   end
 end
