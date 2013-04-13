@@ -1,6 +1,6 @@
 local validate = require( "lib.validate" )
 local payload  = require( "lib.payload" )
-local set      = require( "lib.set" )
+local set      = require( "lib.3rdparty.set" )
 local http     = require( "socket.http" )
 
 local osTime = os.time
@@ -164,7 +164,7 @@ function trackScreenView (self, name, id)
     a GUID or identifier from a game CMS. String
   --]]--
 
-  local pb = payload.newPayloadBuilder( self:configEncodeBase64 )
+  local pb = payload.newPayloadBuilder( self:configEncodeBase64 () )
   pb.addRaw( "e", "sv" )
   pb.add( "sv_na", name, validate.isNonEmptyString )
   pb.add( "sv_id", id, validate.isStringOrNil )
@@ -195,7 +195,7 @@ function trackStructEvent (self, category, action, label, property, value)
     numerical data about the user event
   --]]--
 
-  local pb = payload.newPayloadBuilder( self:configEncodeBase64 )
+  local pb = payload.newPayloadBuilder( self:configEncodeBase64 () )
   pb.addRaw( "e", "se" )
   pb.add( "ev_ca", category, validate.isNonEmptyString )
   pb.add( "ev_ac", action, validate.isNonEmptyString )
@@ -216,7 +216,7 @@ function trackUnstructEvent (self, name, properties)
     TODO
   --]]--
 
-  local pb = payload.newPayloadBuilder( self:configEncodeBase64 )
+  local pb = payload.newPayloadBuilder( self:configEncodeBase64 () )
   pb.addRaw("e", "ue")
   pb.add( "ue_na", name, validate.isNonEmptyString )
   pb.addProps( "ue_px", "ue_pr", props, validate.isNonEmptyTable )
@@ -274,7 +274,7 @@ local function newTracker (uri)
     config       = config,
     collectorUri = uri
   }
-end function
+end
 
 local function collectorUriFromCf (cfSubdomain)
   --[[--

@@ -6,6 +6,18 @@ Add analytics to your Lua apps and Lua-scripted games with the - **still unfinis
 
 With this tracker you can collect event data from your Lua-based applications - or indeed from the Lua scripting layer within your games.
 
+## Notes
+
+**TODO: move this into wiki.**
+
+Snowplow Lua Tracker has a dependency on luasockets.
+
+On Ubuntu:
+
+    $ sudo aptitude install liblua5.1-socket2
+
+For other environments, you'll have to check the Web for instructions on installing luasockets/bundling it with your app.
+
 ## Find out more
 
 | Technical Docs                  | Setup Guide               | Roadmap & Contributing               |         

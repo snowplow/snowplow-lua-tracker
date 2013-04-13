@@ -1,38 +1,42 @@
+local setmetatable = setmetatable
+local pairs, ipairs = pairs, ipairs
+
 module( "set" )
 
-local Set = {}
-Set.mt = { __index = Set }
+-- local Set = {}
+-- Set.mt = { __index = Set }
 
-function newSet (table)
+function newSet (t)
   --[[--
   Creates a new set from the supplied table.
   Taken from: http://www.lua.org/pil/13.1.html
 
-  @Parameter: table
+  @Parameter: t
     The table containing the value for this set
   --]]--
 
   local set = {}
-  setmetatable(set, Set.mt)
+  -- setmetatable(set, Set.mt)
   for _, l in ipairs(t) do set[l] = true end
   return set
 end
 
-function Set:contains (value)
-  --[[--
+--[[--
+Set.contains = function (self, value)
+
   Does the set contain this value?
 
   @Parameter: key
     The value to look for in our set
-  --]]--
+
   return self[value]
 end
 
-function Set:tostring ()
-  --[[--
+Set.tostring = function (self, value)
+
   Convert a set to a string representation
   Taken from: http://www.lua.org/pil/13.1.html
-  --]]--
+
 
   local s = "{"
   local sep = ""
@@ -42,3 +46,6 @@ function Set:tostring ()
   end
   return s .. "}"
 end
+
+return _M;
+--]]--
