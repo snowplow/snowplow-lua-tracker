@@ -1,6 +1,6 @@
-
 module( "set" )
 
+local Set = {}
 local set_meta = { __index = Set }
 
 function newSet (list)
@@ -18,7 +18,7 @@ function newSet (list)
   return setmetatable(set, set_meta)
 end
 
-function contains (set, value)
+function Set:contains (value)
   --[[--
   Does the set contain this value?
 
@@ -27,10 +27,10 @@ function contains (set, value)
   @Parameter: key
     The value to look for in our set
   --]]--
-  return set[value]
+  return self[value]
 end
 
-function mkString (set, delimiter)
+function Set:mkString (delimiter)
   --[[--
   Scala-esque helper to convert the set
   into a string, with values separated
@@ -44,12 +44,12 @@ function mkString (set, delimiter)
   --]]--
 
   -- TODO: replace with code from PIL
-  if set == {} then return nil end
+  if self == {} then return nil end
   
   local str = ""
   local idx = 1
-  local count = size(set) -- TODO: making this syntax up
-  for k, _ in pairs(set) do
+  local count = size(self) -- TODO: making this syntax up
+  for k, _ in pairs(self) do
     str = str .. k
     if idx < count then
       str = str .. delimiter
