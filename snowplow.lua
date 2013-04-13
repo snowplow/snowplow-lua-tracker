@@ -235,7 +235,7 @@ local function configEncodeBase64 (self)
   return self.config[ENCODE_BASE64]
 end
 
-local function Snowplow:track (pb)
+local function track (self, pb)
   --[[--
   Tracks any given SnowPlow event, by sending the specific
   event_pairs to the SnowPlow collector.
