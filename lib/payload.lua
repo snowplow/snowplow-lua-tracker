@@ -27,7 +27,7 @@ function addRaw (key, value, validate)
   self:addNvPair( key, value, false )
 end
 
-function addProps (keyIfEnc, key, props, validate)
+function addProps (keyIfEnc, key, value, validate)
   --[[--
   Add a &name=value pair with the value
   base64 encoded, unless encodeBase64 is set
@@ -38,9 +38,9 @@ function addProps (keyIfEnc, key, props, validate)
   props = toPropertiesJson( value )
 
   if encodeBase64 then
-    addNvPair( keyIfEnc, base64.encode( value ), false) -- Base64 encode, no URI escaping
+    addNvPair( keyIfEnc, base64.encode( props ), false) -- Base64 encode, no URI escaping
   else
-    addNvPair( key, value, true ) -- URI escaping
+    addNvPair( key, props, true ) -- URI escaping
   end
 end
 
@@ -48,7 +48,7 @@ function build (self)
   --[[--
   Our "builder" returns the payload string.
   --]]--
-  return self:payload
+  return self.payload
 end
 
 local function addNvPair (self, key, value, esc)
