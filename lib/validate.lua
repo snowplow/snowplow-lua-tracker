@@ -45,18 +45,18 @@ function isStringOrNil (name, value)
     error(name .. " must be a string or nil")
 end
 
-function isStringFromList (list, name, value)
+function isStringFromSet (set, name, value)
   --[[--
-  Note that list is the first argument, to support
-  partial application. TODO: does Lua support partial application?
+  Note that set is the first argument, to support
+  partial application.
   --]]--
 
   if type(value) ~= "string" then
     error(name .. " must be a string")
   end
 
-  if not list:contains(value) then
-    error(name .. "must be one of " .. list:mkString(", ") )
+  if not set:contains(value) then
+    error(name .. "must be one of " .. set:mkString(", ") )
   end
 end
 
