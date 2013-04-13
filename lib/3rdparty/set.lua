@@ -1,7 +1,7 @@
 module( "set" )
 
 local Set = {}
-local set_meta = { __index = Set }
+local setMeta = { __index = Set }
 
 function newSet (list)
   --[[--
@@ -15,7 +15,7 @@ function newSet (list)
   -- TODO: update with code from PIL
   local set = {}
   for _, v in ipairs(list) do set[v] = true end
-  return setmetatable(set, set_meta)
+  return setmetatable(set, setMeta)
 end
 
 function Set:contains (value)
