@@ -1,4 +1,4 @@
-local mathAbs = require ("math.abs")
+local mathAbs = math.abs
 
 module( "validate" )
 
