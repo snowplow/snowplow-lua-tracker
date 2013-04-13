@@ -14,6 +14,7 @@ module( "snowplow" )
 
 local TRACKER_VERSION = "lua-0.1.0"
 local DEFAULT_PLATFORM = "pc"
+local pb = payload.newPayloadBuilder ()
 local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "con", "iot" }
 
 local config = {
