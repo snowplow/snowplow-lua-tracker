@@ -272,11 +272,11 @@ local function newTracker (uri)
   --]]--
   return {
     config       = config,
-    collectorURI = uri
+    collectorUri = uri
   }
 end function
 
-local function collectorUriFromCf (dist_subdomain)
+local function collectorUriFromCf (cfSubdomain)
   --[[--
   Helper to generate the collector url from a
   CloudFront distribution subdomain.
@@ -284,12 +284,12 @@ local function collectorUriFromCf (dist_subdomain)
   Example:
   collectorUriFromCf("f3f77d9def5") => "http://f3f77d9def5.cloudfront.net/i"
 
-  @Parameter: dist_subdomain
+  @Parameter: cfSubdomain
     The CloudFront subdomain on which the collector's
     distribution is hosted
   --]]--
 
-  return asCollectorUri( dist_subdomain .. ".cloudfront.net" )
+  return asCollectorUri( cfSubdomain .. ".cloudfront.net" )
 end
 
 local function asCollectorUri (host)
