@@ -84,3 +84,5 @@ function isPositiveInt (name, value)
     error(name .. "is required and must be a positive integer")
   end
 end
+
+return _M;

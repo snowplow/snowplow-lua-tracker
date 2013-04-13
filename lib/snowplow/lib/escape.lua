@@ -19,3 +19,5 @@ function escapeUri (s)
   
   return s
 end
+
+return _M;

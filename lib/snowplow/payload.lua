@@ -2,11 +2,17 @@ local escape = require( "lib.escape" )
 local json   = require( "lib.JSON" )
 local base64 = require( "lib.base64" )
 
+local type = type
+
 module( "payload" )
 
 function newPayloadBuilder (encodeBase64)
   return {
-    payload = "?"
+    payload   = "?",
+    addRaw    = addRaw,
+    addProps  = addProps,
+    addNvPair = addNvPair,
+    build     = build
   }
 end
 
@@ -14,27 +20,33 @@ function add (self, key, value, validate)
   --[[--
   Add a &name=value pair with the value encoded,
   --]]--
-  validate( key, value )
+  if type(validate) == "function" then
+    validate( key, value )
+  end
   self:addNvPair( key, value, true )
 end
 
-function addRaw (key, value, validate)
+function addRaw (self, key, value, validate)
   --[[--
   Add a &name=value pair with the value
   not encoded.
   --]]--
-  validate( key, value )
+  if type(validate) == "function" then
+    validate( key, value )
+  end
   self:addNvPair( key, value, false )
 end
 
-function addProps (keyIfEnc, key, value, validate)
+function addProps (self, keyIfEnc, key, value, validate)
   --[[--
   Add a &name=value pair with the value
   base64 encoded, unless encodeBase64 is set
   to false (in which case URI escape).
   --]]--
 
-  validate( key, props )
+  if type(validate) == "function" then
+    validate( key, props )
+  end
   props = toPropertiesJson( value )
 
   if encodeBase64 then
@@ -51,7 +63,7 @@ function build (self)
   return self.payload
 end
 
-local function addNvPair (self, key, value, esc)
+function addNvPair (self, key, value, esc)
   --[[--
   Helper to add a &name=value pair to our payload
   aka querystring. Closes around payload

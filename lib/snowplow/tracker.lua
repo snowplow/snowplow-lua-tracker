@@ -164,7 +164,7 @@ function trackScreenView (self, name, id)
     a GUID or identifier from a game CMS. String
   --]]--
 
-  local pb = payload.newPayloadBuilder( self:configEncodeBase64 () )
+  local pb = payload.newPayloadBuilder( true ) -- self:configEncodeBase64 () )
   pb.addRaw( "e", "sv" )
   pb.add( "sv_na", name, validate.isNonEmptyString )
   pb.add( "sv_id", id, validate.isStringOrNil )
@@ -337,3 +337,5 @@ local function httpGet (uri)
 
   -- TODO: add error handling
 end
+
+return _M;
