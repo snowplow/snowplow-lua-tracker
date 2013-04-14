@@ -1,13 +1,9 @@
-local mathAbs = math.abs
-local type = type
-local error = error
-
 local validate = {}
 
 -- --------------------------------------------------------------
 -- Boolean validations
 
-validate.isBool = function (name, value)
+validate.isBoolean = function (name, value)
 
   if type(value) ~= "boolean" then
     error(name .. " is required and must be a boolean, not [" .. value .. "]")
@@ -80,9 +76,9 @@ validate.isNumberOrNil = function (name, value)
   end
 end
 
-validate.isPositiveInt = function (name, value)
+validate.isPositiveInteger = function (name, value)
 
-  if type(value) ~= "number" or value ~= mathAbs(value) or value < 0 then
+  if type(value) ~= "number" or value ~= math.abs(value) or value < 0 then
     error(name .. "is required and must be a positive integer, not [" .. value .. "]")
   end
 end

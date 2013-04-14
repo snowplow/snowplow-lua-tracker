@@ -1,23 +1,27 @@
-local string = require ("string")
+local escape = {}
 
-module( "encode" )
+-- --------------------------------------------------------------
+-- Static methods
 
-function escapeUri (s)
+escape.escapeUri = function (s)
   --[[--
   Escapes a URI (or URI fragment). Example:
-  Utils.escapeURI("John Smith") => "John%20Smith"
+  escape.escapeUri("John Smith") => "John%20Smith"
+  
   Source: https://github.com/radare/luvit-Connect/blob/master/modules/querystring.lua
   
   @Parameter: s
     The string to escape
   --]]--
 
-  s = string.gsub (s, "\n", "\r\n")
-  s = string.gsub (s, "([^0-9a-zA-Z ])", -- locale independent
-  function (c) return string.format ("%%%02X", string.byte(c)) end)
-  s = string.gsub (s, " ", "+")
+  s = string.gsub( s, "\n", "\r\n" )
+  s = string.gsub( s, "([^0-9a-zA-Z ])", -- Locale independent
+        function (c) return string.format ("%%%02X", string.byte(c)) end)
+  s = string.gsub( s, " ", "+")
   
   return s
 end
 
-return _M;
+-- --------------------------------------------------------------
+
+return escape

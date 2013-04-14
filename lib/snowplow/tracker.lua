@@ -3,21 +3,15 @@ local payload  = require( "payload" )
 local set      = require( "lib.set" )
 local http     = require( "socket.http" )
 
-local osTime = os.time
-local mathRandom = math.random
-local mathRandomseed = math.randomseed
-local tostring = tostring
-local print = print
-
 local tracker = {}
 
 -- --------------------------------------------------------------
 -- Constants & config
 
-local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "con", "iot" }
+local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "csl", "iot" }
 
 -- --------------------------------------------------------------
--- Public configuration methods
+-- Configuration methods
 
 tracker.encodeBase64 = function (self, encode)
   --[[--
@@ -33,28 +27,29 @@ tracker.encodeBase64 = function (self, encode)
   --]]--
 
   validate.isBoolean( "encode", encode )
-  self.config[ENCODE_BASE64] = encode
+  self.config.encodeBase64 = encode
 end
 
--- --------------------------------------------------------------
--- Data setters. All public
-
-tracker.setPlatform = function (self, platform)
+tracker.platform = function (self, platform)
   --[[--
   The default platform for Lua is "pc". If you are using Lua on
   another platform (e.g. as part of a console videogame), you
-  can overwrite the platform here.
+  can change the platform here.
+
+  For details on the different platforms, see:
+  https://github.com/snowplow/snowplow/wiki/SnowPlow-Tracker-Protocol#wiki-appid
 
   @Parameter: platform
     The short-form name of the platform to set. Can be "pc",
-    "tv", "mob", "con" or "iot".
-    For details see:
-    XXX
+    "tv", "mob", "csl" or "iot".
   --]]--
 
   validate.isStringFromSet( SUPPORTED_PLATFORMS, "platform", platform )
-  self.platform = platform
+  self.config.platform = platform
 end
+
+-- --------------------------------------------------------------
+-- Data setters
 
 tracker.setAppId = function (self, appId)
   --[[--
@@ -92,8 +87,8 @@ tracker.setScreenResolution = function (self, width, height)
     The screen height as a number
   --]]--
 
-  validate.isPositiveInt( width, "width" )
-  validate.isPositiveInt( height, "height" )
+  validate.isPositiveInteger( width, "width" )
+  validate.isPositiveInteger( height, "height" )
   self.width = width
   self.height = height
 end
@@ -107,12 +102,12 @@ tracker.setColorDepth = function (self, depth)
     The color depth on this computer
   --]]--
 
-  validate.isPositiveInt( depth, "color depth" )
+  validate.isPositiveInteger( depth, "color depth" )
   self.colorDepth = depth
 end
 
 -- --------------------------------------------------------------
--- Track methods. All public
+-- Track methods
 
 tracker.trackScreenView = function (self, name, id)
   --[[--
@@ -127,7 +122,7 @@ tracker.trackScreenView = function (self, name, id)
     a GUID or identifier from a game CMS. String
   --]]--
 
-  local pb = payload.newPayloadBuilder( true ) -- self:configEncodeBase64 () )
+  local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
   pb.addRaw( "e", "sv" )
   pb.add( "sv_na", name, validate.isNonEmptyString )
   pb.add( "sv_id", id, validate.isStringOrNil )
@@ -158,7 +153,7 @@ tracker.trackStructEvent = function (self, category, action, label, property, va
     numerical data about the user event
   --]]--
 
-  local pb = payload.newPayloadBuilder( self:configEncodeBase64 () )
+  local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
   pb.addRaw( "e", "se" )
   pb.add( "ev_ca", category, validate.isNonEmptyString )
   pb.add( "ev_ac", action, validate.isNonEmptyString )
@@ -179,23 +174,12 @@ tracker.trackUnstructEvent = function (self, name, properties)
     TODO
   --]]--
 
-  local pb = payload.newPayloadBuilder( self:configEncodeBase64 () )
+  local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
   pb.addRaw("e", "ue")
   pb.add( "ue_na", name, validate.isNonEmptyString )
   pb.addProps( "ue_px", "ue_pr", props, validate.isNonEmptyTable )
 
   return self:track( pb )
-end
-
--- --------------------------------------------------------------
--- Private methods
-
-tracker.configEncodeBase64 = function (self)
-  --[[--
-  Alias to wrap whether unstruct events should
-  be base64-encoded or not.
-  --]]--
-  return self.config[ENCODE_BASE64]
 end
 
 tracker.track = function (self, pb)
@@ -209,12 +193,12 @@ tracker.track = function (self, pb)
   --]]--
 
   -- Add the standard name-value pairs
+  pb.add( "p", self.config.platform )
+  pb.add( "tv", self.config.version )
   pb.add( "tid", self.getTransactionId() )
-  pb.add( "p", self.platform )
+  pb.add( "dtm", self.getTimestamp() )
   pb.add( "uid", self.userId )
   pb.add( "aid", self.appId )
-  pb.add( "dtm", self.getTimestamp() )
-  pb.add( "tv", self.trackerVersion )
 
   -- Now build the payloadBuilder
   local payload = pb.build()
@@ -223,6 +207,9 @@ tracker.track = function (self, pb)
   return tracker.httpGet( self.collectorUri .. payload )
 end
 
+-- --------------------------------------------------------------
+-- Helper static methods
+
 tracker.getTransactionId = function ()
   --[[--
   Generates a moderately-unique six-digit transaction ID
@@ -230,8 +217,8 @@ tracker.getTransactionId = function ()
   recorded twice.
   --]]--
 
-  mathRandomseed( osTime() )
-  local rand = mathRandom(100000, 999999)
+  math.randomseed( os.time() )
+  local rand = math.random(100000, 999999)
   return tostring( rand )
 end
 
@@ -240,7 +227,7 @@ tracker.getTimestamp = function ()
   Returns the current timestamp as total milliseconds
   since epoch.
   --]]--
-  return osTime() * 1000
+  return os.time() * 1000
 end
 
 tracker.httpGet = function (uri)

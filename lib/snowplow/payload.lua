@@ -5,7 +5,7 @@ local base64 = require( "lib.base64" )
 local payload = {}
 
 -- --------------------------------------------------------------
--- Closures
+-- Factory to create a payload builder closure
 
 payload.newPayloadBuilder = function (encodeBase64)
   --[[--
@@ -19,8 +19,7 @@ payload.newPayloadBuilder = function (encodeBase64)
 
   payload = "?" -- What we're closing over
 
-  local addNvPair
-  addNvPair = function (key, value, esc)
+  local addNvPair = function (key, value, esc)
     --[[--
     Helper to add a &name=value pair to our payload
     aka querystring. Closes around payload
@@ -35,8 +34,7 @@ payload.newPayloadBuilder = function (encodeBase64)
     end
   end
 
-  local toPropertiesJson
-  toPropertiesJson = function (properties)
+  local toPropertiesJson = function (properties)
     --[[--
     Converts a _non-nested_ Lua table into a JSON
     of properties.
@@ -50,8 +48,7 @@ payload.newPayloadBuilder = function (encodeBase64)
     return properties
   end
 
-  local add
-  add = function (key, value, validate)
+  local add = function (key, value, validate)
     --[[--
     Add a &name=value pair with the value encoded,
     --]]--
@@ -61,8 +58,7 @@ payload.newPayloadBuilder = function (encodeBase64)
     addNvPair( key, value, true )
   end
 
-  local addRaw
-  addRaw = function (key, value, validate)
+  local addRaw = function (key, value, validate)
     --[[--
     Add a &name=value pair with the value
     not encoded.
@@ -73,8 +69,7 @@ payload.newPayloadBuilder = function (encodeBase64)
     addNvPair( key, value, false )
   end
 
-  local addProps
-  addProps = function (keyIfEnc, key, value, validate)
+  local addProps = function (keyIfEnc, key, value, validate)
     --[[--
     Add a &name=value pair with the value
     base64 encoded, unless encodeBase64 is set
@@ -93,8 +88,7 @@ payload.newPayloadBuilder = function (encodeBase64)
     end
   end
 
-  local build
-  build = function ()
+  local build = function ()
     --[[--
     Our "builder" returns the payload string.
     --]]--
@@ -102,10 +96,10 @@ payload.newPayloadBuilder = function (encodeBase64)
   end
 
   return {
-    add          = add,
-    addRaw       = addRaw,
-    addProps     = addProps,
-    build        = build
+    add      = add,
+    addRaw   = addRaw,
+    addProps = addProps,
+    build    = build
   }
 end
 

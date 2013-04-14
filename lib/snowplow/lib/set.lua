@@ -1,6 +1,3 @@
-local setmetatable = setmetatable
-local pairs, ipairs = pairs, ipairs
-
 local set = {}
 
 -- --------------------------------------------------------------
@@ -14,10 +11,10 @@ set.mt = { __index = set }
 set.newSet = function (t)
   --[[--
   Creates a new set from the supplied table.
-  Taken from: http://www.lua.org/pil/13.1.html
+  Source: http://www.lua.org/pil/13.1.html
 
   @Parameter: t
-    The table containing the value for this set
+    The table containing the values for this set
   --]]--
 
   local s = {}
@@ -33,6 +30,7 @@ set.contains = function (self, value)
   --[[--
   Does the set contain this value?
 
+  @Parameter: self
   @Parameter: key
     The value to look for in our set
   --]]--
@@ -40,10 +38,12 @@ set.contains = function (self, value)
   return self[value]
 end
 
-set.toString = function (self, value)
+set.toString = function (self)
   --[[--
   Convert a set to a string representation
-  Taken from: http://www.lua.org/pil/13.1.html
+  Source: http://www.lua.org/pil/13.1.html
+
+  @Parameter: self
   --]]--
 
   local s = "{"
