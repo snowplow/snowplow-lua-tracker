@@ -6,57 +6,20 @@ local http     = require( "socket.http" )
 local osTime = os.time
 local mathRandom = math.random
 local mathRandomseed = math.randomseed
+local tostring = tostring
+local print = print
 
-module( "snowplow.tracker" )
+local tracker = {}
 
--- -------------------------------
+-- --------------------------------------------------------------
 -- Constants & config
 
-local TRACKER_VERSION = "lua-0.1.0"
-local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "con", "iot" }
 
-local config = {
-  ENCODE_BASE64 = true
-}
-
--- -------------------------------
--- Constructors
-
-function newTrackerForUri (host)
-  --[[--
-  Create a new Snowplow tracker talking to a
-  URI-based collector on the given host.
-
-  @Parameter: host
-    The host (i.e. full domain) on which the
-    collector is running
-  --]]--
-
-  validate.isNonEmptyString( "host", host )
-  local uri = asCollectorUri( host )
-  return newTracker( uri )
-end
-
-function newTrackerForCf (cfSubdomain)
-  --[[--
-  Create a new Snowplow tracker talking to a
-  CloudFront-based collector on the given subdomain.
-
-  @Parameter: host
-    The CloudFront subdomain on which the
-    collector is running
-  --]]--
-
-  validate.isNonEmptyString( "cloudfront subdomain", cfSubdomain )
-  local uri = collectorURIFromCf( cfSubdomain )
-  return newTracker( uri )
-end
-
--- -------------------------------
+-- --------------------------------------------------------------
 -- Public configuration methods
 
-function encodeBase64 (self, encode)
+tracker.encodeBase64 = function (self, encode)
   --[[--
   Configuration setting: whether to Base64-encode the
   properties of unstructured events and custom
@@ -70,13 +33,13 @@ function encodeBase64 (self, encode)
   --]]--
 
   validate.isBoolean( "encode", encode )
-  self.config[ENCODE_UNSTRUCT_EVENTS] = encode
+  self.config[ENCODE_BASE64] = encode
 end
 
--- -------------------------------
+-- --------------------------------------------------------------
 -- Data setters. All public
 
-function setPlatform (self, platform)
+tracker.setPlatform = function (self, platform)
   --[[--
   The default platform for Lua is "pc". If you are using Lua on
   another platform (e.g. as part of a console videogame), you
@@ -93,7 +56,7 @@ function setPlatform (self, platform)
   self.platform = platform
 end
 
-function setAppId (self, appId)
+tracker.setAppId = function (self, appId)
   --[[--
   Sets the application ID to record against
   each event.
@@ -106,7 +69,7 @@ function setAppId (self, appId)
   self.appId = appId
 end
 
-function setUserId (self, userId)
+tracker.setUserId = function (self, userId)
   --[[--
   Sets the business user ID.
 
@@ -118,7 +81,7 @@ function setUserId (self, userId)
   self.userId = userId
 end
 
-function setScreenResolution (self, width, height)
+tracker.setScreenResolution = function (self, width, height)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -135,7 +98,7 @@ function setScreenResolution (self, width, height)
   self.height = height
 end
 
-function setColorDepth (self, depth)
+tracker.setColorDepth = function (self, depth)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -148,10 +111,10 @@ function setColorDepth (self, depth)
   self.colorDepth = depth
 end
 
--- -------------------------------
+-- --------------------------------------------------------------
 -- Track methods. All public
 
-function trackScreenView (self, name, id)
+tracker.trackScreenView = function (self, name, id)
   --[[--
   Sends a screen view event to SnowPlow. A screen view
   must have a `name` and can have an optional `id`.
@@ -172,7 +135,7 @@ function trackScreenView (self, name, id)
   return self:track( pb )
 end
 
-function trackStructEvent (self, category, action, label, property, value)
+tracker.trackStructEvent = function (self, category, action, label, property, value)
   --[[--
   Sends a custom structured event to SnowPlow.
 
@@ -206,7 +169,7 @@ function trackStructEvent (self, category, action, label, property, value)
   return self:track( pb )
 end
 
-function trackUnstructEvent (self, name, properties)
+tracker.trackUnstructEvent = function (self, name, properties)
   --[[--
   Sends a custom unstructured event to Snowplow.
 
@@ -224,10 +187,10 @@ function trackUnstructEvent (self, name, properties)
   return self:track( pb )
 end
 
--- -------------------------------
+-- --------------------------------------------------------------
 -- Private methods
 
-local function configEncodeBase64 (self)
+tracker.configEncodeBase64 = function (self)
   --[[--
   Alias to wrap whether unstruct events should
   be base64-encoded or not.
@@ -235,7 +198,7 @@ local function configEncodeBase64 (self)
   return self.config[ENCODE_BASE64]
 end
 
-local function track (self, pb)
+tracker.track = function (self, pb)
   --[[--
   Tracks any given SnowPlow event, by sending the specific
   event_pairs to the SnowPlow collector.
@@ -246,65 +209,21 @@ local function track (self, pb)
   --]]--
 
   -- Add the standard name-value pairs
-  pb.add( "tid", getTransactionId() )
+  pb.add( "tid", self.getTransactionId() )
   pb.add( "p", self.platform )
   pb.add( "uid", self.userId )
   pb.add( "aid", self.appId )
-  pb.add( "dtm", getTimestamp() )
-  pb.add( "tv", TRACKER_VERSION )
+  pb.add( "dtm", self.getTimestamp() )
+  pb.add( "tv", self.trackerVersion )
 
   -- Now build the payloadBuilder
   local payload = pb.build()
 
   -- Finally send to Snowplow
-  return httpGet( self.collectorUri .. payload )
+  return tracker.httpGet( self.collectorUri .. payload )
 end
 
--- -------------------------------
--- Private functions aka 'static' methods
-
-local function newTracker (uri)
-  --[[--
-  Builds our new tracker using the supplied URI.
-
-  @Parameter: uri
-    The full URI to the Snowplow collector
-  --]]--
-  return {
-    config       = config,
-    collectorUri = uri
-  }
-end
-
-local function collectorUriFromCf (cfSubdomain)
-  --[[--
-  Helper to generate the collector url from a
-  CloudFront distribution subdomain.
-
-  Example:
-  collectorUriFromCf("f3f77d9def5") => "http://f3f77d9def5.cloudfront.net/i"
-
-  @Parameter: cfSubdomain
-    The CloudFront subdomain on which the collector's
-    distribution is hosted
-  --]]--
-
-  return asCollectorUri( cfSubdomain .. ".cloudfront.net" )
-end
-
-local function asCollectorUri (host)
-  --[[--
-  Helper to generate the collector url from a
-  collector host name.
-
-  Example:
-  as_collector_url("snplow.myshop.com") => "http://snplow.myshop.com/i"
-  --]]--
-
-  return "http://" .. host .. "/i"
-end
-
-local function getTransactionId ()
+tracker.getTransactionId = function ()
   --[[--
   Generates a moderately-unique six-digit transaction ID
   - essentially a nonce to make sure this event isn't
@@ -316,7 +235,7 @@ local function getTransactionId ()
   return tostring( rand )
 end
 
-local function getTimestamp ()
+tracker.getTimestamp = function ()
   --[[--
   Returns the current timestamp as total milliseconds
   since epoch.
@@ -324,7 +243,7 @@ local function getTimestamp ()
   return osTime() * 1000
 end
 
-local function httpGet (uri)
+tracker.httpGet = function (uri)
   --[[--
   GETs the given URI: this is how our event data
   is transmitted to the Snowplow collector.
@@ -333,9 +252,17 @@ local function httpGet (uri)
     The URI (including querystring) to GET
   --]]--
 
-  result, statuscode, content = http.request( uri )
+  print(uri)
+  result, statusCode, content = http.request( uri )
 
+  print(result)
+  print(statusCode)
+  print(content)
   -- TODO: add error handling
+
+  return statusCode
 end
 
-return _M;
+-- --------------------------------------------------------------
+
+return tracker

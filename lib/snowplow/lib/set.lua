@@ -16,7 +16,7 @@ function newSet (t)
   --]]--
 
   local set = {}
-  -- setmetatable(set, Set.mt)
+  setmetatable(set, Set.mt)
   for _, l in ipairs(t) do set[l] = true end
   return set
 end
@@ -32,7 +32,7 @@ Set.contains = function (self, value)
   return self[value]
 end
 
-Set.tostring = function (self, value)
+Set.toString = function (self, value)
   --[[--
   Convert a set to a string representation
   Taken from: http://www.lua.org/pil/13.1.html

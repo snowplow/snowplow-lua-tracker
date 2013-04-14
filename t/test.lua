@@ -1,5 +1,7 @@
 package.path = '../lib/?.lua;' .. '../lib/snowplow/?.lua;' .. package.path
 
-local snowplow = require('snowplow.tracker')
+local snowplow = require('snowplow.snowplow')
 
-snowplow.trackScreenView("Game HUD", 23)
+tracker = snowplow.newTrackerForCf( "dbdbdb" )
+tracker:setPlatform ( "pc2" )
+tracker:trackScreenView( "Game HUD", "23" )
