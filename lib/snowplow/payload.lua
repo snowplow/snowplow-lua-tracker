@@ -28,7 +28,7 @@ payload.newPayloadBuilder = function (encodeBase64)
     local a, v
 
     if value ~= nil and value ~= "" then
-      if payload:len() > 0 then a = "&" else a = "" end
+      if payload:len() > 1 then a = "&" else a = "" end
       if esc then v = escape.escapeUri( value ) else v = value end
       payload = payload .. a .. key .. "=" .. v
     end
