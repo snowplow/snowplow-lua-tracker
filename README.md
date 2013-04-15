@@ -4,7 +4,7 @@
 
 Add analytics to your Lua apps and Lua-scripted games with the - **still unfinished** - SnowPlow event tracker for [Lua] [lua].
 
-With this tracker you can collect event data from your Lua-based applications, or from the Lua scripting layer within your games.
+With this tracker you can collect event data from your Lua-based applications, or from the Lua scripting layer within your games or apps.
 
 ## Notes
 
