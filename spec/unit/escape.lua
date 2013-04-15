@@ -18,7 +18,7 @@
 local escape = require( "lib.escape" )
 
 describe("escape.escapeUri should URI-escape strings correctly", function()
-	assert.are.equal(escape.escapeUri("JohnSmith"), "JohnSmith")
+  assert.are.equal(escape.escapeUri("JohnSmith"), "JohnSmith")
   assert.are.equal(escape.escapeUri("john+smith"), "john+smith"))
   assert.are.equal(escape.escapeUri("John Smith"), "John%20Smith")
 end)
