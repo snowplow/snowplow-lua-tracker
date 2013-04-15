@@ -1,0 +1,13 @@
+return {
+  default = {
+    verbose = true
+  },
+  unit = {
+    ROOT = "spec/unit"
+    verbose = true
+  },
+  int = {
+  	ROOT = "spec/integration"
+  	verbose = true
+  }
+}
