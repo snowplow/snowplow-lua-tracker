@@ -48,6 +48,6 @@ limitations under the License.
 [techdocs]: https://github.com/snowplow/snowplow/wiki/Lua-Tracker
 [setup]: https://github.com/snowplow/snowplow/wiki/Lua-Tracker-Setup
 [roadmap]: https://github.com/snowplow/snowplow/wiki/Lua-Tracker-Roadmap
-[constributing]: https://github.com/snowplow/snowplow/wiki/Lua-Tracker-Contributing
+[contributing]: https://github.com/snowplow/snowplow/wiki/Lua-Tracker-Contributing
 
 [license]: http://www.apache.org/licenses/LICENSE-2.0
