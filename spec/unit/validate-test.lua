@@ -19,9 +19,9 @@ local validate = require( "validate" )
 
 local fieldName = "TestField"
 
-describe( "validate.isBoolean() should work correctly", function()
+describe( "validate.isBoolean() should validate values correctly", function()
 
-  local err = function ( value)
+  local err = function (value)
     return fieldName .. " is required and must be a boolean, not [" .. value .. "]"
   end
 
@@ -42,4 +42,26 @@ describe( "validate.isBoolean() should work correctly", function()
       end
     end
   end
+end )
+
+describe( "validate.isNonEmptyTable() should validate values correctly", function()
+
+  local err = function (value)
+    return fieldName .. " is required and must be a non-empty table, not [" .. value .. "]"
+  end
+
+  local dataTable = {
+    { "INPUT"                     , "EXPECTED"     },
+    { { "hello" }                 , nil            },
+    { { 1, 2 }                    , nil            },
+    { { a = 1, b = c}             , nil            },
+    { { "a" = true, "b" = false } , nil            },
+    { {}                          , err( {} )      },
+    { "string"                    , err( "string") },
+    { nil                         , err( nil )     },
+    { 23.3                        , err( 23.3)     }
+  }
+
+  -- TODO: add looping code
+
 end )
