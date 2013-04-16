@@ -17,7 +17,7 @@
 
 local escape = require( "lib.escape" )
 
-describe("escape.escapeUri should URI-escape strings correctly", function()
+describe( "escape.escapeUri() should URI-escape strings correctly", function()
 
   local dataTable = {
     { "INPUT"      , "EXPECTED"     }
@@ -32,4 +32,4 @@ describe("escape.escapeUri should URI-escape strings correctly", function()
       assert.are.equal(expected, t[2])
     end
   end
-end)
+end )
