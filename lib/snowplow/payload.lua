@@ -34,7 +34,7 @@ payload.newPayloadBuilder = function (encodeBase64)
     be sent Base64 encoded or not
   --]]--
 
-  payload = "?" -- What we're closing over
+  local payload = "?" -- What we're closing over
 
   local addNvPair = function (key, value, esc)
     --[[--
