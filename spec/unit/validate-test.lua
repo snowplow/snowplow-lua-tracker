@@ -1,4 +1,4 @@
---- escape-test.lua
+--- validate-test.lua
 --
 -- Copyright (c) 2013 SnowPlow Analytics Ltd. All rights reserved.
 --
@@ -14,22 +14,3 @@
 -- Authors:     Alex Dean
 -- Copyright:   Copyright (c) 2013 SnowPlow Analytics Ltd
 -- License:     Apache License Version 2.0
-
-local escape = require( "lib.escape" )
-
-describe("escape.escapeUri should URI-escape strings correctly", function()
-
-  local dataTable = {
-    { "INPUT"      , "EXPECTED"     }
-    { "JohnSmith"  , "JohnSmith"    },
-    { "john+smith" , "john+smith"   },
-    { "John Smith" , "John%20Smith" },
-  }
-
-  for i, t in ipairs(dataTable) do
-    if i > 1 then
-      local expected = escape.escapeUri( t[1] )
-      assert.are.equal(expected, t[2])
-    end
-  end
-end)
