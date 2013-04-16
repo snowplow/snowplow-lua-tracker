@@ -4,7 +4,7 @@
 
 Add analytics to your Lua apps and Lua-scripted games with the - **still unfinished** - SnowPlow event tracker for [Lua] [lua].
 
-With this tracker you can collect event data from your Lua-based applications - or indeed from the Lua scripting layer within your games.
+With this tracker you can collect event data from your Lua-based applications, or from the Lua scripting layer within your games or apps.
 
 ## Notes
 
@@ -20,10 +20,10 @@ For other environments, you'll have to check the Web for instructions on install
 
 ## Find out more
 
-| Technical Docs                  | Setup Guide               | Roadmap & Contributing               |         
-|---------------------------------|---------------------------|--------------------------------------|
-| ![i1] [techdocs-image]          | ![i2] [setup-image]       | ![i3] [roadmap-image]                |
-| **[Technical Docs] [techdocs]** | **[Setup Guide] [setup]** | _coming soon_                        |
+| Technical Docs                  | Setup Guide               | Roadmap                 | Contributing                      |
+|---------------------------------|---------------------------|-------------------------|-----------------------------------|
+| ![i1] [techdocs-image]          | ![i2] [setup-image]       | ![i3] [roadmap-image]   | ![i4] [contributing-image]        |
+| **[Technical Docs] [techdocs]** | **[Setup Guide] [setup]** | **[Roadmap] [roadmap]** | **[Contributing] [contributing]** |
 
 ## Copyright and license
 
@@ -43,7 +43,11 @@ limitations under the License.
 [techdocs-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
 [setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
 [roadmap-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/roadmap.png
+[contributing-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/contributing.png
+
 [techdocs]: https://github.com/snowplow/snowplow/wiki/Lua-Tracker
 [setup]: https://github.com/snowplow/snowplow/wiki/Lua-Tracker-Setup
+[roadmap]: https://github.com/snowplow/snowplow/wiki/Lua-Tracker-Roadmap
+[contributing]: https://github.com/snowplow/snowplow/wiki/Lua-Tracker-Contributing
 
 [license]: http://www.apache.org/licenses/LICENSE-2.0
