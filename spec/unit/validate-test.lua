@@ -21,24 +21,24 @@ local fieldName = "TestField"
 
 describe( "validate.isBoolean() should work correctly", function()
 
-  local buildError = function ( value)
+  local err = function ( value)
     return fieldName .. " is required and must be a boolean, not [" .. value .. "]"
   end
 
   local dataTable = {
-    { "INPUT" , "EXPECTED"             }
-    { true    , nil                    },
-    { false   , nil                    },
-    { 23      , buildError( 23 )       },
-    { "hello" , buildError( "hello" )  }
+    { "INPUT" , "EXPECTED"     }
+    { true    , nil            },
+    { false   , nil            },
+    { 23      , err( 23 )      },
+    { "hello" , err( "hello" ) }
   }
 
   for i, t in ipairs(dataTable) do
     if i > 1 then
       if t[2] == nil then
-        assert.has_no.errors( validate.isBoolean( fieldName, t[1]) )
+        assert.has_no.errors( validate.isBoolean( fieldName, t[1] ) )
       else
-        assert.has_error( validate.isBoolean( fieldName, t[1]), buildError( t[2] ) )
+        assert.has_error( validate.isBoolean( fieldName, t[1]), t[2] )
       end
     end
   end
