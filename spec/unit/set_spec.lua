@@ -25,7 +25,7 @@ describe("set", function()
   it("should compare sets correctly", function()
     local set3 = set.newSet { 1, 2, 3 }
   	assert.are.equal(set1, set3)
-  	assert.are_not.equal(set1, set3)
+  	assert.are_not.equal(set2, set3)
     assert.are_not.equal(set1, { 1, 2, 3 })
   end)
 
