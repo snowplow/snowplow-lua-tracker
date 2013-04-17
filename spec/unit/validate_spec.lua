@@ -1,4 +1,4 @@
---- validate-test.lua
+--- validate_spec.lua
 --
 -- Copyright (c) 2013 SnowPlow Analytics Ltd. All rights reserved.
 --

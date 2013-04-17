@@ -1,4 +1,4 @@
---- escape_spec.lua
+--- set_spec.lua
 --
 -- Copyright (c) 2013 SnowPlow Analytics Ltd. All rights reserved.
 --
@@ -15,25 +15,27 @@
 -- Copyright:   Copyright (c) 2013 SnowPlow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local escape = require("lib.snowplow.lib.escape")
+local escape = require("lib.snowplow.lib.set")
 
-describe("escape.escapeUri()", function()
+local set1 = set.newSet { 1, 2, 3 }
+local set2 = set.newSet { a, b, c }
 
-  it("should URI-escape strings correctly", function()
+describe("set", function()
 
-    local dataTable = {
-      { "INPUT"      , "EXPECTED"     },
-      { "JohnSmith"  , "JohnSmith"    },
-      { "john+smith" , "john%2Bsmith"   },
-      { "John Smith" , "John+Smith" }
-    }
+  it("should compare sets correctly", function()
+    local set3 = set.newSet { 1, 2, 3 }
+  	assert.are.equal(set1, set3)
+  	assert.are_not.equal(set1, set3)
+    assert.are_not.equal(set1, { 1, 2, 3 })
+  end)
 
-    for i, t in ipairs(dataTable) do
-      if i > 1 then
-        local expected = escape.escapeUri(t[1])
-        assert.are.equal(t[2], expected)
-      end
-    end
+  it("should know if it contains an element", function()
+    assert.is.true(set1:contains(2))
+    assert.is.false(set2:contains(1))
+  end)
 
+  it("should be convertable to a string", function()
+    assert.are.equal(set1:toString(), "{1, 2, 3}")
+    assert.are.equal(set2:toString(), "{a, b, c}")
   end)
 end)
