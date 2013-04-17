@@ -15,21 +15,25 @@
 -- Copyright:   Copyright (c) 2013 SnowPlow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local escape = require( "lib.escape" )
+local escape = require( "lib.snowplow.lib.escape" )
 
-describe( "escape.escapeUri() should URI-escape strings correctly", function()
+describe( "escape.escapeUri()", function()
 
-  local dataTable = {
-    { "INPUT"      , "EXPECTED"     }
-    { "JohnSmith"  , "JohnSmith"    },
-    { "john+smith" , "john+smith"   },
-    { "John Smith" , "John%20Smith" },
-  }
+  it( "should URI-escape strings correctly", function()
 
-  for i, t in ipairs(dataTable) do
-    if i > 1 then
-      local expected = escape.escapeUri( t[1] )
-      assert.are.equal(expected, t[2])
+    local dataTable = {
+      { "INPUT"      , "EXPECTED"     },
+      { "JohnSmith"  , "JohnSmith"    },
+      { "john+smith" , "john%2Bsmith"   },
+      { "John Smith" , "John+Smith" }
+    }
+
+    for i, t in ipairs(dataTable) do
+      if i > 1 then
+        local expected = escape.escapeUri( t[1] )
+        assert.are.equal(t[2], expected)
+      end
     end
-  end
+
+  end )
 end )
