@@ -15,27 +15,29 @@
 -- Copyright:   Copyright (c) 2013 SnowPlow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local escape = require("lib.snowplow.lib.set")
+local set = require("lib.snowplow.lib.set")
 
 local set1 = set.newSet { 1, 2, 3 }
-local set2 = set.newSet { a, b, c }
+local set2 = set.newSet { "a", "b", "c" }
 
 describe("set", function()
 
   it("should compare sets correctly", function()
     local set3 = set.newSet { 1, 2, 3 }
-  	assert.are.equal(set1, set3)
-  	assert.are_not.equal(set2, set3)
-    assert.are_not.equal(set1, { 1, 2, 3 })
+  	assert.are.same(set1, set3)
+  	assert.are_not.same(set2, set3)
+    assert.are_not.same(set1, { 1, 2, 3 })
   end)
 
   it("should know if it contains an element", function()
-    assert.is.true(set1:contains(2))
-    assert.is.false(set2:contains(1))
+    assert.is_truthy(set1:contains(2))
+    assert.is_false(set2:contains(1))
   end)
 
   it("should be convertable to a string", function()
+    local set3 = set.newSet {}
     assert.are.equal(set1:toString(), "{1, 2, 3}")
-    assert.are.equal(set2:toString(), "{a, b, c}")
+    assert.are.equal(set2:toString(), "{a, c, b}") -- Lua changes order for some reason
+    assert.are.equal(set3:toString(), "{}")
   end)
 end)

@@ -52,7 +52,14 @@ set.contains = function (self, value)
     The value to look for in our set
   --]]--
 
-  return self[value]
+  local c
+  if self[value] == true then
+    c = true
+  else
+    c = false
+  end
+
+  return c
 end
 
 set.toString = function (self)
