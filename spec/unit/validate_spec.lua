@@ -71,13 +71,51 @@ describe("validate", function()
       { { 1, 2 }                    , nil            },
       { { a = 1, b = c}             , nil            },
       { { a = true, b = false }     , nil            },
-      { {}                          , err("<table>") },
-      { "string"                    , err("string")  },
       { nil                         , err("<nil>")   },
+      { {}                          , err("<table>") },
+      { "hello"                     , err("hello")   },
       { 23.3                        , err(23.3)      }
     }
 
     assertDataTable(dataTable, validate.isNonEmptyTable)
   end)
+
+  it("isTableOrNil() should validate correctly", function()
+
+    local err = function(value)
+      return fieldName .. " must be a table or nil, not [" .. nts(value) .. "]"
+    end
+
+    local dataTable = {
+      { "INPUT"                     , "EXPECTED"     },
+      { { "hello" }                 , nil            },
+      { { 1, 2 }                    , nil            },
+      { { a = 1, b = c}             , nil            },
+      { { a = true, b = false }     , nil            },
+      { nil                         , nil            }, -- Only difference from the above
+      { {}                          , err("<table>") },
+      { "hello"                     , err("hello")   },
+      { 23.3                        , err(23.3)      }
+    }
+
+    assertDataTable(dataTable, validate.isNonEmptyTable)
+  end)
+
+  it("isNonEmptyString() should validate correctly", function()
+
+    local err = function(value)
+      return fieldName .. " is required and must be a string, not [" .. nts(value) .. "]"
+    end
+
+    local dataTable = {
+      { "INPUT"                     , "EXPECTED"     },
+      { "a string"                  , nil            },
+      { "another"                   , nil            },
+      { ""                          , err("")        },
+      { nil                         , err("<nil>")   },
+      { {}                          , err("<table>") },
+      { { a = 1, b = c}             , err("<table>") },
+      { 23.3                        , err(23.3)      }
+    }
 
 end)

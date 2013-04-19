@@ -50,7 +50,7 @@ end
 validate.isTableOrNil = function(name, value)
 
   if type(value) ~= "table" and value ~= nil then
-    error(name .. " must be a table or nil, not [" .. value .. "]")
+    error(name .. " must be a table or nil, not [" .. nts(value) .. "]")
   end
 end
 
@@ -67,7 +67,7 @@ end
 validate.isStringOrNil = function(name, value)
 
   if type(value) ~= "string" and value ~= nil then
-    error(name .. " must be a string or nil, not [" .. value .. "]")
+    error(name .. " must be a string or nil, not [" .. nts(value) .. "]")
   end
 end
 
@@ -99,7 +99,7 @@ end
 validate.isNumberOrNil = function(name, value)
 
   if type(value) ~= "number" and value ~= nil then
-    error(name .. " must be a number or nil, not [" .. value .. "]")
+    error(name .. " must be a number or nil, not [" .. nts(value) .. "]")
   end
 end
 
