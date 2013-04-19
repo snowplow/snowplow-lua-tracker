@@ -118,4 +118,7 @@ describe("validate", function()
       { 23.3                        , err(23.3)      }
     }
 
+    assertDataTable(dataTable, validate.isNonEmptyString)
+  end)
+
 end)
