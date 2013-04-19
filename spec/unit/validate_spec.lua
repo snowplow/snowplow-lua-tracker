@@ -16,6 +16,7 @@
 -- License:     Apache License Version 2.0
 
 local validate = require("lib.snowplow.validate")
+local set      = require("lib.snowplow.lib.set")
 
 local fieldName = "TestField"
 
@@ -119,6 +120,52 @@ describe("validate", function()
     }
 
     assertDataTable(dataTable, validate.isNonEmptyString)
+  end)
+
+  it("isStringOrNil() should validate correctly", function()
+
+    local err = function(value)
+      return fieldName .. " is required and must be a string, not [" .. nts(value) .. "]"
+    end
+
+    local dataTable = {
+      { "INPUT"                     , "EXPECTED"     },
+      { "a string"                  , nil            },
+      { "another"                   , nil            },
+      { ""                          , nil            }, -- Difference from the above
+      { nil                         , nil            }, -- Difference from the above
+      { {}                          , err("<table>") },
+      { { a = 1, b = c}             , err("<table>") },
+      { 23.3                        , err(23.3)      }
+    }
+
+    assertDataTable(dataTable, validate.isNonEmptyString)
+  end)
+
+  it("isStringFromSet() should validate correctly", function()
+
+    local s = set.newSet { a, c, f }
+
+    local err = function(value)
+      return fieldName .. " is required and must be a string, not [" .. nts(value) .. "]"
+    end
+
+    local setValidator = function(name, value)
+      return validate.isStringFromSet(s, name, value)
+    end
+
+    local dataTable = {
+      { "INPUT"                     , "EXPECTED"     },
+      { "a string"                  , nil            },
+      { "another"                   , nil            },
+      { ""                          , nil            }, -- Difference from the above
+      { nil                         , nil            }, -- Difference from the above
+      { {}                          , err("<table>") },
+      { { a = 1, b = c}             , err("<table>") },
+      { 23.3                        , err(23.3)      }
+    }
+
+    assertDataTable(dataTable, setValidator)
   end)
 
 end)
