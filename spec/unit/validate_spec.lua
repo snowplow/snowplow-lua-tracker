@@ -19,11 +19,9 @@ local validate = require("lib.snowplow.validate")
 
 local fieldName = "TestField"
 
-local assertDataTable = function(dataTable)
+local function assertDataTable(dataTable, validator)
   for i, t in ipairs(dataTable) do
-    local f = function ()
-      validate.isBoolean(fieldName, t[1])
-    end
+    local f = function () validator(fieldName, t[1]) end
 
     if i > 1 then
       if t[2] == nil then
@@ -35,46 +33,51 @@ local assertDataTable = function(dataTable)
   end
 end
 
+local function nts(value) -- Nil to string
+  local v
+  if value == nil then v = "<nil>" else v = value end
+  if type(value) == "table" then v = "<table>" end
+  return v
+end
+
 describe("validate", function()
 
   it("isBoolean() should validate correctly", function()
 
     local err = function(value)
-      local v = if value == nil then "<nil>" else value end
-      return fieldName .. " is required and must be a boolean, not [" .. v .. "]"
+      return fieldName .. " is required and must be a boolean, not [" .. nts(value) .. "]"
     end
 
     local dataTable = {
-      { "INPUT" , "EXPECTED"     },
-      { true    , nil            },
-      { false   , nil            },
-      { 23      , err( 23 )      },
-      { "hello" , err( "hello" ) }
+      { "INPUT" , "EXPECTED"   },
+      { true    , nil          },
+      { false   , nil          },
+      { 23      , err(23)      },
+      { "hello" , err("hello") }
     }
 
-    assertDataTable(dataTable)
+    assertDataTable(dataTable, validate.isBoolean)
   end )
 
-  it( "isNonEmptyTable() should validate correctly", function()
+  it("isNonEmptyTable() should validate correctly", function()
 
     local err = function(value)
-      local v = if value == nil then "<nil>" else value end
-      return fieldName .. " is required and must be a non-empty table, not [" .. v .. "]"
+      return fieldName .. " is required and must be a non-empty table, not [" .. nts(value) .. "]"
     end
 
     local dataTable = {
       { "INPUT"                     , "EXPECTED"     },
-      -- { { "hello" }                 , nil            },
-      -- { { 1, 2 }                    , nil            },
-      -- { { a = 1, b = c}             , nil            },
-      -- { { "a" = true, "b" = false } , nil            },
-      -- { {}                          , err( {} )      },
-      { "string"                    , err( "string" ) },
-      -- { nil                         , err( nil )     },
-      -- { 23.3                        , err( 23.3 )     }
+      { { "hello" }                 , nil            },
+      { { 1, 2 }                    , nil            },
+      { { a = 1, b = c}             , nil            },
+      { { a = true, b = false }     , nil            },
+      { {}                          , err("<table>") },
+      { "string"                    , err("string")  },
+      { nil                         , err("<nil>")   },
+      { 23.3                        , err(23.3)      }
     }
 
-    assertDataTable(dataTable)
+    assertDataTable(dataTable, validate.isNonEmptyTable)
   end)
 
 end)

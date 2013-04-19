@@ -23,6 +23,7 @@ local validate = {}
 local function nts(value) -- Nil to string
   local v
   if value == nil then v = "<nil>" else v = value end
+  if type(value) == "table" then v = "<table>" end
   return v
 end
 
@@ -41,7 +42,7 @@ end
 
 validate.isNonEmptyTable = function(name, value)
 
-  if type(value) ~= "table" or value == {} then
+  if type(value) ~= "table" or next(value) == nil then
     error(name .. " is required and must be a non-empty table, not [" .. nts(value) .. "]")
   end
 end
