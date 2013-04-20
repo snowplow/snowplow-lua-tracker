@@ -144,10 +144,10 @@ describe("validate", function()
 
   it("isStringFromSet() should validate correctly", function()
 
-    local s = set.newSet { a, c, f }
+    local s = set.newSet { "a", "c", "f" }
 
     local err = function(value)
-      return fieldName .. " is required and must be a string, not [" .. nts(value) .. "]"
+      return fieldName .. " must be one of " .. s:toString() .. ", not [" .. nts(value) .. "]"
     end
 
     local setValidator = function(name, value)
@@ -156,16 +156,79 @@ describe("validate", function()
 
     local dataTable = {
       { "INPUT"                     , "EXPECTED"     },
-      { "a string"                  , nil            },
-      { "another"                   , nil            },
-      { ""                          , nil            }, -- Difference from the above
-      { nil                         , nil            }, -- Difference from the above
+      { "a"                         , nil            },
+      { "f"                         , nil            },
+      { "g"                         , err("g")       },
+      { "hello"                     , err("hello")   },
+      { ""                          , err("")        },
+      { nil                         , err("<nil>")   },
       { {}                          , err("<table>") },
       { { a = 1, b = c}             , err("<table>") },
       { 23.3                        , err(23.3)      }
     }
 
     assertDataTable(dataTable, setValidator)
+  end)
+
+  it("isNumber() should validate correctly", function()
+
+    local err = function(value)
+      return fieldName .. " is required and must be a number, not [" .. nts(value) .. "]"
+    end
+
+    local dataTable = {
+      { "INPUT"                     , "EXPECTED"     },
+      { 23                          , nil            },
+      { 0                           , nil            },
+      { -10.586                     , nil            },
+      { 4523000.29                  , nil            },
+      { nil                         , err("<nil>")   },
+      { "hello"                     , err("hello")   },
+      { { a = 1, b = c}             , err("<table>") },
+    }
+
+    assertDataTable(dataTable, validate.isNumber)
+  end )
+
+  it("isNumberOrNil() should validate correctly", function()
+
+    local err = function(value)
+      return fieldName .. " must be a number or nil, not [" .. nts(value) .. "]"
+    end
+
+    local dataTable = {
+      { "INPUT"                     , "EXPECTED"     },
+      { 23                          , nil            },
+      { 0                           , nil            },
+      { -10.586                     , nil            },
+      { 4523000.29                  , nil            },
+      { nil                         , nil            }, -- Only difference from the above
+      { "hello"                     , err("hello")   },
+      { { a = 1, b = c}             , err("<table>") }
+    }
+
+    assertDataTable(dataTable, validate.isNumberOrNil)
+  end)
+
+  it("isPositiveInteger() should validate correctly", function()
+
+    local err = function(value)
+      return fieldName .. "is required and must be a positive integer, not [" .. nts(value) .. "]"
+    end
+
+    local dataTable = {
+      { "INPUT"                     , "EXPECTED"     },
+      { 23                          , nil            },
+      { 0                           , nil            },
+      { 4523000.29                  , nil            },
+      { -1                          , err("-1")      },
+      { -10.586                     , err("-10.586") },
+      { nil                         , err("<nil>")   },
+      { "hello"                     , err("hello")   },
+      { { a = 1, b = c}             , err("<table>") }
+    }
+
+    assertDataTable(dataTable, validate.isPositiveInteger)
   end)
 
 end)
