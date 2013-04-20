@@ -77,12 +77,8 @@ validate.isStringFromSet = function(set, name, value)
   partial application.
   --]]--
 
-  if type(value) ~= "string" then
-    error(name .. " must be a string")
-  end
-
-  if not set:contains(value) then
-    error(name .. " must be one of " .. set:toString() .. ", not [" .. nts(value) .. "]" )
+  if type(value) ~= "string" or not set:contains(value) then
+    error(name .. " must be a string from the set " .. set:toString() .. ", not [" .. nts(value) .. "]" )
   end
 end
 

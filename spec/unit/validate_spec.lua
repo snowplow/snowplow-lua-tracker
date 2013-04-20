@@ -91,15 +91,15 @@ describe("validate", function()
       { "INPUT"                     , "EXPECTED"     },
       { { "hello" }                 , nil            },
       { { 1, 2 }                    , nil            },
-      { { a = 1, b = c}             , nil            },
+      { { a = 1, b = "c"}           , nil            },
       { { a = true, b = false }     , nil            },
-      { nil                         , nil            }, -- Only difference from the above
-      { {}                          , err("<table>") },
+      { nil                         , nil            }, -- Difference from the above
+      { {}                          , nil            }, -- Difference from the above
       { "hello"                     , err("hello")   },
       { 23.3                        , err(23.3)      }
     }
 
-    assertDataTable(dataTable, validate.isNonEmptyTable)
+    assertDataTable(dataTable, validate.isTableOrNil)
   end)
 
   it("isNonEmptyString() should validate correctly", function()
@@ -125,7 +125,7 @@ describe("validate", function()
   it("isStringOrNil() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a string, not [" .. nts(value) .. "]"
+      return fieldName .. " must be a string or nil, not [" .. nts(value) .. "]"
     end
 
     local dataTable = {
@@ -139,7 +139,7 @@ describe("validate", function()
       { 23.3                        , err(23.3)      }
     }
 
-    assertDataTable(dataTable, validate.isNonEmptyString)
+    assertDataTable(dataTable, validate.isStringOrNil)
   end)
 
   it("isStringFromSet() should validate correctly", function()
@@ -147,7 +147,7 @@ describe("validate", function()
     local s = set.newSet { "a", "c", "f" }
 
     local err = function(value)
-      return fieldName .. " must be one of " .. s:toString() .. ", not [" .. nts(value) .. "]"
+      return fieldName .. " must be a string from the set " .. s:toString() .. ", not [" .. nts(value) .. "]"
     end
 
     local setValidator = function(name, value)
