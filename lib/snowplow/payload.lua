@@ -61,8 +61,12 @@ payload.newPayloadBuilder = function (encodeBase64)
       converted to JSON format
     --]]--
 
-    -- TODO: write this code
-    return properties
+    -- TODO: add validation: check for nesting etc
+    -- TODO: check data types
+
+    local propsJson = json:encode(properties)
+
+    return propsJson
   end
 
   local add = function (key, value, validate)

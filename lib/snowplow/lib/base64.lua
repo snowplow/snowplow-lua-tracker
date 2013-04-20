@@ -46,9 +46,15 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 -- THE SOFTWARE.
- 
-require "lib.bit"
- 
+
+-- For Busted.
+-- TODO: if someone knows another way of doing this, pleas
+if _TEST then 
+	require "lib.snowplow.lib.bit"
+else
+	require "lib.bit"
+end
+
 base64 = {}
  
 --- octet -> char encoding.

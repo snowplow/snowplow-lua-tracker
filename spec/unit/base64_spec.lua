@@ -25,8 +25,18 @@ describe("base64", function()
       { "INPUT"      , "EXPECTED"     },
       { "JohnSmith"  , "XXX"    },
       { "john+smith" , "XXX"   },
-      { "John Smith" , "xxx" }
+      { "John Smith" , "xxx" },
+      { "TODO: add big ol JSON here",    ""},
+      { "TODO: add big ol JSON here",    ""},
+      { "TODO: add big ol JSON here",    ""}
     }
+
+    for i, v in ipairs(dataTable) do
+      if i > 1 then
+        local expected = base64.encode(v[1])
+        assert.are.equal(v[2], expected)
+      end
+    end
 
   end)
 
@@ -34,8 +44,8 @@ describe("base64", function()
 
     local badValues = { nil, "", 1, true, false, 34.5 }
 
-    -- TODO: finish this
-    -- Equivalent of map in Lua?
-      assert.has_error(function() base64.encode(bv) end)
+    for i, v in pairs(badValues) do
+      assert.has_error(function() base64.encode(v) end)
+    end
   end)
 end)

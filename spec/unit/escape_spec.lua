@@ -28,10 +28,10 @@ describe("escape.escapeUri()", function()
       { "John Smith" , "John+Smith" }
     }
 
-    for i, t in ipairs(dataTable) do
+    for i, v in ipairs(dataTable) do
       if i > 1 then
-        local expected = escape.escapeUri(t[1])
-        assert.are.equal(t[2], expected)
+        local expected = escape.escapeUri(v[1])
+        assert.are.equal(v[2], expected)
       end
     end
 
