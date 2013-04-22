@@ -42,7 +42,25 @@ describe("payload", function()
     assert.are.equal(pb.build(), "?arg")
   end)
 
-  pending("should error when a validation fails")
-  -- TODO: write this.
+  it("should error when a validation on an add() fails")
+
+    local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
+    local f = function()
+      pb.add( "num", -2, validate.isPositiveInteger )
+    end
+
+    assert.has_error(f, "num is required and must be a positive integer, not [-2]")
+  end)
+
+  it("should error when a validation on an addRaw() fails")
+
+    local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
+    pb.add( "ev_la", nil, validate.isStringOrNil )
+    local f = function()
+      pb.addRaw( "flag", "falsy", validate.isBoolean )
+    end
+
+    assert.has_error(f, "flag is required and must be a boolean, not [falsy]")
+  end)
 
 end)
