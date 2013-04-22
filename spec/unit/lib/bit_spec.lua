@@ -1,4 +1,4 @@
---- escape_spec.lua
+--- bit_spec.lua
 --
 -- Copyright (c) 2013 Snowplow Analytics Ltd. All rights reserved.
 --
@@ -15,25 +15,8 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local escape = require("lib.snowplow.lib.escape")
+local bit = require("lib.snowplow.bit")
 
-describe("escape.escapeUri()", function()
+pending("bit", function()
 
-  it("should URI-escape strings correctly", function()
-
-    local dataTable = {
-      { "INPUT"      , "EXPECTED"     },
-      { "JohnSmith"  , "JohnSmith"    },
-      { "john+smith" , "john%2Bsmith"   },
-      { "John Smith" , "John+Smith" }
-    }
-
-    for i, v in ipairs(dataTable) do
-      if i > 1 then
-        local expected = escape.escapeUri(v[1])
-        assert.are.equal(v[2], expected)
-      end
-    end
-
-  end)
 end)
