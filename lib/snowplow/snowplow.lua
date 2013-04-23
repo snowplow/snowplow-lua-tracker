@@ -57,7 +57,7 @@ snowplow.newTrackerForCf = function (cfSubdomain)
     collector is running
   --]]--
 
-  validate.isNonEmptyString( "cloudfront subdomain", cfSubdomain )
+  validate.isNonEmptyString( "cfSubdomain", cfSubdomain )
   local uri = snowplow.collectorUriFromCf( cfSubdomain )
   return snowplow.newTracker( uri )
 end

@@ -20,6 +20,8 @@ local validate = {}
 -- --------------------------------------------------------------
 -- Helpers
 
+-- TODO: if we're running on test, make this public so our tests can use it directly.
+
 local function nts(value) -- Nil to string
   local v
   if value == nil then v = "<nil>" else v = value end

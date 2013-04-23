@@ -34,6 +34,7 @@ local function assertDataTable(dataTable, validator)
   end
 end
 
+-- TODO: switch to using original copy of nts in validate lib
 local function nts(value) -- Nil to string
   local v
   if value == nil then v = "<nil>" else v = value end
@@ -42,6 +43,8 @@ local function nts(value) -- Nil to string
 end
 
 describe("validate", function()
+
+  pending("nts() should work correctly")
 
   it("isBoolean() should validate correctly", function()
 
