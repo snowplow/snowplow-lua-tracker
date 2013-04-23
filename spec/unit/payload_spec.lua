@@ -22,7 +22,7 @@ describe("payload", function()
 
   it("should correctly assemble a payload", function()
 
-    local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
+    local pb = payload.newPayloadBuilder( true )
     pb.addRaw( "e", "sv" )
     pb.add( "sv_na", "Welcome" )
     pb.add( "sv_id", "231", validate.isStringOrNil )
@@ -32,7 +32,7 @@ describe("payload", function()
 
   it("should correctly assemble a second payload", function()
 
-    local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
+    local pb = payload.newPayloadBuilder( false )
     pb.addRaw( "e", "hello" )
     pb.addRaw( "hello_test", "test")
     
@@ -44,7 +44,7 @@ describe("payload", function()
 
   it("should error when a validation on an add() fails")
 
-    local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
+    local pb = payload.newPayloadBuilder( true )
     local f = function()
       pb.add( "num", -2, validate.isPositiveInteger )
     end
@@ -54,7 +54,7 @@ describe("payload", function()
 
   it("should error when a validation on an addRaw() fails")
 
-    local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
+    local pb = payload.newPayloadBuilder( false )
     pb.add( "ev_la", nil, validate.isStringOrNil )
     local f = function()
       pb.addRaw( "flag", "falsy", validate.isBoolean )
