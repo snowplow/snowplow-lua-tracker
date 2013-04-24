@@ -41,7 +41,7 @@ describe("validate", function()
   it("isBoolean() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a boolean, not [" .. _nts(value) .. "]"
+      return fieldName .. " is required and must be a boolean, not [" .. validate._nts(value) .. "]"
     end
 
     local dataTable = {
@@ -58,7 +58,7 @@ describe("validate", function()
   it("isNonEmptyTable() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a non-empty table, not [" .. _nts(value) .. "]"
+      return fieldName .. " is required and must be a non-empty table, not [" .. validate._nts(value) .. "]"
     end
 
     local dataTable = {
@@ -79,7 +79,7 @@ describe("validate", function()
   it("isTableOrNil() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " must be a table or nil, not [" .. _nts(value) .. "]"
+      return fieldName .. " must be a table or nil, not [" .. validate._nts(value) .. "]"
     end
 
     local dataTable = {
@@ -100,7 +100,7 @@ describe("validate", function()
   it("isNonEmptyString() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a string, not [" .. _nts(value) .. "]"
+      return fieldName .. " is required and must be a string, not [" .. validate._nts(value) .. "]"
     end
 
     local dataTable = {
@@ -120,7 +120,7 @@ describe("validate", function()
   it("isStringOrNil() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " must be a string or nil, not [" .. _nts(value) .. "]"
+      return fieldName .. " must be a string or nil, not [" .. validate._nts(value) .. "]"
     end
 
     local dataTable = {
@@ -142,7 +142,7 @@ describe("validate", function()
     local s = set.newSet { "a", "c", "f" }
 
     local err = function(value)
-      return fieldName .. " must be a string from the set " .. s:toString() .. ", not [" .. _nts(value) .. "]"
+      return fieldName .. " must be a string from the set " .. s:toString() .. ", not [" .. validate._nts(value) .. "]"
     end
 
     local setValidator = function(name, value)
@@ -168,7 +168,7 @@ describe("validate", function()
   it("isNumber() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a number, not [" .. _nts(value) .. "]"
+      return fieldName .. " is required and must be a number, not [" .. validate._nts(value) .. "]"
     end
 
     local dataTable = {
@@ -188,7 +188,7 @@ describe("validate", function()
   it("isNumberOrNil() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " must be a number or nil, not [" .. _nts(value) .. "]"
+      return fieldName .. " must be a number or nil, not [" .. validate._nts(value) .. "]"
     end
 
     local dataTable = {
@@ -208,7 +208,7 @@ describe("validate", function()
   it("isPositiveInteger() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a positive integer, not [" .. _nts(value) .. "]"
+      return fieldName .. " is required and must be a positive integer, not [" .. validate._nts(value) .. "]"
     end
 
     local dataTable = {

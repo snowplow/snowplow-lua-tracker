@@ -48,8 +48,8 @@ describe("snowplow", function()
     assert.has_error(f(-23.04), err("-23.04"))
   end)
 
-  it("newTrackerForCf() should error unles passed a non-empty string", function()
-    local f = function(host)
+  it("newTrackerForCf() should error unless passed a non-empty string", function()
+    local f = function(cfSubdomain)
       return function() snowplow.newTrackerForCf(cfSubdomain) end
     end
     local err = function(value)
