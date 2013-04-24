@@ -216,7 +216,7 @@ describe("validate", function()
   it("isPositiveInteger() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. "is required and must be a positive integer, not [" .. nts(value) .. "]"
+      return fieldName .. " is required and must be a positive integer, not [" .. nts(value) .. "]"
     end
 
     local dataTable = {

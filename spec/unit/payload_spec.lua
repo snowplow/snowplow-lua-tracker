@@ -27,10 +27,10 @@ describe("payload", function()
     pb.add( "sv_na", "Welcome" )
     pb.add( "sv_id", "231", validate.isStringOrNil )
     
-    assert.are.equal(pb.build(), "?arg")
+    assert.are.equal(pb.build(), "?e=sv&sv_na=Welcome&sv_id=231")
   end)
 
-  it("should correctly assemble a second payload", function()
+  it("should correctly assemble another payload", function()
 
     local pb = payload.newPayloadBuilder( false )
     pb.addRaw( "e", "hello" )
@@ -39,10 +39,10 @@ describe("payload", function()
     pb.add( "ev_ca", "2  spaces", validate.isNonEmptyString )
     pb.add( "ev_va", -23.34, validate.isNumberOrNil )
 
-    assert.are.equal(pb.build(), "?arg")
+    assert.are.equal(pb.build(), "?e=hello&hello_test=test&ev_ca=2++spaces&ev_va=%2D23%2E34")
   end)
 
-  it("should error when a validation on an add() fails")
+  it("should error when a validation on an add() fails", function()
 
     local pb = payload.newPayloadBuilder( true )
     local f = function()
@@ -52,7 +52,7 @@ describe("payload", function()
     assert.has_error(f, "num is required and must be a positive integer, not [-2]")
   end)
 
-  it("should error when a validation on an addRaw() fails")
+  it("should error when a validation on an addRaw() fails", function()
 
     local pb = payload.newPayloadBuilder( false )
     pb.add( "ev_la", nil, validate.isStringOrNil )
@@ -62,5 +62,5 @@ describe("payload", function()
 
     assert.has_error(f, "flag is required and must be a boolean, not [falsy]")
   end)
-
+--]]--
 end)

@@ -15,9 +15,18 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local escape = require( "lib.escape" )
-local json   = require( "lib.JSON" )
-local base64 = require( "lib.base64" )
+-- For Busted.
+-- TODO: if someone knows another way of doing this, please
+local escape, json, base64
+if _TEST then 
+  escape = require( "lib.snowplow.lib.escape" )
+  json   = require( "lib.snowplow.lib.JSON" )
+  base64 = require( "lib.snowplow.lib.base64" )
+else
+  escape = require( "lib.escape" )
+  json   = require( "lib.JSON" )
+  base64 = require( "lib.base64" )
+end
 
 local payload = {}
 

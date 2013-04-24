@@ -48,7 +48,7 @@
 -- THE SOFTWARE.
 
 -- For Busted.
--- TODO: if someone knows another way of doing this, pleas
+-- TODO: if someone knows another way of doing this, please
 if _TEST then 
 	require "lib.snowplow.lib.bit"
 else
