@@ -36,7 +36,25 @@ end
 
 describe("validate", function()
 
-  pending("_nts() should work correctly", function() end)
+  it("_nts() should work correctly", function()
+
+    local dataTable = {
+      { "INPUT"            , "EXPECTED"  },
+      { true               , "true"      },
+      { false              , "false"     },
+      { 23                 , "23"        },
+      { nil                , "<nil>"     },
+      { {}                 , "<table>"   },
+      { { a = 1, b = "2" } , "<table>"   }
+    }
+
+    for i, t in ipairs(dataTable) do
+      if i > 1 then
+        assert.are.equal( validate._nts(t[1]), t[2] ) 
+      end
+    end    
+
+  end )
 
   it("isBoolean() should validate correctly", function()
 
