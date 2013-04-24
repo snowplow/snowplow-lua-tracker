@@ -15,8 +15,10 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local bit = require("lib.snowplow.bit")
+local bit = require("lib.snowplow.lib.bit")
 
-pending("bit", function()
+describe("bit", function()
+
+  pending("the bit operations used by base64 should be present and work", function() end)
 
 end)

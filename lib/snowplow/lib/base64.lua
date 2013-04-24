@@ -189,3 +189,5 @@ function base64.encode (input)
 	return table.concat(out)
 	
 end
+
+return base64

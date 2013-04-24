@@ -15,7 +15,7 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local escape = require("lib.snowplow.lib.base64")
+local base64 = require("lib.snowplow.lib.base64")
 
 describe("base64", function()
 
@@ -25,16 +25,17 @@ describe("base64", function()
       { "INPUT"                              , "EXPECTED"     },
       { "JohnSmith"                          , "XXX"    },
       { "john+smith"                         , "XXX"   },
-      { "John Smith"                         , "xxx" },
+      { "John Smith"                         , "xxx" }, 
       { '{"age":23,"name":"John"}'           , ""},
       { '{"myTemp":23.3,"myUnit":"celsius"}' , ""},
-      { '{"event":"page_ping","mobile":true,"properties":{"max_x":960,"max_y":1080,"min_x":0,"min_y":-12}}',    ""}
+      { '{"event":"page_ping","mobile":true,"properties":{"max_x":960,"max_y":1080,"min_x":0,"min_y":-12}}',    ""},
       { '{"event":"basket_change","price":23.39,"product_id":"PBZ000345","quantity":-2,"tstamp":1678023000}',  ""}
     }
 
     for i, v in ipairs(dataTable) do
       if i > 1 then
-        local expected = base64.encode(v[1])
+        local input = v[1]
+        local expected = base64.encode(input)
         assert.are.equal(v[2], expected)
       end
     end

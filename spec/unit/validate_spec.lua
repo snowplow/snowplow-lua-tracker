@@ -44,7 +44,7 @@ end
 
 describe("validate", function()
 
-  pending("nts() should work correctly")
+  pending("nts() should work correctly", function() end)
 
   it("isBoolean() should validate correctly", function()
 
@@ -187,7 +187,7 @@ describe("validate", function()
       { 4523000.29                  , nil            },
       { nil                         , err("<nil>")   },
       { "hello"                     , err("hello")   },
-      { { a = 1, b = c}             , err("<table>") },
+      { { a = 1, b = c}             , err("<table>") }
     }
 
     assertDataTable(dataTable, validate.isNumber)
