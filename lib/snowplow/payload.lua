@@ -16,7 +16,7 @@
 -- License:     Apache License Version 2.0
 
 -- For Busted.
--- TODO: if someone knows another way of doing this, please
+-- TODO: if someone knows another way of doing this, please update
 local escape, json, base64
 if _TEST then 
   escape = require( "lib.snowplow.lib.escape" )

@@ -15,10 +15,19 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local validate = require( "validate" )
-local payload  = require( "payload" )
-local set      = require( "lib.set" )
-local http     = require( "socket.http" )
+-- For Busted.
+-- TODO: if someone knows another way of doing this, please update
+local validate, payload, set
+if _TEST then
+  validate = require( "lib.snowplow.validate" )
+  payload  = require( "lib.snowplow.payload" )
+  set      = require( "lib.snowplow.lib.set" )
+else
+  validate = require( "validate" )
+  payload  = require( "payload" )
+  set      = require( "lib.set" )
+end
+local http = require( "socket.http" )
 
 local tracker = {}
 

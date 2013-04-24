@@ -15,8 +15,16 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local validate = require( "validate" )
-local tracker  = require( "tracker" )
+-- For Busted.
+-- TODO: if someone knows another way of doing this, please update
+local validate, tracker
+if _TEST then 
+  validate = require( "lib.snowplow.validate" )
+  tracker  = require( "lib.snowplow.tracker" )
+else
+  validate = require( "validate" )
+  tracker  = require( "tracker" )
+end
 
 local snowplow = {}
 
@@ -30,42 +38,9 @@ local config = {
 }
 
 -- --------------------------------------------------------------
--- Factories to create a tracker
-
-snowplow.newTrackerForUri = function (host)
-  --[[--
-  Create a new Snowplow tracker talking to a
-  URI-based collector on the given host.
-
-  @Parameter: host
-    The host (i.e. full domain) on which the
-    collector is running
-  --]]--
-
-  validate.isNonEmptyString( "host", host )
-  local uri = snowplow.asCollectorUri( host )
-  return snowplow.newTracker( uri )
-end
-
-snowplow.newTrackerForCf = function (cfSubdomain)
-  --[[--
-  Create a new Snowplow tracker talking to a
-  CloudFront-based collector on the given subdomain.
-
-  @Parameter: host
-    The CloudFront subdomain on which the
-    collector is running
-  --]]--
-
-  validate.isNonEmptyString( "cfSubdomain", cfSubdomain )
-  local uri = snowplow.collectorUriFromCf( cfSubdomain )
-  return snowplow.newTracker( uri )
-end
-
--- --------------------------------------------------------------
 -- Static methods
 
-snowplow.newTracker = function (uri)
+local function newTracker(uri)
   --[[--
   Builds our new tracker using the supplied URI.
 
@@ -81,7 +56,19 @@ snowplow.newTracker = function (uri)
   return tracker
 end
 
-snowplow.collectorUriFromCf = function (cfSubdomain)
+local function asCollectorUri(host)
+  --[[--
+  Helper to generate the collector url from a
+  collector host name.
+
+  Example:
+  as_collector_url("snplow.myshop.com") => "http://snplow.myshop.com/i"
+  --]]--
+
+  return "http://" .. host .. "/i"
+end
+
+local function collectorUriFromCf(cfSubdomain)
   --[[--
   Helper to generate the collector url from a
   CloudFront distribution subdomain.
@@ -94,19 +81,48 @@ snowplow.collectorUriFromCf = function (cfSubdomain)
     distribution is hosted
   --]]--
 
-  return snowplow.asCollectorUri( cfSubdomain .. ".cloudfront.net" )
+  return asCollectorUri( cfSubdomain .. ".cloudfront.net" )
 end
 
-snowplow.asCollectorUri = function (host)
-  --[[--
-  Helper to generate the collector url from a
-  collector host name.
+-- --------------------------------------------------------------
+-- Make privates public for testing
 
-  Example:
-  as_collector_url("snplow.myshop.com") => "http://snplow.myshop.com/i"
+if _TEST then
+  snowplow._asCollectorUri = asCollectorUri
+  snowplow._collectorUriFromCf = collectorUriFromCf
+end
+
+-- --------------------------------------------------------------
+-- Factories to create a tracker
+
+snowplow.newTrackerForUri = function (host)
+  --[[--
+  Create a new Snowplow tracker talking to a
+  URI-based collector on the given host.
+
+  @Parameter: host
+    The host (i.e. full domain) on which the
+    collector is running
   --]]--
 
-  return "http://" .. host .. "/i"
+  validate.isNonEmptyString( "host", host )
+  local uri = asCollectorUri( host )
+  return newTracker( uri )
+end
+
+snowplow.newTrackerForCf = function (cfSubdomain)
+  --[[--
+  Create a new Snowplow tracker talking to a
+  CloudFront-based collector on the given subdomain.
+
+  @Parameter: host
+    The CloudFront subdomain on which the
+    collector is running
+  --]]--
+
+  validate.isNonEmptyString( "cfSubdomain", cfSubdomain )
+  local uri = collectorUriFromCf( cfSubdomain )
+  return newTracker( uri )
 end
 
 -- --------------------------------------------------------------

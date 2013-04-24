@@ -16,39 +16,55 @@
 -- License:     Apache License Version 2.0
 
 local snowplow = require("lib.snowplow.snowplow")
-
--- TODO: switch to using original copy of nts in validate lib
-local function nts(value) -- Nil to string
-  local v
-  if value == nil then v = "<nil>" else v = value end
-  if type(value) == "table" then v = "<table>" end
-  return v
-end
+local validate = require("lib.snowplow.validate")
 
 describe("snowplow", function()
   
-  it("asCollectorUri() should generate a non-CloudFront Collector URI correctly", function()
-    local uri = snowplow.asCollectorUri("c.snplow.com")
+  -- --------------------------------------------------------------
+  -- Test private helpers
+
+  it("_asCollectorUri() should generate a non-CloudFront Collector URI correctly", function()
+    local uri = snowplow._asCollectorUri("c.snplow.com")
     assert.are.equal(uri, "http://c.snplow.com/i")
   end)
 
-  it("collectorUriFromCf() should generate a CloudFront Collector URI correctly", function()
-    local uri = snowplow.collectorUriFromCf("d3rkrsqld9gmqf")
+  it("_collectorUriFromCf() should generate a CloudFront Collector URI correctly", function()
+    local uri = snowplow._collectorUriFromCf("d3rkrsqld9gmqf")
     assert.are.equal(uri, "http://d3rkrsqld9gmqf.cloudfront.net/i")
   end)
+
+  -- --------------------------------------------------------------
+  -- Test error handling on constructors
 
   it("newTrackerForUri() should error unless passed a non-empty string", function()
     local f = function(host)
       return function() snowplow.newTrackerForUri(host) end
     end
     local err = function(value)
-      return "host is required and must be a string, not [" .. nts(value) .. "]"
+      return "host is required and must be a string, not [" .. validate._nts(value) .. "]"
     end
     assert.has_error(f(""), err(""))
     assert.has_error(f({}), err("<table>"))
     assert.has_error(f(-23.04), err("-23.04"))
   end)
 
-  pending("newTrackerForCf() should error unles passed a non-empty string")
+  it("newTrackerForCf() should error unles passed a non-empty string", function()
+    local f = function(host)
+      return function() snowplow.newTrackerForCf(cfSubdomain) end
+    end
+    local err = function(value)
+      return "cfSubdomain is required and must be a string, not [" .. validate._nts(value) .. "]"
+    end
+    assert.has_error(f(""), err(""))
+    assert.has_error(f({}), err("<table>"))
+    assert.has_error(f(-23.04), err("-23.04"))
+  end)
+
+  -- --------------------------------------------------------------
+  -- Verify constructed tables
+
+  pending("newTrackerForUri() should correctly create a tracker", function() end)
+
+  pending("newTrackerForCf() should correctly create a tracker", function() end)
 
 end)

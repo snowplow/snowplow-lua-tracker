@@ -18,15 +18,20 @@
 local validate = {}
 
 -- --------------------------------------------------------------
--- Helpers
-
--- TODO: if we're running on test, make this public so our tests can use it directly.
+-- Private helpers
 
 local function nts(value) -- Nil to string
   local v
   if value == nil then v = "<nil>" else v = value end
   if type(value) == "table" then v = "<table>" end
   return v
+end
+
+-- --------------------------------------------------------------
+-- Make privates public for testing
+
+if _TEST then
+  validate._nts = nts
 end
 
 -- --------------------------------------------------------------
