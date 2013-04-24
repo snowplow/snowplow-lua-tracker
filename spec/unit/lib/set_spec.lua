@@ -40,4 +40,5 @@ describe("set", function()
     assert.are.equal(set2:toString(), "{a, c, b}") -- Lua changes order for some reason
     assert.are.equal(set3:toString(), "{}")
   end)
+
 end)

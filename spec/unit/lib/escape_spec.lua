@@ -36,4 +36,5 @@ describe("escape.escapeUri()", function()
     end
 
   end)
+  
 end)

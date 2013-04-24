@@ -50,4 +50,5 @@ describe("base64", function()
       assert.has_error(function() base64.encode(v) end)
     end
   end)
+  
 end)

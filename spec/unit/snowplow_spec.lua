@@ -26,6 +26,7 @@ local function nts(value) -- Nil to string
 end
 
 describe("snowplow", function()
+  
   it("asCollectorUri() should generate a non-CloudFront Collector URI correctly", function()
     local uri = snowplow.asCollectorUri("c.snplow.com")
     assert.are.equal(uri, "http://c.snplow.com/i")
@@ -49,4 +50,5 @@ describe("snowplow", function()
   end)
 
   pending("newTrackerForCf() should error unles passed a non-empty string")
+
 end)
