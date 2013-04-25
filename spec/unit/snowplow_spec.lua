@@ -74,8 +74,6 @@ describe("snowplow", function()
     local t = snowplow.newTrackerForUri("c.snplow.com")
     assertTrackerConfig(t)
     assert.are.equal(t.config.collectorUri, "http://c.snplow.com/i")
-
-    -- TODO: check that we have our methods available
   end)
 
   it("newTrackerForCf() should correctly create a tracker", function()
