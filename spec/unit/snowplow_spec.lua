@@ -18,6 +18,12 @@
 local snowplow = require("lib.snowplow.snowplow")
 local validate = require("lib.snowplow.validate")
 
+local function assertTrackerConfig(tracker)
+  assert.are.equal(t.config.encodeBase64, true)
+  assert.are.equal(t.config.platform, "pc")
+  assert.are.equal(t.config.version, "lua-0.1.0")
+end
+
 describe("snowplow", function()
   
   -- --------------------------------------------------------------
@@ -63,8 +69,20 @@ describe("snowplow", function()
   -- --------------------------------------------------------------
   -- Verify constructed tables
 
-  pending("newTrackerForUri() should correctly create a tracker", function() end)
+  it("newTrackerForUri() should correctly create a tracker", function()
 
-  pending("newTrackerForCf() should correctly create a tracker", function() end)
+    local t = snowplow.newTrackerForUri("c.snplow.com")
+    assertTrackerConfig(t)
+    assert.are.equal(t.config.collectorUri, "http://c.snplow.com/i")
+
+    -- TODO: check that we have our methods available
+  end)
+
+  it("newTrackerForCf() should correctly create a tracker", function()
+
+    local t = snowplow.newTrackerForCf("d3rkrsqld9gmqf")
+    assertTrackerConfig(t)
+    assert.are.equal(uri, "http://d3rkrsqld9gmqf.cloudfront.net/i")
+  end)
 
 end)
