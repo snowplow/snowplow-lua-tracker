@@ -85,14 +85,6 @@ local function collectorUriFromCf(cfSubdomain)
 end
 
 -- --------------------------------------------------------------
--- Make privates public for testing
-
-if _TEST then
-  snowplow._asCollectorUri = asCollectorUri
-  snowplow._collectorUriFromCf = collectorUriFromCf
-end
-
--- --------------------------------------------------------------
 -- Factories to create a tracker
 
 snowplow.newTrackerForUri = function (host)
