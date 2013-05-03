@@ -16,6 +16,7 @@
 -- License:     Apache License Version 2.0
 
 local validate = require( "validate" )
+local tracker = require("tracker")
 
 local snowplow = {}
 
@@ -31,7 +32,7 @@ local config = {
 -- --------------------------------------------------------------
 -- Static methods
 
-local function newTracker(uri)
+local function initTracker(uri)
   --[[--
   Builds our new tracker using the supplied URI.
 
@@ -40,7 +41,7 @@ local function newTracker(uri)
   --]]--
 
   -- Create a new tracker
-  local tracker = require("tracker")
+  local tracker = tracker.newTracker( uri, config )
 
   -- Add these to our tracker
   tracker.collectorUri = uri
@@ -93,7 +94,7 @@ snowplow.newTrackerForUri = function (host)
 
   validate.isNonEmptyString( "host", host )
   local uri = asCollectorUri( host )
-  return newTracker( uri )
+  return initTracker( uri )
 end
 
 snowplow.newTrackerForCf = function (cfSubdomain)
@@ -108,7 +109,7 @@ snowplow.newTrackerForCf = function (cfSubdomain)
 
   validate.isNonEmptyString( "cfSubdomain", cfSubdomain )
   local uri = collectorUriFromCf( cfSubdomain )
-  return newTracker( uri )
+  return initTracker( uri )
 end
 
 -- --------------------------------------------------------------

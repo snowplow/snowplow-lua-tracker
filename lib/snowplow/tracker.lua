@@ -20,7 +20,9 @@ local validate = require( "validate" )
 local payload  = require( "payload" )
 local set      = require( "lib.set" )
 
-local tracker = {}
+local tracker = {} -- The module
+local Tracker = {} -- The class
+Tracker.__index = Tracker
 
 -- --------------------------------------------------------------
 -- Constants & config
@@ -28,9 +30,73 @@ local tracker = {}
 local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "csl", "iot" }
 
 -- --------------------------------------------------------------
+-- Factory to create a tracker
+
+tracker.newTracker = function (collectorUri, config)
+  --[[--
+  Creates a new tracker.
+
+  @Parameter: collectorUri
+    String: the full URI to the Snowplow collector
+  @Parameter: config
+    Table: 
+  --]]--
+
+  local trck = {}
+  setmetatable(trck, Tracker)
+  trck.collectorUri = uri
+  trck.config = config
+
+  return trck
+end
+
+-- --------------------------------------------------------------
+-- Private helpers
+
+getTransactionId = function ()
+  --[[--
+  Generates a moderately-unique six-digit transaction ID
+  - essentially a nonce to make sure this event isn't
+  recorded twice.
+  --]]--
+
+  math.randomseed( os.time() )
+  local rand = math.random(100000, 999999)
+  return tostring( rand )
+end
+
+getTimestamp = function ()
+  --[[--
+  Returns the current timestamp as total milliseconds
+  since epoch.
+  --]]--
+  return os.time() * 1000
+end
+
+httpGet = function (uri)
+  --[[--
+  GETs the given URI: this is how our event data
+  is transmitted to the Snowplow collector.
+
+  @Parameter: uri
+    The URI (including querystring) to GET
+  --]]--
+
+  print(uri)
+  result, statusCode, content = http.request( uri )
+
+  print(result)
+  print(statusCode)
+  print(content)
+  -- TODO: add error handling
+
+  return statusCode
+end
+
+-- --------------------------------------------------------------
 -- Configuration methods
 
-tracker.encodeBase64 = function (self, encode)
+Tracker.encodeBase64 = function (self, encode)
   --[[--
   Configuration setting: whether to Base64-encode the
   properties of unstructured events and custom
@@ -47,7 +113,7 @@ tracker.encodeBase64 = function (self, encode)
   self.config.encodeBase64 = encode
 end
 
-tracker.platform = function (self, platform)
+Tracker.platform = function (self, platform)
   --[[--
   The default platform for Lua is "pc". If you are using Lua on
   another platform (e.g. as part of a console videogame), you
@@ -68,7 +134,7 @@ end
 -- --------------------------------------------------------------
 -- Data setters
 
-tracker.setAppId = function (self, appId)
+Tracker.setAppId = function (self, appId)
   --[[--
   Sets the application ID to record against
   each event.
@@ -81,7 +147,7 @@ tracker.setAppId = function (self, appId)
   self.appId = appId
 end
 
-tracker.setUserId = function (self, userId)
+Tracker.setUserId = function (self, userId)
   --[[--
   Sets the business user ID.
 
@@ -93,7 +159,7 @@ tracker.setUserId = function (self, userId)
   self.userId = userId
 end
 
-tracker.setScreenResolution = function (self, width, height)
+Tracker.setScreenResolution = function (self, width, height)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -110,7 +176,7 @@ tracker.setScreenResolution = function (self, width, height)
   self.height = height
 end
 
-tracker.setColorDepth = function (self, depth)
+Tracker.setColorDepth = function (self, depth)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -126,7 +192,7 @@ end
 -- --------------------------------------------------------------
 -- Track methods
 
-tracker.trackScreenView = function (self, name, id)
+Tracker.trackScreenView = function (self, name, id)
   --[[--
   Sends a screen view event to SnowPlow. A screen view
   must have a `name` and can have an optional `id`.
@@ -147,7 +213,7 @@ tracker.trackScreenView = function (self, name, id)
   return self:track( pb )
 end
 
-tracker.trackStructEvent = function (self, category, action, label, property, value)
+Tracker.trackStructEvent = function (self, category, action, label, property, value)
   --[[--
   Sends a custom structured event to SnowPlow.
 
@@ -181,7 +247,7 @@ tracker.trackStructEvent = function (self, category, action, label, property, va
   return self:track( pb )
 end
 
-tracker.trackUnstructEvent = function (self, name, properties)
+Tracker.trackUnstructEvent = function (self, name, properties)
   --[[--
   Sends a custom unstructured event to Snowplow.
 
@@ -199,7 +265,7 @@ tracker.trackUnstructEvent = function (self, name, properties)
   return self:track( pb )
 end
 
-tracker.track = function (self, pb)
+Tracker.track = function (self, pb)
   --[[--
   Tracks any given SnowPlow event, by sending the specific
   event_pairs to the SnowPlow collector.
@@ -212,8 +278,8 @@ tracker.track = function (self, pb)
   -- Add the standard name-value pairs
   pb.add( "p", self.config.platform )
   pb.add( "tv", self.config.version )
-  pb.add( "tid", self.getTransactionId() )
-  pb.add( "dtm", self.getTimestamp() )
+  pb.add( "tid", getTransactionId() )
+  pb.add( "dtm", getTimestamp() )
   pb.add( "uid", self.userId )
   pb.add( "aid", self.appId )
 
@@ -221,51 +287,10 @@ tracker.track = function (self, pb)
   local payload = pb.build()
 
   -- Finally send to Snowplow
-  return tracker.httpGet( self.collectorUri .. payload )
+  return httpGet( self.collectorUri .. payload )
 end
 
--- --------------------------------------------------------------
--- Helper static methods
 
-tracker.getTransactionId = function ()
-  --[[--
-  Generates a moderately-unique six-digit transaction ID
-  - essentially a nonce to make sure this event isn't
-  recorded twice.
-  --]]--
-
-  math.randomseed( os.time() )
-  local rand = math.random(100000, 999999)
-  return tostring( rand )
-end
-
-tracker.getTimestamp = function ()
-  --[[--
-  Returns the current timestamp as total milliseconds
-  since epoch.
-  --]]--
-  return os.time() * 1000
-end
-
-tracker.httpGet = function (uri)
-  --[[--
-  GETs the given URI: this is how our event data
-  is transmitted to the Snowplow collector.
-
-  @Parameter: uri
-    The URI (including querystring) to GET
-  --]]--
-
-  print(uri)
-  result, statusCode, content = http.request( uri )
-
-  print(result)
-  print(statusCode)
-  print(content)
-  -- TODO: add error handling
-
-  return statusCode
-end
 
 -- --------------------------------------------------------------
 
