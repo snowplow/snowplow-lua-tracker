@@ -43,10 +43,6 @@ local function initTracker(uri)
   -- Create a new tracker
   local tracker = tracker.newTracker( uri, config )
 
-  -- Add these to our tracker
-  tracker.collectorUri = uri
-  tracker.config = config
-
   -- Return the fully populated tracker
   return tracker
 end
@@ -82,7 +78,7 @@ end
 -- --------------------------------------------------------------
 -- Factories to create a tracker
 
-snowplow.newTrackerForUri = function (host)
+function snowplow.newTrackerForUri(host)
   --[[--
   Create a new Snowplow tracker talking to a
   URI-based collector on the given host.
@@ -97,7 +93,7 @@ snowplow.newTrackerForUri = function (host)
   return initTracker( uri )
 end
 
-snowplow.newTrackerForCf = function (cfSubdomain)
+function snowplow.newTrackerForCf(cfSubdomain)
   --[[--
   Create a new Snowplow tracker talking to a
   CloudFront-based collector on the given subdomain.

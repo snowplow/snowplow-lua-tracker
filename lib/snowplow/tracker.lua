@@ -32,7 +32,7 @@ local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "csl", "iot" }
 -- --------------------------------------------------------------
 -- Factory to create a tracker
 
-tracker.newTracker = function (collectorUri, config)
+function tracker.newTracker(collectorUri, config)
   --[[--
   Creates a new tracker.
 
@@ -43,8 +43,8 @@ tracker.newTracker = function (collectorUri, config)
   --]]--
 
   local trck = {}
-  setmetatable(trck, Tracker)
-  trck.collectorUri = uri
+  setmetatable( trck, Tracker )
+  trck.collectorUri = collectorUri
   trck.config = config
 
   return trck
@@ -53,7 +53,7 @@ end
 -- --------------------------------------------------------------
 -- Private helpers
 
-getTransactionId = function ()
+function getTransactionId()
   --[[--
   Generates a moderately-unique six-digit transaction ID
   - essentially a nonce to make sure this event isn't
@@ -65,7 +65,7 @@ getTransactionId = function ()
   return tostring( rand )
 end
 
-getTimestamp = function ()
+function getTimestamp()
   --[[--
   Returns the current timestamp as total milliseconds
   since epoch.
@@ -73,7 +73,7 @@ getTimestamp = function ()
   return os.time() * 1000
 end
 
-httpGet = function (uri)
+function httpGet(uri)
   --[[--
   GETs the given URI: this is how our event data
   is transmitted to the Snowplow collector.
@@ -96,7 +96,7 @@ end
 -- --------------------------------------------------------------
 -- Configuration methods
 
-Tracker.encodeBase64 = function (self, encode)
+function Tracker:encodeBase64(encode)
   --[[--
   Configuration setting: whether to Base64-encode the
   properties of unstructured events and custom
@@ -113,7 +113,7 @@ Tracker.encodeBase64 = function (self, encode)
   self.config.encodeBase64 = encode
 end
 
-Tracker.platform = function (self, platform)
+function Tracker:platform(platform)
   --[[--
   The default platform for Lua is "pc". If you are using Lua on
   another platform (e.g. as part of a console videogame), you
@@ -134,7 +134,7 @@ end
 -- --------------------------------------------------------------
 -- Data setters
 
-Tracker.setAppId = function (self, appId)
+function Tracker:setAppId(appId)
   --[[--
   Sets the application ID to record against
   each event.
@@ -147,7 +147,7 @@ Tracker.setAppId = function (self, appId)
   self.appId = appId
 end
 
-Tracker.setUserId = function (self, userId)
+function Tracker:setUserId(userId)
   --[[--
   Sets the business user ID.
 
@@ -159,7 +159,7 @@ Tracker.setUserId = function (self, userId)
   self.userId = userId
 end
 
-Tracker.setScreenResolution = function (self, width, height)
+function Tracker:setScreenResolution(width, height)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -176,7 +176,7 @@ Tracker.setScreenResolution = function (self, width, height)
   self.height = height
 end
 
-Tracker.setColorDepth = function (self, depth)
+function Tracker:setColorDepth(depth)
   --[[--
   If you have access to a graphics library which can
   tell you screen width and height, then set it here.
@@ -192,7 +192,7 @@ end
 -- --------------------------------------------------------------
 -- Track methods
 
-Tracker.trackScreenView = function (self, name, id)
+function Tracker:trackScreenView(name, id)
   --[[--
   Sends a screen view event to SnowPlow. A screen view
   must have a `name` and can have an optional `id`.
@@ -213,7 +213,7 @@ Tracker.trackScreenView = function (self, name, id)
   return self:track( pb )
 end
 
-Tracker.trackStructEvent = function (self, category, action, label, property, value)
+function Tracker:trackStructEvent(category, action, label, property, value)
   --[[--
   Sends a custom structured event to SnowPlow.
 
@@ -247,7 +247,7 @@ Tracker.trackStructEvent = function (self, category, action, label, property, va
   return self:track( pb )
 end
 
-Tracker.trackUnstructEvent = function (self, name, properties)
+function Tracker:trackUnstructEvent(name, properties)
   --[[--
   Sends a custom unstructured event to Snowplow.
 
@@ -265,7 +265,7 @@ Tracker.trackUnstructEvent = function (self, name, properties)
   return self:track( pb )
 end
 
-Tracker.track = function (self, pb)
+function Tracker:track(pb)
   --[[--
   Tracks any given SnowPlow event, by sending the specific
   event_pairs to the SnowPlow collector.
@@ -289,8 +289,6 @@ Tracker.track = function (self, pb)
   -- Finally send to Snowplow
   return httpGet( self.collectorUri .. payload )
 end
-
-
 
 -- --------------------------------------------------------------
 

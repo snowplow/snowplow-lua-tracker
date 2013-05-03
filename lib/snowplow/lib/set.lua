@@ -15,17 +15,14 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local set = {}
-
--- --------------------------------------------------------------
--- Metatable configuration
-
-set.mt = { __index = set }
+local set = {} -- The module
+local Set = {} -- The class
+Set.__index = Set
 
 -- --------------------------------------------------------------
 -- Factory to create a set
 
-set.newSet = function (t)
+function set.newSet(t)
   --[[--
   Creates a new set from the supplied table.
   Source: http://www.lua.org/pil/13.1.html
@@ -35,7 +32,7 @@ set.newSet = function (t)
   --]]--
 
   local s = {}
-  setmetatable(s, set.mt)
+  setmetatable(s, Set)
   for _, l in ipairs(t) do s[l] = true end
   return s
 end
@@ -43,7 +40,7 @@ end
 -- --------------------------------------------------------------
 -- Public methods
 
-set.contains = function (self, value)
+function Set:contains(value)
   --[[--
   Does the set contain this value?
 
@@ -62,7 +59,7 @@ set.contains = function (self, value)
   return c
 end
 
-set.toString = function (self)
+function Set:toString()
   --[[--
   Convert a set to a string representation
   Source: http://www.lua.org/pil/13.1.html
