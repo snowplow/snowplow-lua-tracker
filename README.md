@@ -14,7 +14,8 @@ Snowplow Lua Tracker has a dependency on luasockets.
 
 On Ubuntu:
 
-    $ sudo aptitude install liblua5.1-socket2
+    $ sudo aptitude install lua luarocks liblua5.1-socket2
+    $ sudo luarocks install busted
 
 For other environments, you'll have to check the Web for instructions on installing luasockets/bundling it with your app.
 

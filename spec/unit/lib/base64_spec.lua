@@ -23,13 +23,13 @@ describe("base64", function()
 
     local dataTable = {
       { "INPUT"                              , "EXPECTED"     },
-      { "JohnSmith"                          , "XXX"    },
-      { "john+smith"                         , "XXX"   },
-      { "John Smith"                         , "xxx" }, 
-      { '{"age":23,"name":"John"}'           , ""},
-      { '{"myTemp":23.3,"myUnit":"celsius"}' , ""},
-      { '{"event":"page_ping","mobile":true,"properties":{"max_x":960,"max_y":1080,"min_x":0,"min_y":-12}}',    ""},
-      { '{"event":"basket_change","price":23.39,"product_id":"PBZ000345","quantity":-2,"tstamp":1678023000}',  ""}
+      { "JohnSmith"                          , "Sm9oblNtaXRo"    },
+      { "john+smith"                         , "am9obitzbWl0aA"   },
+      { "John Smith"                         , "Sm9obiBTbWl0aA" }, 
+      { '{"age":23,"name":"John"}'           , "eyJhZ2UiOjIzLCJuYW1lIjoiSm9obiJ9"},
+      { '{"myTemp":23.3,"myUnit":"celsius"}' , "eyJteVRlbXAiOjIzLjMsIm15VW5pdCI6ImNlbHNpdXMifQ"},
+      { '{"event":"page_ping","mobile":true,"properties":{"max_x":960,"max_y":1080,"min_x":0,"min_y":-12}}',    "eyJldmVudCI6InBhZ2VfcGluZyIsIm1vYmlsZSI6dHJ1ZSwicHJvcGVydGllcyI6eyJtYXhfeCI6OTYwLCJtYXhfeSI6MTA4MCwibWluX3giOjAsIm1pbl95IjotMTJ9fQ"},
+      { '{"event":"basket_change","price":23.39,"product_id":"PBZ000345","quantity":-2,"tstamp":1678023000}',  "eyJldmVudCI6ImJhc2tldF9jaGFuZ2UiLCJwcmljZSI6MjMuMzksInByb2R1Y3RfaWQiOiJQQlowMDAzNDUiLCJxdWFudGl0eSI6LTIsInRzdGFtcCI6MTY3ODAyMzAwMH0"}
     }
 
     for i, v in ipairs(dataTable) do
