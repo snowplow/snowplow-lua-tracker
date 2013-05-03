@@ -27,6 +27,9 @@ Tracker.__index = Tracker
 -- --------------------------------------------------------------
 -- Constants & config
 
+local VERSION = "lua-0.1.0"
+local DEFAULT_ENCODE_BASE64 = true
+local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "csl", "iot" }
 
 -- --------------------------------------------------------------
@@ -45,7 +48,11 @@ function tracker.newTracker(collectorUri, config)
   local trck = {}
   setmetatable( trck, Tracker )
   trck.collectorUri = collectorUri
-  trck.config = config
+  trck.config = {
+    encodeBase64 = DEFAULT_ENCODE_BASE64,
+    platform     = DEFAULT_PLATFORM,
+    version      = VERSION
+  }
 
   return trck
 end

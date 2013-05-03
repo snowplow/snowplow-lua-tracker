@@ -12,5 +12,4 @@ tracker2:encodeBase64( false )
 tracker2:platform ( "iot" )
 tracker2:trackScreenView( "Test", "23" )
 
-print(tracker.config.platform)
 tracker:trackScreenView( "Game HUD", "23" )

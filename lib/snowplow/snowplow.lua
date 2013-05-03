@@ -21,15 +21,6 @@ local tracker = require("tracker")
 local snowplow = {}
 
 -- --------------------------------------------------------------
--- Constants & config
-
-local config = {
-  encodeBase64 = true,
-  platform     = "pc",
-  version      = "lua-0.1.0"
-}
-
--- --------------------------------------------------------------
 -- Static methods
 
 local function initTracker(uri)
