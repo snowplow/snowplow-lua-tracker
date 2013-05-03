@@ -15,8 +15,8 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local validate = require("lib.snowplow.validate")
-local set      = require("lib.snowplow.lib.set")
+local validate = require("validate")
+local set      = require("lib.set")
 
 local fieldName = "TestField"
 

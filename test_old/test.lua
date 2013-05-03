@@ -9,7 +9,7 @@ tracker:trackScreenView( "Game HUD", "23" )
 
 tracker2 = snowplow.newTrackerForCf( "d3rkrsqld9gmqf" )
 tracker2:encodeBase64( false )
-tracker2:platform ( "iot" )
+tracker2:platform ( "ioty" )
 tracker2:trackScreenView( "Test", "23" )
 
 tracker:trackScreenView( "Game HUD", "23" )

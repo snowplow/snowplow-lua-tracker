@@ -15,8 +15,8 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local payload = require("lib.snowplow.payload")
-local validate = require("lib.snowplow.validate")
+local payload = require("payload")
+local validate = require("validate")
 
 describe("payload", function()
 

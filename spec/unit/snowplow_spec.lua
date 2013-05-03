@@ -15,8 +15,8 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local snowplow = require("lib.snowplow.snowplow")
-local validate = require("lib.snowplow.validate")
+local snowplow = require("snowplow")
+local validate = require("validate")
 
 local function assertTracker(tracker, collectorUri)
   assert.are.equal(tracker.collectorUri, collectorUri)

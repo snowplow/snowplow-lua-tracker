@@ -15,16 +15,7 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
--- For Busted.
--- TODO: if someone knows another way of doing this, please update
-local validate, tracker
-if _TEST then 
-  validate = require( "lib.snowplow.validate" )
-  tracker  = require( "lib.snowplow.tracker" )
-else
-  validate = require( "validate" )
-  tracker  = require( "tracker" )
-end
+local validate = require( "validate" )
 
 local snowplow = {}
 
@@ -48,7 +39,10 @@ local function newTracker(uri)
     The full URI to the Snowplow collector
   --]]--
 
-  -- Add these to our existing tracker object
+  -- Create a new tracker
+  local tracker = require("tracker")
+
+  -- Add these to our tracker
   tracker.collectorUri = uri
   tracker.config = config
 

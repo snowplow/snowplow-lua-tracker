@@ -47,13 +47,7 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 -- THE SOFTWARE.
 
--- For Busted.
--- TODO: if someone knows another way of doing this, please update
-if _TEST then 
-	require "lib.snowplow.lib.bit"
-else
-	require "lib.bit"
-end
+require "lib.bit"
 
 base64 = {}
  
