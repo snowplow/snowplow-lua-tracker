@@ -148,7 +148,7 @@ function Tracker:setAppId(appId)
     The application ID to set
   --]]--
 
-  validate.isNonEmptyString( "app id", appId )
+  validate.isNonEmptyString( "appId", appId )
   self.appId = appId
 end
 
@@ -160,7 +160,7 @@ function Tracker:setUserId(userId)
     The business user ID to set.
   --]]--
 
-  validate.isNonEmptyString( "user id", userId )
+  validate.isNonEmptyString( "userId", userId )
   self.userId = userId
 end
 
@@ -207,7 +207,7 @@ function Tracker:setColorDepth(depth)
     The color depth on this computer
   --]]--
 
-  validate.isPositiveInteger( "color depth", depth )
+  validate.isPositiveInteger( "depth", depth )
   self.colorDepth = depth
 end
 
@@ -298,12 +298,17 @@ function Tracker:track(pb)
   --]]--
 
   -- Add the standard name-value pairs
-  pb.add( "p", self.config.platform )
+  pb.add( "p",  self.config.platform )
   pb.add( "tv", self.config.version )
   pb.add( "tid", getTransactionId() )
   pb.add( "dtm", getTimestamp() )
+
+  -- Add the fields which may have been set
   pb.add( "uid", self.userId )
   pb.add( "aid", self.appId )
+  pb.addRaw( "res", self.screenResolution )
+  pb.addRaw( "vp",  self.viewport )
+  pb.addRaw( "cd",  self.colorDepth )
 
   -- Now build the payloadBuilder
   local payload = pb.build()

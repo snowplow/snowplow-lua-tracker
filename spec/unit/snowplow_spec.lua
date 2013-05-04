@@ -35,7 +35,7 @@ describe("snowplow", function()
       return function() snowplow.newTrackerForUri(host) end
     end
     local err = function(value)
-      return "host is required and must be a string, not [" .. validate._nts(value) .. "]"
+      return "host is required and must be a non-empty string, not [" .. validate._nts(value) .. "]"
     end
     assert.has_error(f(""), err(""))
     assert.has_error(f({}), err("<table>"))
@@ -47,7 +47,7 @@ describe("snowplow", function()
       return function() snowplow.newTrackerForCf(cfSubdomain) end
     end
     local err = function(value)
-      return "cfSubdomain is required and must be a string, not [" .. validate._nts(value) .. "]"
+      return "cfSubdomain is required and must be a non-empty string, not [" .. validate._nts(value) .. "]"
     end
     assert.has_error(f(""), err(""))
     assert.has_error(f({}), err("<table>"))

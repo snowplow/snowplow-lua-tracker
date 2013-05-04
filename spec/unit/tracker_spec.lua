@@ -23,6 +23,9 @@ describe("tracker", function()
 
   local t = tracker.newTracker( collectorUri )
 
+  -- --------------------------------------------------------------
+  -- Constructor tests
+
   it("newTracker() should construct a new Tracker", function()
     
     -- Check these are populated
@@ -40,6 +43,9 @@ describe("tracker", function()
     assert.is_nil(t.viewport)
     assert.is_nil(t.colorDepth)
   end)
+
+  -- --------------------------------------------------------------
+  -- Configuration tests
 
   it("encodeBase64() should error unless passed a boolean", function()
     local f = function() t:encodeBase64("23") end
@@ -59,20 +65,42 @@ describe("tracker", function()
     assert.are.equal(t.config.platform, "tv")
   end)
 
-  pending("setAppId() should error unless passed a non-empty string")
-  pending("setAppId() should set the Tracker's appId")
+  -- --------------------------------------------------------------
+  -- setter tests
 
-  pending("setUserId() should error unless passed a non-empty string")
-  pending("setUserId() should set the Tracker's userId")
+  it("setAppId() should error unless passed a non-empty string", function()
+    local f = function() t:setAppId("") end
+    assert.has_error(f, "appId is required and must be a non-empty string, not []")
+  end)
+  it("setAppId() should set the Tracker's appId", function()
+    t:setAppId("wow-ext-1")
+    assert.are.equal(t.appId, "wow-ext-1")
+  end)
+
+  it("setUserId() should error unless passed a non-empty string", function()
+    local f = function() t:setUserId(23) end
+    assert.has_error(f, "userId is required and must be a non-empty string, not [23]")
+  end)
+  it("setUserId() should set the Tracker's userId", function()
+    t:setUserId("user123")
+    assert.are.equal(t.userId, "user123")
+  end)
 
   pending("setScreenResolution() should error unless passed a pair of positive integers")
-  pending("setScreenResolution() should set the Tracker's screenResolution")
+  it("setScreenResolution() should set the Tracker's screenResolution", function()
+    t:setScreenResolution(1068, 720)
+    assert.are.equal(t.screenResolution, "1068x720")
+  end)
 
   pending("setViewport() should error unless passed a pair of positive integers")
-  pending("setViewport() should set the Tracker's viewport")
+  it("setViewport() should set the Tracker's viewport", function()
+    t:setViewport(420, 360)
+    assert.are.equal(t.viewport, "420x360")
+  end)
 
   pending("setColorDepth() should error unless passed a positive integer")
-  pending("setColorDepth() should set the Tracker's colorDepth")
-
-  -- TODO: note that screen res and color depth aren't attached to the event yet
+  it("setColorDepth() should set the Tracker's colorDepth", function()
+    t:setColorDepth(32)
+    assert.are.equal(t.colorDepth, 32)
+  end)
 end)

@@ -118,7 +118,7 @@ describe("validate", function()
   it("isNonEmptyString() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a string, not [" .. validate._nts(value) .. "]"
+      return fieldName .. " is required and must be a non-empty string, not [" .. validate._nts(value) .. "]"
     end
 
     local dataTable = {

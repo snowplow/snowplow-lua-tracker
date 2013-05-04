@@ -67,7 +67,7 @@ end
 validate.isNonEmptyString = function(name, value)
 
   if type(value) ~= "string" or value == "" then
-    error(name .. " is required and must be a string, not [" .. nts(value) .. "]")
+    error(name .. " is required and must be a non-empty string, not [" .. nts(value) .. "]")
   end
 end
 
