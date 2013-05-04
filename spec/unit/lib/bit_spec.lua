@@ -17,7 +17,7 @@
 
 require("lib.snowplow.lib.bit")
 
-describe("bit", function()
+describe("subset of bit used in base64", function()
 
   it("band() should work", function()
   	assert.are.equal(bit.band(0x0111, 0x1101), 0x0101)
