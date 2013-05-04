@@ -28,7 +28,7 @@ return {
     verbose = true,
     lpath = LPATH
   },
-  int = {
+  integration = {
     ROOT = "spec/integration",
     verbose = true,
     lpath = LPATH

@@ -114,7 +114,21 @@ describe("tracker", function()
   end)
 
   -- --------------------------------------------------------------
-  -- Track() tests
+  -- Track() test
 
-  -- See: integration tests.
+  spy.on(t, "_httpGet")
+
+  it("trackScreenView() should error unless name is a non-empty string", function()
+    local f = function() t:trackScreenView( -23, "23") end
+    assert.has_error(f, "sv_na is required and must be a non-empty string, not [-23]")
+  end)
+  it("trackScreenView() should error unless id is a string or nil", function()
+    local f = function() t:trackScreenView( "Game HUD", 23) end
+    assert.has_error(f, "sv_id must be a string or nil, not [23]")
+  end)
+  pending("trackScreenView() should call httpGet() with a querystring including sv_na", function()
+    t:trackScreenView( "Game HUD" )
+    assert.spy(t._httpGet).was_called_with("http://c.snplow.com/i?e=sv&sv_na=Game+HUD&p=tv&tv=lua%2D0%2E1%2E0&tid=886216&dtm=1367677504000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
+  end) -- Pending because we can't predict tid or dtm
+
 end)

@@ -128,10 +128,15 @@ function track(self, pb)
   pb.addRaw( "cd",  self.colorDepth )
 
   -- Now build the payloadBuilder
-  local payload = pb.build()
+  local uri = self.collectorUri .. pb.build()
+
+  -- For mocking
+  if _TEST then
+    self._httpGet( uri )
+  end
 
   -- Finally send to Snowplow
-  return httpGet( self.collectorUri .. payload )
+  return httpGet( uri )
 end
 
 -- --------------------------------------------------------------
@@ -324,5 +329,15 @@ function Tracker:trackUnstructEvent(name, properties)
 end
 
 -- --------------------------------------------------------------
+-- Mocks
+
+if _TEST then
+  function Tracker._httpGet(uri)
+  --[[--
+  A mock on the table to be checked by Busted.
+  --]]--
+  print(uri)
+  end
+end
 
 return tracker
