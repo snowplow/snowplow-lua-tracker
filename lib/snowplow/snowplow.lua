@@ -45,6 +45,9 @@ local function asCollectorUri(host)
 
   Example:
   as_collector_url("snplow.myshop.com") => "http://snplow.myshop.com/i"
+
+  @Parameter: host
+    The host name of the collector
   --]]--
 
   return "http://" .. host .. "/i"

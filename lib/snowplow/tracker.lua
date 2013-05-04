@@ -35,14 +35,12 @@ local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "csl", "iot" }
 -- --------------------------------------------------------------
 -- Factory to create a new Tracker
 
-function tracker.newTracker(collectorUri, config)
+function tracker.newTracker(collectorUri)
   --[[--
   Creates a new tracker.
 
   @Parameter: collectorUri
     String: the full URI to the Snowplow collector
-  @Parameter: config
-    Table: 
   --]]--
 
   local trck = {}
@@ -179,8 +177,7 @@ function Tracker:setScreenResolution(width, height)
 
   validate.isPositiveInteger( width, "width" )
   validate.isPositiveInteger( height, "height" )
-  self.width = width
-  self.height = height
+  self.screenResolution = width .. "x" .. height
 end
 
 function Tracker:setColorDepth(depth)
