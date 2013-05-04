@@ -15,10 +15,21 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local bit = require("lib.snowplow.lib.bit")
+require("lib.snowplow.lib.bit")
 
 describe("bit", function()
 
-  pending("the bit operations used by base64 should be present and work", function() end)
+  it("band() should work", function()
+  	assert.are.equal(bit.band(0x0111, 0x1101), 0x0101)
+  end)
+  it("bor() should work", function()
+  	assert.are.equal(bit.bor(0x0111, 0x1101), 0x1111)
+  end)
+  it("blshift() should work", function()
+  	assert.are.equal(bit.blshift(0xff, 4), 0xff0)
+  end)
+  it("blogic_rshift() should work", function()
+  	assert.are.equal(bit.blogic_rshift(0xffffff, 4), 0xfffff)
+  end) 
 
 end)
