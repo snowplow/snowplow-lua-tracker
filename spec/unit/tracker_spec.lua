@@ -36,7 +36,9 @@ describe("tracker", function()
     -- These are not set by default
     assert.is_nil(t.appId)
     assert.is_nil(t.userId)
-
+    assert.is_nil(t.screenResolution)
+    assert.is_nil(t.viewport)
+    assert.is_nil(t.colorDepth)
   end)
 
   it("encodeBase64() should error unless passed a boolean", function()
@@ -65,6 +67,9 @@ describe("tracker", function()
 
   pending("setScreenResolution() should error unless passed a pair of positive integers")
   pending("setScreenResolution() should set the Tracker's screenResolution")
+
+  pending("setViewport() should error unless passed a pair of positive integers")
+  pending("setViewport() should set the Tracker's viewport")
 
   pending("setColorDepth() should error unless passed a positive integer")
   pending("setColorDepth() should set the Tracker's colorDepth")

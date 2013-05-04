@@ -175,9 +175,27 @@ function Tracker:setScreenResolution(width, height)
     The screen height as a number
   --]]--
 
-  validate.isPositiveInteger( width, "width" )
-  validate.isPositiveInteger( height, "height" )
+  validate.isPositiveInteger( "width", width )
+  validate.isPositiveInteger( "height", height )
   self.screenResolution = width .. "x" .. height
+end
+
+function Tracker:setViewport(width, height)
+  --[[--
+  If you have access to a graphics library which can
+  tell you the width and height of the viewport (i.e.
+  the screen space taken up by this app), then set it
+  here.
+
+  @Parameter: width
+    The viewport width as a number
+  @Parameter: height
+    The viewport height as a number
+  --]]--
+
+  validate.isPositiveInteger( "width", width )
+  validate.isPositiveInteger( "height", height )
+  self.viewport = width .. "x" .. height
 end
 
 function Tracker:setColorDepth(depth)
@@ -189,7 +207,7 @@ function Tracker:setColorDepth(depth)
     The color depth on this computer
   --]]--
 
-  validate.isPositiveInteger( depth, "color depth" )
+  validate.isPositiveInteger( "color depth", depth )
   self.colorDepth = depth
 end
 
