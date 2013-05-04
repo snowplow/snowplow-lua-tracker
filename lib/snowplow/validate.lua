@@ -108,7 +108,7 @@ end
 
 validate.isPositiveInteger = function(name, value)
 
-  if type(value) ~= "number" or value ~= math.abs(value) or value < 0 then
+  if type(value) ~= "number" or value ~= math.floor(value) or value < 0 then
     error(name .. " is required and must be a positive integer, not [" .. nts(value) .. "]")
   end
 end

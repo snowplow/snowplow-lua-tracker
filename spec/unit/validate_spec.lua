@@ -230,15 +230,15 @@ describe("validate", function()
     end
 
     local dataTable = {
-      { "INPUT"                     , "EXPECTED"     },
-      { 23                          , nil            },
-      { 0                           , nil            },
-      { 4523000.29                  , nil            },
-      { -1                          , err("-1")      },
-      { -10.586                     , err("-10.586") },
-      { nil                         , err("<nil>")   },
-      { "hello"                     , err("hello")   },
-      { { a = 1, b = c}             , err("<table>") }
+      { "INPUT"                   , "EXPECTED"       },
+      { 23                        , nil              },
+      { 0                         , nil              },
+      { 452300.29                 , err("452300.29") },
+      { -1                        , err("-1")        },
+      { -10.586                   , err("-10.586")   },
+      { nil                       , err("<nil>")     },
+      { "hello"                   , err("hello")     },
+      { { a = 1, b = c}           , err("<table>")   }
     }
 
     assertDataTable(dataTable, validate.isPositiveInteger)

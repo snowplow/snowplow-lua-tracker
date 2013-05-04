@@ -56,7 +56,7 @@ function tracker.newTracker(collectorUri)
 end
 
 -- --------------------------------------------------------------
--- Private helpers
+-- Private static methods
 
 function getTransactionId()
   --[[--
@@ -96,6 +96,42 @@ function httpGet(uri)
   -- TODO: add error handling
 
   return statusCode
+end
+
+-- --------------------------------------------------------------
+-- Private methods
+
+function track(self, pb)
+  --[[--
+  Tracks any given SnowPlow event, by sending the specific
+  event_pairs to the SnowPlow collector.
+
+  @Parameter: self
+    The Tracker table holding our configuration etc
+
+  @Parameter: pb
+    A partially populated payloadBuilder closure. We will
+    finish populating it in this method, then build() it
+  --]]--
+
+  -- Add the standard name-value pairs
+  pb.add( "p",  self.config.platform )
+  pb.add( "tv", self.config.version )
+  pb.add( "tid", getTransactionId() )
+  pb.add( "dtm", getTimestamp() )
+
+  -- Add the fields which may have been set
+  pb.add( "uid", self.userId )
+  pb.add( "aid", self.appId )
+  pb.addRaw( "res", self.screenResolution )
+  pb.addRaw( "vp",  self.viewport )
+  pb.addRaw( "cd",  self.colorDepth )
+
+  -- Now build the payloadBuilder
+  local payload = pb.build()
+
+  -- Finally send to Snowplow
+  return httpGet( self.collectorUri .. payload )
 end
 
 -- --------------------------------------------------------------
@@ -232,7 +268,7 @@ function Tracker:trackScreenView(name, id)
   pb.add( "sv_na", name, validate.isNonEmptyString )
   pb.add( "sv_id", id, validate.isStringOrNil )
 
-  return self:track( pb )
+  return track( self, pb )
 end
 
 function Tracker:trackStructEvent(category, action, label, property, value)
@@ -266,7 +302,7 @@ function Tracker:trackStructEvent(category, action, label, property, value)
   pb.add( "ev_pr", property, validate.isStringOrNil )
   pb.add( "ev_va", value, validate.isNumberOrNil )
 
-  return self:track( pb )
+  return track( self, pb )
 end
 
 function Tracker:trackUnstructEvent(name, properties)
@@ -284,37 +320,7 @@ function Tracker:trackUnstructEvent(name, properties)
   pb.add( "ue_na", name, validate.isNonEmptyString )
   pb.addProps( "ue_px", "ue_pr", props, validate.isNonEmptyTable )
 
-  return self:track( pb )
-end
-
-function Tracker:track(pb)
-  --[[--
-  Tracks any given SnowPlow event, by sending the specific
-  event_pairs to the SnowPlow collector.
-
-  @Parameter: pb
-    A partially populated payloadBuilder closure. We will
-    finish populating it in this method, then build() it
-  --]]--
-
-  -- Add the standard name-value pairs
-  pb.add( "p",  self.config.platform )
-  pb.add( "tv", self.config.version )
-  pb.add( "tid", getTransactionId() )
-  pb.add( "dtm", getTimestamp() )
-
-  -- Add the fields which may have been set
-  pb.add( "uid", self.userId )
-  pb.add( "aid", self.appId )
-  pb.addRaw( "res", self.screenResolution )
-  pb.addRaw( "vp",  self.viewport )
-  pb.addRaw( "cd",  self.colorDepth )
-
-  -- Now build the payloadBuilder
-  local payload = pb.build()
-
-  -- Finally send to Snowplow
-  return httpGet( self.collectorUri .. payload )
+  return track( self, pb )
 end
 
 -- --------------------------------------------------------------

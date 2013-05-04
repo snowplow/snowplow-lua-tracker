@@ -66,7 +66,7 @@ describe("tracker", function()
   end)
 
   -- --------------------------------------------------------------
-  -- setter tests
+  -- Setter tests
 
   it("setAppId() should error unless passed a non-empty string", function()
     local f = function() t:setAppId("") end
@@ -86,21 +86,35 @@ describe("tracker", function()
     assert.are.equal(t.userId, "user123")
   end)
 
-  pending("setScreenResolution() should error unless passed a pair of positive integers")
+  it("setScreenResolution() should error unless passed a pair of positive integers", function()
+    local f = function() t:setScreenResolution(-20, 1078) end
+    assert.has_error(f, "width is required and must be a positive integer, not [-20]")
+  end)
   it("setScreenResolution() should set the Tracker's screenResolution", function()
     t:setScreenResolution(1068, 720)
     assert.are.equal(t.screenResolution, "1068x720")
   end)
 
-  pending("setViewport() should error unless passed a pair of positive integers")
+  it("setViewport() should error unless passed a pair of positive integers", function()
+    local f = function() t:setViewport(800, "1078") end
+    assert.has_error(f, "height is required and must be a positive integer, not [1078]")
+  end)
   it("setViewport() should set the Tracker's viewport", function()
     t:setViewport(420, 360)
     assert.are.equal(t.viewport, "420x360")
   end)
 
-  pending("setColorDepth() should error unless passed a positive integer")
+  it("setColorDepth() should error unless passed a positive integer", function()
+    local f = function() t:setColorDepth(23.2) end
+    assert.has_error(f, "depth is required and must be a positive integer, not [23.2]")
+  end)
   it("setColorDepth() should set the Tracker's colorDepth", function()
     t:setColorDepth(32)
     assert.are.equal(t.colorDepth, 32)
   end)
+
+  -- --------------------------------------------------------------
+  -- Track() tests
+
+  -- See: integration tests.
 end)
