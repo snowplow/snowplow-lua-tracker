@@ -20,7 +20,7 @@ local Set = {} -- The class
 Set.__index = Set
 
 -- --------------------------------------------------------------
--- Factory to create a set
+-- Factory to create a Set
 
 function set.newSet(t)
   --[[--
@@ -38,7 +38,7 @@ function set.newSet(t)
 end
 
 -- --------------------------------------------------------------
--- Public methods
+-- Class methods
 
 function Set:contains(value)
   --[[--

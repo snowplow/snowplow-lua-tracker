@@ -33,7 +33,7 @@ local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "csl", "iot" }
 
 -- --------------------------------------------------------------
--- Factory to create a tracker
+-- Factory to create a new Tracker
 
 function tracker.newTracker(collectorUri, config)
   --[[--
