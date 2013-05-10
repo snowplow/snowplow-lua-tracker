@@ -70,12 +70,24 @@ function getTransactionId()
   return tostring( rand )
 end
 
-function getTimestamp()
+function getTimestamp( tstamp )
   --[[--
   Returns the current timestamp as total milliseconds
   since epoch.
+
+  @Parameter: tstamp
+    Optional time (in seconds since epoch) at which
+    event occurred
   --]]--
-  return os.time() * 1000
+
+  local timestamp
+  if tstamp == nil then
+    timestamp = os.time()
+  else
+    timestamp = tstamp
+  end
+
+  return timestamp * 1000
 end
 
 function httpGet(uri)
@@ -118,7 +130,6 @@ function track(self, pb)
   pb.add( "p",  self.config.platform )
   pb.add( "tv", self.config.version )
   pb.add( "tid", getTransactionId() )
-  pb.add( "dtm", getTimestamp() )
 
   -- Add the fields which may have been set
   pb.add( "uid", self.userId )
@@ -255,7 +266,7 @@ end
 -- --------------------------------------------------------------
 -- Track methods
 
-function Tracker:trackScreenView(name, id)
+function Tracker:trackScreenView(name, id, tstamp)
   --[[--
   Sends a screen view event to SnowPlow. A screen view
   must have a `name` and can have an optional `id`.
@@ -266,17 +277,21 @@ function Tracker:trackScreenView(name, id)
   @Parameter: id
     Optional unique identifier for this screen. Could be e.g.
     a GUID or identifier from a game CMS. String
+  @Parameter: tstamp
+    Optional time (in seconds since epoch) at which event
+    occurred
   --]]--
 
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
   pb.addRaw( "e", "sv" )
   pb.add( "sv_na", name, validate.isNonEmptyString )
   pb.add( "sv_id", id, validate.isStringOrNil )
+  pb.add( "dtm", getTimestamp( tstamp ) )
 
   return track( self, pb )
 end
 
-function Tracker:trackStructEvent(category, action, label, property, value)
+function Tracker:trackStructEvent(category, action, label, property, value, tstamp)
   --[[--
   Sends a custom structured event to SnowPlow.
 
@@ -297,6 +312,9 @@ function Tracker:trackStructEvent(category, action, label, property, value)
   @Parameter: value
     A value that you can use to provide
     numerical data about the user event
+  @Parameter: tstamp
+    Optional time (in seconds since epoch) at which
+    event occurred
   --]]--
 
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
@@ -306,11 +324,12 @@ function Tracker:trackStructEvent(category, action, label, property, value)
   pb.add( "ev_la", label, validate.isStringOrNil )
   pb.add( "ev_pr", property, validate.isStringOrNil )
   pb.add( "ev_va", value, validate.isNumberOrNil )
+  pb.add( "dtm", getTimestamp( tstamp ) )
 
   return track( self, pb )
 end
 
-function Tracker:trackUnstructEvent(name, properties)
+function Tracker:trackUnstructEvent(name, properties, tstamp)
   --[[--
   Sends a custom unstructured event to Snowplow.
 
@@ -318,12 +337,16 @@ function Tracker:trackUnstructEvent(name, properties)
     TODO
   @Parameter: properties
     TODO
+  @Parameter: tstamp
+    Optional time (in seconds since epoch) at which
+    event occurred
   --]]--
 
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
   pb.addRaw("e", "ue")
   pb.add( "ue_na", name, validate.isNonEmptyString )
   pb.addProps( "ue_px", "ue_pr", props, validate.isNonEmptyTable )
+  pb.add( "dtm", getTimestamp( tstamp ) )
 
   return track( self, pb )
 end
