@@ -27,7 +27,7 @@ describe("tracker", function()
   -- Constructor tests
 
   it("newTracker() should construct a new Tracker", function()
-    
+
     -- Check these are populated
     assert.are.equal(t.collectorUri, collectorUri)
     assert.are.same(t.config, {
@@ -114,9 +114,10 @@ describe("tracker", function()
   end)
 
   -- --------------------------------------------------------------
-  -- Track() test
+  -- track...() tests
 
   spy.on(t, "_httpGet")
+  local tstamp = 1367677504
 
   it("trackScreenView() should error unless name is a non-empty string", function()
     local f = function() t:trackScreenView( -23, "23") end
@@ -126,9 +127,39 @@ describe("tracker", function()
     local f = function() t:trackScreenView( "Game HUD", 23) end
     assert.has_error(f, "sv_id must be a string or nil, not [23]")
   end)
-  pending("trackScreenView() should call httpGet() with a querystring including sv_na", function()
-    t:trackScreenView( "Game HUD" )
+  pending("trackScreenView() should call httpGet() with the correct payload in the querystring", function()
+    t:trackScreenView( "Game HUD", nil, tstamp)
     assert.spy(t._httpGet).was_called_with("http://c.snplow.com/i?e=sv&sv_na=Game+HUD&p=tv&tv=lua%2D0%2E1%2E0&tid=886216&dtm=1367677504000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
-  end) -- Pending because we can't predict tid or dtm
+  end) -- Pending because we can't predict tid
+
+  it("trackStructEvent() should error unless category is a non-empty string", function()
+    local f = function() t:trackStructEvent( true, "23" ) end
+    assert.has_error(f, "se_ca is required and must be a non-empty string, not [true]")
+  end)
+  it("trackStructEvent() should error unless action is a non-empty string", function()
+    local f = function() t:trackStructEvent( "shop", -456.021 ) end
+    assert.has_error(f, "se_ac is required and must be a non-empty string, not [-456.021]")
+  end)
+  it("trackStructEvent() should error unless label is a string or nil", function()
+    local f = function() t:trackStructEvent( "shop", "add-to-basket", {} ) end
+    assert.has_error(f, "se_la is required and must be a string or nil, not [<table>]")
+  end)
+  it("trackStructEvent() should error unless property is a string or nil", function()
+    local f = function() t:trackStructEvent( "shop", "add-to-basket", nil, 23 ) end
+    assert.has_error(f, "se_pr is required and must be a string or nil, not [23]")
+  end)
+  it("trackScreenEvent() should error unless value is a number or nil", function()
+    local f = function() t:trackScreenEvent( "shop", "add-to-basket", nil, "units", "212" ) end
+    assert.has_error(f, "sv_id must be a number or nil, not [212]")
+  end)
+  pending("trackStructEvent() should call httpGet() with the correct payload in the querystring", function()
+    t:trackScreenEvent( "shop", "add-to-basket", nil, "units", "2" )
+    assert.spy(t._httpGet).was_called_with("http://c.snplow.com/i?e=sv&sv_na=Game+HUD&p=tv&tv=lua%2D0%2E1%2E0&tid=886216&dtm=1367677504000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
+  end) -- Pending because we can't predict tid
+
+  it("trackUnstructEvent() should error unless name is a non-empty string", function()
+    local f = function() t:trackUnstructEvent( nil, {} ) end
+    assert.has_error(f, "ue_na is required and must be a non-empty string, not [<nil>]")
+  end)
 
 end)

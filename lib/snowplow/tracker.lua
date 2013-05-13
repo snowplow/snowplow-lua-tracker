@@ -286,7 +286,7 @@ function Tracker:trackScreenView(name, id, tstamp)
   pb.addRaw( "e", "sv" )
   pb.add( "sv_na", name, validate.isNonEmptyString )
   pb.add( "sv_id", id, validate.isStringOrNil )
-  pb.add( "dtm", getTimestamp( tstamp ) )
+  pb.add( "dtm", getTimestamp( tstamp ), validate.isPositiveInteger )
 
   return track( self, pb )
 end
@@ -324,7 +324,7 @@ function Tracker:trackStructEvent(category, action, label, property, value, tsta
   pb.add( "ev_la", label, validate.isStringOrNil )
   pb.add( "ev_pr", property, validate.isStringOrNil )
   pb.add( "ev_va", value, validate.isNumberOrNil )
-  pb.add( "dtm", getTimestamp( tstamp ) )
+  pb.add( "dtm", getTimestamp( tstamp ), validate.isPositiveInteger )
 
   return track( self, pb )
 end
@@ -346,7 +346,7 @@ function Tracker:trackUnstructEvent(name, properties, tstamp)
   pb.addRaw("e", "ue")
   pb.add( "ue_na", name, validate.isNonEmptyString )
   pb.addProps( "ue_px", "ue_pr", props, validate.isNonEmptyTable )
-  pb.add( "dtm", getTimestamp( tstamp ) )
+  pb.add( "dtm", getTimestamp( tstamp ), validate.isPositiveInteger )
 
   return track( self, pb )
 end
