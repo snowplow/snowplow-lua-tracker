@@ -38,7 +38,7 @@ describe("snowplow", function()
       return "host is required and must be a non-empty string, not [" .. validate._nts(value) .. "]"
     end
     assert.has_error(f(""), err(""))
-    assert.has_error(f({}), err("<table>"))
+    assert.has_error(f({}), err("{}"))
     assert.has_error(f(-23.04), err("-23.04"))
   end)
 
@@ -50,7 +50,7 @@ describe("snowplow", function()
       return "cfSubdomain is required and must be a non-empty string, not [" .. validate._nts(value) .. "]"
     end
     assert.has_error(f(""), err(""))
-    assert.has_error(f({}), err("<table>"))
+    assert.has_error(f({}), err("{}"))
     assert.has_error(f(-23.04), err("-23.04"))
   end)
 

@@ -83,11 +83,13 @@ function getTimestamp( tstamp )
   local timestamp
   if tstamp == nil then
     timestamp = os.time()
+  elseif type(tstamp) == "number" then
+    timestamp = tstamp * 1000
   else
-    timestamp = tstamp
+    timestamp = tstamp -- Hope the calling code deals with the error
   end
 
-  return timestamp * 1000
+  return timestamp
 end
 
 function httpGet(uri)
@@ -319,11 +321,11 @@ function Tracker:trackStructEvent(category, action, label, property, value, tsta
 
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
   pb.addRaw( "e", "se" )
-  pb.add( "ev_ca", category, validate.isNonEmptyString )
-  pb.add( "ev_ac", action, validate.isNonEmptyString )
-  pb.add( "ev_la", label, validate.isStringOrNil )
-  pb.add( "ev_pr", property, validate.isStringOrNil )
-  pb.add( "ev_va", value, validate.isNumberOrNil )
+  pb.add( "se_ca", category, validate.isNonEmptyString )
+  pb.add( "se_ac", action, validate.isNonEmptyString )
+  pb.add( "se_la", label, validate.isStringOrNil )
+  pb.add( "se_pr", property, validate.isStringOrNil )
+  pb.add( "se_va", value, validate.isNumberOrNil )
   pb.add( "dtm", getTimestamp( tstamp ), validate.isPositiveInteger )
 
   return track( self, pb )
@@ -345,7 +347,7 @@ function Tracker:trackUnstructEvent(name, properties, tstamp)
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
   pb.addRaw("e", "ue")
   pb.add( "ue_na", name, validate.isNonEmptyString )
-  pb.addProps( "ue_px", "ue_pr", props, validate.isNonEmptyTable )
+  pb.addProps( "ue_px", "ue_pr", properties, validate.isNonEmptyTable )
   pb.add( "dtm", getTimestamp( tstamp ), validate.isPositiveInteger )
 
   return track( self, pb )

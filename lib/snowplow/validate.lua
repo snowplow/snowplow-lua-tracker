@@ -24,7 +24,7 @@ local function nts(value) -- Nil to string
   local v
   if value == nil then v = "<nil>" else v = value end
   if type(value) == "table" then
-    if value == {} then
+    if next(value) == nil then
       v = "{}"
     else
       v = "<table>"

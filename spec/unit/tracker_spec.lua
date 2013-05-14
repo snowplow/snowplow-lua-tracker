@@ -127,9 +127,9 @@ describe("tracker", function()
     local f = function() t:trackScreenView( "Game HUD", 23) end
     assert.has_error(f, "sv_id must be a string or nil, not [23]")
   end)
-  it("trackScreenView() should error unless stamp is a positive integer", function()
+  it("trackScreenView() should error unless tstamp is a positive integer", function()
     local f = function() t:trackScreenView( "Game HUD", "Load Save Game", false) end
-    assert.has_error(f, "tstamp must be a positive integer, not [false]")
+    assert.has_error(f, "dtm is required and must be a positive integer, not [false]")
   end)
   pending("trackScreenView() should call httpGet() with the correct payload in the querystring", function()
     t:trackScreenView( "Game HUD", nil, tstamp)
@@ -137,8 +137,8 @@ describe("tracker", function()
   end) -- Pending because we can't predict tid
 
   it("trackStructEvent() should error unless category is a non-empty string", function()
-    local f = function() t:trackStructEvent( true, "23" ) end
-    assert.has_error(f, "se_ca is required and must be a non-empty string, not [true]")
+    local f = function() t:trackStructEvent( 23.2, "23" ) end
+    assert.has_error(f, "se_ca is required and must be a non-empty string, not [23.2]")
   end)
   it("trackStructEvent() should error unless action is a non-empty string", function()
     local f = function() t:trackStructEvent( "shop", -456.021 ) end
@@ -146,19 +146,19 @@ describe("tracker", function()
   end)
   it("trackStructEvent() should error unless label is a string or nil", function()
     local f = function() t:trackStructEvent( "shop", "add-to-basket", {} ) end
-    assert.has_error(f, "se_la is required and must be a string or nil, not [<table>]")
+    assert.has_error(f, "se_la must be a string or nil, not [{}]")
   end)
   it("trackStructEvent() should error unless property is a string or nil", function()
     local f = function() t:trackStructEvent( "shop", "add-to-basket", nil, 23 ) end
-    assert.has_error(f, "se_pr is required and must be a string or nil, not [23]")
+    assert.has_error(f, "se_pr must be a string or nil, not [23]")
   end)
   it("trackScreenEvent() should error unless value is a number or nil", function()
     local f = function() t:trackStructEvent( "shop", "add-to-basket", nil, "units", "212" ) end
-    assert.has_error(f, "sv_id must be a number or nil, not [212]")
+    assert.has_error(f, "se_va must be a number or nil, not [212]")
   end)
   it("trackScreenEvent() should error unless tstamp is a positive integer", function()
-    {local f = function() t:trackStructEvent( "shop", "add-to-basket", nil, "units", 212, {} ) end
-    assert.has_error(f, "tstamp must be a positive integer, not [{}]")
+    local f = function() t:trackStructEvent( "shop", "add-to-basket", nil, "units", 212, {} ) end
+    assert.has_error(f, "dtm is required and must be a positive integer, not [{}]")
   end)
   pending("trackStructEvent() should call httpGet() with the correct payload in the querystring", function()
     t:trackStructEvent( "shop", "add-to-basket", nil, "units", "2" )
@@ -174,11 +174,11 @@ describe("tracker", function()
     assert.has_error(f, "ue_px|ue_pr is required and must be a non-empty table, not [{}]")
     
     local f2 = function() t:trackUnstructEvent( "save-game", 23.0 ) end
-    assert.has_error(f2, "ue_px|ue_pr is required and must be a non-empty table, not [23.0]")
+    assert.has_error(f2, "ue_px|ue_pr is required and must be a non-empty table, not [23]")
   end)
   it("trackUnstructEvent() should error unless tstamp is a positive integer", function()
-    {local f = function() t:trackUnstructEvent( "save-game", { save_id = 23 }, 23.23 ) end
-    assert.has_error(f, "tstamp must be a positive integer, not [23.23]")
+    local f = function() t:trackUnstructEvent( "save-game", { save_id = 23 }, 23.232312 ) end
+    assert.has_error(f, "dtm is required and must be a positive integer, not [23232.312]")
   end)
   pending("trackUnstructEvent() should call httpGet() with the correct payload in the querystring", function()
     t:trackUnstructEvent( "save-game", { save_id = "4321", level = 23, difficultyLevel = "HARD", dl_content = true }, nil, "units", "2" )

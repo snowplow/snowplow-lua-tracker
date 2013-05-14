@@ -44,7 +44,7 @@ describe("validate", function()
       { false              , "false"     },
       { 23                 , "23"        },
       { nil                , "<nil>"     },
-      { {}                 , "<table>"   },
+      { {}                 , "{}"        },
       { { a = 1, b = "2" } , "<table>"   }
     }
 
@@ -86,7 +86,7 @@ describe("validate", function()
       { { a = 1, b = c}             , nil            },
       { { a = true, b = false }     , nil            },
       { nil                         , err("<nil>")   },
-      { {}                          , err("<table>") },
+      { {}                          , err("{}")      },
       { "hello"                     , err("hello")   },
       { 23.3                        , err(23.3)      }
     }
@@ -127,7 +127,7 @@ describe("validate", function()
       { "another"                   , nil            },
       { ""                          , err("")        },
       { nil                         , err("<nil>")   },
-      { {}                          , err("<table>") },
+      { {}                          , err("{}")      },
       { { a = 1, b = c}             , err("<table>") },
       { 23.3                        , err(23.3)      }
     }
@@ -147,7 +147,7 @@ describe("validate", function()
       { "another"                   , nil            },
       { ""                          , nil            }, -- Difference from the above
       { nil                         , nil            }, -- Difference from the above
-      { {}                          , err("<table>") },
+      { {}                          , err("{}")      },
       { { a = 1, b = c}             , err("<table>") },
       { 23.3                        , err(23.3)      }
     }
@@ -175,7 +175,7 @@ describe("validate", function()
       { "hello"                     , err("hello")   },
       { ""                          , err("")        },
       { nil                         , err("<nil>")   },
-      { {}                          , err("<table>") },
+      { {}                          , err("{}")      },
       { { a = 1, b = c}             , err("<table>") },
       { 23.3                        , err(23.3)      }
     }
