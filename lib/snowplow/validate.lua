@@ -23,7 +23,13 @@ local validate = {}
 local function nts(value) -- Nil to string
   local v
   if value == nil then v = "<nil>" else v = value end
-  if type(value) == "table" then v = "<table>" end
+  if type(value) == "table" then
+    if value == {} then
+      v = "{}"
+    else
+      v = "<table>"
+    end
+  end
   return tostring(v)
 end
 

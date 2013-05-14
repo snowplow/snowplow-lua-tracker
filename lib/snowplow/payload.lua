@@ -98,7 +98,7 @@ payload.newPayloadBuilder = function (encodeBase64)
     --]]--
 
     if type(validate) == "function" then
-      validate( key, props )
+      validate( ( keyIfEnc .. "|" .. key ), props )
     end
     props = toPropertiesJson( value )
 

@@ -127,6 +127,10 @@ describe("tracker", function()
     local f = function() t:trackScreenView( "Game HUD", 23) end
     assert.has_error(f, "sv_id must be a string or nil, not [23]")
   end)
+  it("trackScreenView() should error unless stamp is a positive integer", function()
+    local f = function() t:trackScreenView( "Game HUD", "Load Save Game", false) end
+    assert.has_error(f, "tstamp must be a positive integer, not [false]")
+  end)
   pending("trackScreenView() should call httpGet() with the correct payload in the querystring", function()
     t:trackScreenView( "Game HUD", nil, tstamp)
     assert.spy(t._httpGet).was_called_with("http://c.snplow.com/i?e=sv&sv_na=Game+HUD&p=tv&tv=lua%2D0%2E1%2E0&tid=886216&dtm=1367677504000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
@@ -149,11 +153,15 @@ describe("tracker", function()
     assert.has_error(f, "se_pr is required and must be a string or nil, not [23]")
   end)
   it("trackScreenEvent() should error unless value is a number or nil", function()
-    local f = function() t:trackScreenEvent( "shop", "add-to-basket", nil, "units", "212" ) end
+    local f = function() t:trackStructEvent( "shop", "add-to-basket", nil, "units", "212" ) end
     assert.has_error(f, "sv_id must be a number or nil, not [212]")
   end)
+  it("trackScreenEvent() should error unless tstamp is a positive integer", function()
+    {local f = function() t:trackStructEvent( "shop", "add-to-basket", nil, "units", 212, {} ) end
+    assert.has_error(f, "tstamp must be a positive integer, not [{}]")
+  end)
   pending("trackStructEvent() should call httpGet() with the correct payload in the querystring", function()
-    t:trackScreenEvent( "shop", "add-to-basket", nil, "units", "2" )
+    t:trackStructEvent( "shop", "add-to-basket", nil, "units", "2" )
     assert.spy(t._httpGet).was_called_with("http://c.snplow.com/i?e=sv&sv_na=Game+HUD&p=tv&tv=lua%2D0%2E1%2E0&tid=886216&dtm=1367677504000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
   end) -- Pending because we can't predict tid
 
@@ -161,5 +169,20 @@ describe("tracker", function()
     local f = function() t:trackUnstructEvent( nil, {} ) end
     assert.has_error(f, "ue_na is required and must be a non-empty string, not [<nil>]")
   end)
+  it("trackUnstructEvent() should error unless properties is a non-empty table", function()
+    local f = function() t:trackUnstructEvent( "save-game", {} ) end
+    assert.has_error(f, "ue_px|ue_pr is required and must be a non-empty table, not [{}]")
+    
+    local f2 = function() t:trackUnstructEvent( "save-game", 23.0 ) end
+    assert.has_error(f2, "ue_px|ue_pr is required and must be a non-empty table, not [23.0]")
+  end)
+  it("trackUnstructEvent() should error unless tstamp is a positive integer", function()
+    {local f = function() t:trackUnstructEvent( "save-game", { save_id = 23 }, 23.23 ) end
+    assert.has_error(f, "tstamp must be a positive integer, not [23.23]")
+  end)
+  pending("trackUnstructEvent() should call httpGet() with the correct payload in the querystring", function()
+    t:trackUnstructEvent( "save-game", { save_id = "4321", level = 23, difficultyLevel = "HARD", dl_content = true }, nil, "units", "2" )
+    assert.spy(t._httpGet).was_called_with("http://c.snplow.com/i?e=sv&sv_na=Game+HUD&p=tv&tv=lua%2D0%2E1%2E0&tid=886216&dtm=1367677504000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
+  end) -- Pending because we can't predict tid
 
 end)
