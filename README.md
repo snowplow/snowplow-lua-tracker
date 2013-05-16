@@ -1,5 +1,7 @@
 # UNFINISHED Snowplow Analytics for Lua
 
+[![Build Status](https://travis-ci.org/snowplow/snowplow-lua-tracker.png)](https://travis-ci.org/snowplow/snowplow-lua-tracker)
+
 ## Overview
 
 Add analytics to your Lua apps and Lua-scripted games with the - **still unfinished** - SnowPlow event tracker for [Lua] [lua].
