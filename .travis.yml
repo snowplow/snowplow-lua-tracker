@@ -10,6 +10,7 @@ branches:
 
 install:
   - sudo apt-get install luajit luarocks liblua5.1-socket2
+  - sudo luarocks install luafilesystem
   - sudo luarocks install busted
 
 script: "sudo busted"
