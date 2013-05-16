@@ -1,0 +1,22 @@
+language: erlang
+
+env:
+  - LUA=""
+  - LUA="luajit"
+
+branches:
+  only:
+    - master
+
+install:
+  - sudo apt-get install lua luajit luarocks liblua5.1-socket2
+  - sudo luarocks install busted
+
+script: "busted"
+
+notifications:
+  recipients:
+    - ci@snowplowanalytics.com
+  email:
+    on_success: change
+    on_failure: always
