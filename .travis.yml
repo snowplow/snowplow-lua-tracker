@@ -9,7 +9,7 @@ branches:
     - master
 
 install:
-  - sudo apt-get install lua luajit luarocks liblua5.1-socket2
+  - sudo apt-get install luajit luarocks liblua5.1-socket2
   - sudo luarocks install busted
 
 script: "busted"
