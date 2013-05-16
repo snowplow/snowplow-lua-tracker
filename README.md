@@ -1,6 +1,4 @@
-# UNFINISHED Snowplow Analytics for Lua
-
-[![Build Status](https://travis-ci.org/snowplow/snowplow-lua-tracker.png)](https://travis-ci.org/snowplow/snowplow-lua-tracker)
+# UNFINISHED Snowplow Analytics for Lua [![Build Status](https://travis-ci.org/snowplow/snowplow-lua-tracker.png)](https://travis-ci.org/snowplow/snowplow-lua-tracker)
 
 ## Overview
 
