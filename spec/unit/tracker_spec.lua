@@ -58,7 +58,7 @@ describe("tracker", function()
 
   it("platform() should error unless passed a valid platform", function()
     local f = function() t:platform("fake") end
-    assert.has_error(f, "platform must be a string from the set {pc, mob, csl, tv, iot}, not [fake]")
+    assert.has_error(f, "platform must be a string from the set {pc, mob, cnsl, tv, iot}, not [fake]")
   end)
   it("encodeBase64() should update the Tracker's encodeBase64 configuration setting", function()
     t:platform( "tv" )

@@ -23,7 +23,7 @@ describe("Integration tests with bad config", function()
 
     local t = snowplow.newTrackerForCf( "d3rkrsqld9gmqf" )
     t:encodeBase64( false )
-    t:platform ( "tv" )
+    t:platform( "tv" )
 
     local f = function() t:setColorDepth("unknown") end
     assert.has_error(f, "depth is required and must be a positive integer, not [unknown]")
@@ -33,8 +33,8 @@ describe("Integration tests with bad config", function()
 
     local t1 = snowplow.newTrackerForCf( "d3rkrsqld9gmqf" )
     t1:platform ( "tv" )
-    assert.has_no.errors( function() t1:trackScreenView( "Game HUD", "23" end )
-    assert.has_no.errors( function() t1:trackUnstructEvent( "save-game", { save_id = 23 }, 23.232312 ) end )
+    assert.has_no.errors( function() t1:trackScreenView( "Game HUD", "23" ) end )
+    assert.has_no.errors( function() t1:trackUnstructEvent( "save-game", { save_id = 23 }, 1369330092 ) end )
 
     local t2 = snowplow.newTrackerForUri( "cc-endpoint2.beanstalky.com" )
     t2:encodeBase64( false )
@@ -48,21 +48,20 @@ describe("Integration tests with bad config", function()
     t1:platform( "iot" ) -- Redefine
     t1:encodeBase64( false ) -- Redefine
     assert.has_no.errors( function() t1:trackScreenView( "Test", "23" ) end )
-    assert.has_no.errors( function() t1:trackStructEvent( "hud", "save" ) end )
+    assert.has_no.errors( function() t1:trackStructEvent( "hud", "save", nil, nil, nil, 1368725287 ) end )
 
   end)
 
-  pending("should be reusable if the error is caught", function()
-  -- TODO: note, we should catch the error rather than leave it to Busted
-  -- to catch. As otherwise it might not be a realistic test
+  it("should be reusable if the error is caught", function()
 
     local t1 = snowplow.newTrackerForCf( "d3rkrsqld9gmqf" )
-    t2:encodeBase64( false )
-    (status, err) = pcall( t1:platform( false ) )
+    t1:encodeBase64( false )
+    status, err = pcall( t1.platform, t1, false )
     assert.are.equal( status, false )
-    assert.are.equal( err, "Oh no!" ) -- TODO: fix this
+    assert.are.equal( err, "lib/snowplow/validate.lua:94: platform must be a string from the set {pc, mob, cnsl, tv, iot}, not [false]" )
 
     assert.has_no.errors( function() t1:platform( "cnsl" ) end )
+    assert.has_no.errors( function() t1:trackScreenView( "Test", "23", 1368725287 ) end )
 
   end)
 
