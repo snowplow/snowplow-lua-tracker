@@ -65,9 +65,18 @@ function getTransactionId()
   recorded twice.
   --]]--
 
+  local tid
   math.randomseed( os.time() )
   local rand = math.random(100000, 999999)
-  return tostring( rand )
+  tid = tostring( rand )
+
+  -- To handle testing
+  -- TODO: is there a cleaner way of doing this? DI or a mock or something?
+  if _TEST then
+    tid = "100000"
+  end
+
+  return tid
 end
 
 function getTimestamp( tstamp )

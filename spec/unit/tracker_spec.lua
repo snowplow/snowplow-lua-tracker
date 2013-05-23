@@ -17,7 +17,7 @@
 
 local tracker = require("tracker")
 
-local collectorUri = "http://c.snplow.com/i"
+local collectorUri = "http://d3rkrsqld9gmqf.cloudfront.net/i"
 
 describe("tracker", function()
 
@@ -117,7 +117,6 @@ describe("tracker", function()
   -- track...() tests
 
   spy.on(t, "_httpGet")
-  local tstamp = 1367677504
 
   it("trackScreenView() should error unless name is a non-empty string", function()
     local f = function() t:trackScreenView( -23, "23") end
@@ -131,10 +130,10 @@ describe("tracker", function()
     local f = function() t:trackScreenView( "Game HUD", "Load Save Game", false) end
     assert.has_error(f, "dtm is required and must be a positive integer, not [false]")
   end)
-  pending("trackScreenView() should call httpGet() with the correct payload in the querystring", function()
-    t:trackScreenView( "Game HUD", nil, tstamp)
-    assert.spy(t._httpGet).was_called_with("http://c.snplow.com/i?e=sv&sv_na=Game+HUD&p=tv&tv=lua%2D0%2E1%2E0&tid=886216&dtm=1367677504000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
-  end) -- Pending because we can't predict tid
+  it("trackScreenView() should call httpGet() with the correct payload in the querystring", function()
+    t:trackScreenView( "Game HUD 2", nil, 1369330916 )
+    assert.spy(t._httpGet).was_called_with("http://d3rkrsqld9gmqf.cloudfront.net/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv=lua%2D0%2E1%2E0&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
+  end)
 
   it("trackStructEvent() should error unless category is a non-empty string", function()
     local f = function() t:trackStructEvent( 23.2, "23" ) end
@@ -160,10 +159,10 @@ describe("tracker", function()
     local f = function() t:trackStructEvent( "shop", "add-to-basket", nil, "units", 212, {} ) end
     assert.has_error(f, "dtm is required and must be a positive integer, not [{}]")
   end)
-  pending("trackStructEvent() should call httpGet() with the correct payload in the querystring", function()
-    t:trackStructEvent( "shop", "add-to-basket", nil, "units", "2" )
-    assert.spy(t._httpGet).was_called_with("http://c.snplow.com/i?e=sv&sv_na=Game+HUD&p=tv&tv=lua%2D0%2E1%2E0&tid=886216&dtm=1367677504000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
-  end) -- Pending because we can't predict tid
+  it("trackStructEvent() should call httpGet() with the correct payload in the querystring", function()
+    t:trackStructEvent( "shop", "add-to-basket", nil, "units", 2, 1369330909 )
+    assert.spy(t._httpGet).was_called_with("http://d3rkrsqld9gmqf.cloudfront.net/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2&dtm=1369330909000&p=tv&tv=lua%2D0%2E1%2E0&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
+  end)
 
   it("trackUnstructEvent() should error unless name is a non-empty string", function()
     local f = function() t:trackUnstructEvent( nil, {} ) end
@@ -180,9 +179,15 @@ describe("tracker", function()
     local f = function() t:trackUnstructEvent( "save-game", { save_id = 23 }, 23.232312 ) end
     assert.has_error(f, "dtm is required and must be a positive integer, not [23232.312]")
   end)
-  pending("trackUnstructEvent() should call httpGet() with the correct payload in the querystring", function()
-    t:trackUnstructEvent( "save-game", { save_id = "4321", level = 23, difficultyLevel = "HARD", dl_content = true }, nil, "units", "2" )
-    assert.spy(t._httpGet).was_called_with("http://c.snplow.com/i?e=sv&sv_na=Game+HUD&p=tv&tv=lua%2D0%2E1%2E0&tid=886216&dtm=1367677504000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
-  end) -- Pending because we can't predict tid
+  it("trackUnstructEvent() should call httpGet() with the correct URL-encoded payload in the querystring", function()
+    t:encodeBase64( false )
+    t:trackUnstructEvent( "save-game", { save_id = "4321", level = 23, difficultyLevel = "HARD", dl_content = true }, 1369330929 )
+    assert.spy(t._httpGet).was_called_with("http://d3rkrsqld9gmqf.cloudfront.net/i?e=ue&ue_na=save%2Dgame&ue_pr=%7B%22difficultyLevel%22%3A%22HARD%22%2C%22dl%5Fcontent%22%3Atrue%2C%22level%22%3A23%2C%22save%5Fid%22%3A%224321%22%7D&dtm=1369330929000&p=tv&tv=lua%2D0%2E1%2E0&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
+  end)
+  it("trackUnstructEvent() should call httpGet() with the correct Base64-encoded payload in the querystring", function()
+    t:encodeBase64( true )
+    t:trackUnstructEvent( "load-game", { save_id = "4321", level = 23, difficultyLevel = "HARD", dl_content = true }, 1369330929 )
+    assert.spy(t._httpGet).was_called_with("http://d3rkrsqld9gmqf.cloudfront.net/i?e=ue&ue_na=load%2Dgame&ue_px=eyJkaWZmaWN1bHR5TGV2ZWwiOiJIQVJEIiwiZGxfY29udGVudCI6dHJ1ZSwibGV2ZWwiOjIzLCJzYXZlX2lkIjoiNDMyMSJ9&dtm=1369330929000&p=tv&tv=lua%2D0%2E1%2E0&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
+  end)
 
 end)

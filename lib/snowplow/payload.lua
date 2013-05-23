@@ -36,6 +36,10 @@ payload.newPayloadBuilder = function (encodeBase64)
 
   local payload = "?" -- What we're closing over
 
+  print("----------------->")
+  print("encodeBase64 = ")
+  print(encodeBase64)
+
   local addNvPair = function (key, value, esc)
     --[[--
     Helper to add a &name=value pair to our payload
@@ -103,9 +107,9 @@ payload.newPayloadBuilder = function (encodeBase64)
     props = toPropertiesJson( value )
 
     if encodeBase64 then
-      addNvPair( keyIfEnc, base64.encode( props ), false) -- Base64 encode, no URI escaping
+      addNvPair( keyIfEnc, base64.encode( props ), false) -- Base64 encode, no URL-encoding
     else
-      addNvPair( key, props, true ) -- URI escaping
+      addNvPair( key, props, true ) -- URL-encoding
     end
   end
 
