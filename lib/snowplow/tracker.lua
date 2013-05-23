@@ -30,7 +30,7 @@ Tracker.__index = Tracker
 local VERSION = "lua-0.1.0"
 local DEFAULT_ENCODE_BASE64 = true
 local DEFAULT_PLATFORM = "pc"
-local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "csl", "iot" }
+local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "cnsl", "iot" }
 
 -- --------------------------------------------------------------
 -- Factory to create a new Tracker
