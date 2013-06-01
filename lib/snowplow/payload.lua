@@ -36,10 +36,6 @@ payload.newPayloadBuilder = function (encodeBase64)
 
   local payload = "?" -- What we're closing over
 
-  print("----------------->")
-  print("encodeBase64 = ")
-  print(encodeBase64)
-
   local addNvPair = function (key, value, esc)
     --[[--
     Helper to add a &name=value pair to our payload

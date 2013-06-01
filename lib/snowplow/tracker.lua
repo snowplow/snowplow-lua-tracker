@@ -110,12 +110,9 @@ function httpGet(uri)
     The URI (including querystring) to GET
   --]]--
 
-  print(uri)
   result, statusCode, content = http.request( uri )
 
-  print(result)
   print(statusCode)
-  print(content)
   -- TODO: add error handling
 
   return statusCode
@@ -345,9 +342,9 @@ function Tracker:trackUnstructEvent(name, properties, tstamp)
   Sends a custom unstructured event to Snowplow.
 
   @Parameter: name
-    TODO
+    The name of the event
   @Parameter: properties
-    TODO
+    The properties of the event
   @Parameter: tstamp
     Optional time (in seconds since epoch) at which
     event occurred
@@ -369,8 +366,9 @@ if _TEST then
   function Tracker._httpGet(uri)
   --[[--
   A mock on the table to be checked by Busted.
+  Does nothing - we will simply inspect the uri
+  argument.
   --]]--
-  print(uri)
   end
 end
 
