@@ -108,14 +108,17 @@ function httpGet(uri)
 
   @Parameter: uri
     The URI (including querystring) to GET
+
+  Return TODO
   --]]--
 
   result, statusCode, content = http.request( uri )
 
-  print(statusCode)
-  -- TODO: add error handling
+  local status
+  -- Failure if statusCode is not a positive integer (e.g. "host not found")
+  status = false
 
-  return statusCode
+  return status
 end
 
 -- --------------------------------------------------------------
@@ -132,6 +135,8 @@ function track(self, pb)
   @Parameter: pb
     A partially populated payloadBuilder closure. We will
     finish populating it in this method, then build() it
+
+  Return TODO
   --]]--
 
   -- Add the standard name-value pairs
@@ -288,6 +293,8 @@ function Tracker:trackScreenView(name, id, tstamp)
   @Parameter: tstamp
     Optional time (in seconds since epoch) at which event
     occurred
+
+  Return TODO
   --]]--
 
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
@@ -323,6 +330,8 @@ function Tracker:trackStructEvent(category, action, label, property, value, tsta
   @Parameter: tstamp
     Optional time (in seconds since epoch) at which
     event occurred
+
+  Return TODO
   --]]--
 
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
@@ -348,6 +357,8 @@ function Tracker:trackUnstructEvent(name, properties, tstamp)
   @Parameter: tstamp
     Optional time (in seconds since epoch) at which
     event occurred
+
+  Return TODO
   --]]--
 
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
