@@ -16,7 +16,7 @@
 -- License:     Apache License Version 2.0
 
 local escape = require( "lib.escape" )
-local json   = require( "lib.JSON" )
+local json   = require( "lib.json" )
 local base64 = require( "lib.base64" )
 
 local payload = {}
