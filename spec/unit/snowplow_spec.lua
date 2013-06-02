@@ -23,7 +23,7 @@ local function assertTracker(tracker, collectorUri)
   assert.are.equal(tracker.collectorUri, collectorUri)
   assert.are.equal(tracker.config.encodeBase64, true)
   assert.are.equal(tracker.config.platform, "pc")
-  assert.are.equal(tracker.config.version, "lua-0.1.0")
+  assert.are.equal(tracker.config.version, "lua-1.0-1")
 end
 
 describe("snowplow", function()

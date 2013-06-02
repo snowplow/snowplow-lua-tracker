@@ -28,7 +28,7 @@ Tracker.__index = Tracker
 -- --------------------------------------------------------------
 -- Constants & config
 
-local VERSION = "lua-0.1.0"
+local VERSION = "lua-1.0-1"
 local DEFAULT_ENCODE_BASE64 = true
 local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "cnsl", "iot" }
@@ -151,7 +151,7 @@ function track(self, pb)
 
   -- Add the standard name-value pairs
   pb.add( "p",  self.config.platform )
-  pb.add( "tv", self.config.version )
+  pb.addRaw( "tv", self.config.version )
   pb.add( "tid", getTransactionId() )
 
   -- Add the fields which may have been set
