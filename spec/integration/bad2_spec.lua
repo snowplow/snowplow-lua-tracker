@@ -17,16 +17,9 @@
 
 local snowplow = require("snowplow")
 
-local function assertTracker(status, errorMessage)
-
-  assert.are.equal(tracker.config.encodeBase64, true)
-  assert.are.equal(tracker.config.platform, "pc")
-  assert.are.equal(tracker.config.version, "lua-0.1.0")
-end
-
 describe("Integration tests with HTTP/collector problems", function()
 
-  it("should return an error if CloudFront host cannot be found", function()
+  it("should return false and an error message if a CloudFront collector cannot be found", function()
 
     local t = snowplow.newTrackerForCf( "fake" ) -- Doesn't exist
     t:encodeBase64( false )
@@ -37,7 +30,7 @@ describe("Integration tests with HTTP/collector problems", function()
     assert.are.equal(msg, "Host [http://fake.cloudfront.net/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2&dtm=1369330909000&p=cnsl&tv=lua%2D0%2E1%2E0&tid=100000] not found (possible connectivity error)")
   end)
 
-  it("should return an error if non-CloudFront host cannot be found", function()
+  it("should return false and an error message if a URI-based collector cannot be found", function()
 
     local t = snowplow.newTrackerForUri("c.snplow.com") -- Doesn't exist
     t:platform( "tv" )

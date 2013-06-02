@@ -117,8 +117,15 @@ function httpGet(uri)
 
   if statusCode == "host not found" then
     return false, "Host [" .. uri .. "] not found (possible connectivity error)"
-  elseif type(value) ~= "number" or value ~= math.floor(value) or value < 0 then
-    return false, "Unrecognised status code [" .. ss(statusCode) .. "]"
+  else
+    local code = tonumber(statusCode)
+    if code == nil or code ~= math.floor(code) or code < 0 or code >= 600 then
+      return false, "Unrecognised status code [" .. ss(statusCode) .. "]"
+    elseif code >= 400 and code < 500 then
+      return false, "HTTP status code [" .. ss(statusCode) .. "] is a client error"
+    elseif code >= 500 then
+      return false, "HTTP status code [" .. ss(statusCode) .. "] is a server error"
+    end
   end
 
   return true
