@@ -1,7 +1,8 @@
 package = "SnowplowTracker"
 version = "0.1.0-1"
 source = {
-  url = "https://github.com/snowplow/snowplow-lua-tracker.git"
+  url = "https://github.com/snowplow/snowplow-lua-tracker.git",
+  tag = "0.1.0"
 }
 description = {
   summary = "Snowplow event tracker for Lua",
