@@ -1,7 +1,7 @@
 package = "SnowplowTracker"
-version = "1.0-1"
+version = "0.1.0-1"
 source = {
-  url = "https://github.com/snowplow/snowplow-lua-tracker"
+  url = "https://github.com/snowplow/snowplow-lua-tracker.git"
 }
 description = {
   summary = "Snowplow event tracker for Lua",
@@ -15,7 +15,7 @@ description = {
 }
 dependencies = {
   "lua ~> 5.1",
-  -- TODO: add luasockets dependency
+  "luasocket >= 2.0.2"
 }
 build = {
   type = "builtin",

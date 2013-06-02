@@ -28,7 +28,7 @@ Tracker.__index = Tracker
 -- --------------------------------------------------------------
 -- Constants & config
 
-local VERSION = "lua-1.0-1"
+local VERSION = "lua-0.1.0-1"
 local DEFAULT_ENCODE_BASE64 = true
 local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "cnsl", "iot" }
