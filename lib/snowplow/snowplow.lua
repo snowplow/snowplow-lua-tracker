@@ -16,7 +16,7 @@
 -- License:     Apache License Version 2.0
 
 local validate = require( "validate" )
-local tracker = require("tracker")
+local tracker  = require( "tracker" )
 
 local snowplow = {}
 
