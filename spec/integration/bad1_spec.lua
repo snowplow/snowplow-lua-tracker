@@ -32,13 +32,13 @@ describe("Integration tests with bad config", function()
   it("should throw an error without impacting another tracker", function()
 
     local t1 = snowplow.newTrackerForCf( "d3rkrsqld9gmqf" )
-    t1:platform ( "tv" )
+    t1:platform( "tv" )
     assert.has_no.errors( function() t1:trackScreenView( "Game HUD", "23" ) end )
     assert.has_no.errors( function() t1:trackUnstructEvent( "save-game", { save_id = 23 }, 1369330092 ) end )
 
     local t2 = snowplow.newTrackerForUri( "cc-endpoint2.beanstalky.com" )
     t2:encodeBase64( false )
-    t2:platform ( "iot" )
+    t2:platform( "iot" )
     t2:setColorDepth( 32 )
     t2:setViewport( 1028, 760 )
 
