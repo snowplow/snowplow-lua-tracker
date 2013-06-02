@@ -110,7 +110,7 @@ function httpGet(uri)
   @Parameter: uri
     The URI (including querystring) to GET
 
-  Return TODO
+  @Return: true/false for whether event was successfully collected; if false, the error message
   --]]--
 
   result, statusCode, content = http.request( uri )
@@ -146,7 +146,7 @@ function track(self, pb)
     A partially populated payloadBuilder closure. We will
     finish populating it in this method, then build() it
 
-  Return TODO
+  @Return: true/false for whether event was successfully collected; if false, the error message
   --]]--
 
   -- Add the standard name-value pairs
@@ -304,7 +304,7 @@ function Tracker:trackScreenView(name, id, tstamp)
     Optional time (in seconds since epoch) at which event
     occurred
 
-  Return TODO
+  @Return: true/false for whether event was successfully collected; if false, the error message
   --]]--
 
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
@@ -341,7 +341,7 @@ function Tracker:trackStructEvent(category, action, label, property, value, tsta
     Optional time (in seconds since epoch) at which
     event occurred
 
-  Return TODO
+  @Return: true/false for whether event was successfully collected; if false, the error message
   --]]--
 
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
@@ -368,7 +368,7 @@ function Tracker:trackUnstructEvent(name, properties, tstamp)
     Optional time (in seconds since epoch) at which
     event occurred
 
-  Return TODO
+  @Return: true/false for whether event was successfully collected; if false, the error message
   --]]--
 
   local pb = payload.newPayloadBuilder( self.config.encodeBase64 )

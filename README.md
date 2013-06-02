@@ -1,8 +1,8 @@
-# UNFINISHED Snowplow Analytics for Lua [![Build Status](https://travis-ci.org/snowplow/snowplow-lua-tracker.png)](https://travis-ci.org/snowplow/snowplow-lua-tracker)
+# Snowplow Analytics for Lua [![Build Status](https://travis-ci.org/snowplow/snowplow-lua-tracker.png)](https://travis-ci.org/snowplow/snowplow-lua-tracker)
 
 ## Overview
 
-Add analytics to your Lua apps and Lua-scripted games with the - **still unfinished** - SnowPlow event tracker for [Lua] [lua].
+Add analytics to your Lua apps and Lua-scripted games with the Snowplow event tracker for [Lua] [lua].
 
 With this tracker you can collect event data from your Lua-based applications, Lua web servers/frameworks, or from the Lua scripting layer within your games or apps.
 
@@ -28,7 +28,7 @@ For other environments, you'll have to check the Web for instructions on install
 
 ## Copyright and license
 
-The SnowPlow Lua Tracker is copyright 2013 Snowplow Analytics Ltd.
+The Snowplow Lua Tracker is copyright 2013 Snowplow Analytics Ltd.
 
 Licensed under the **[Apache License, Version 2.0] [license]** (the "License");
 you may not use this software except in compliance with the License.
