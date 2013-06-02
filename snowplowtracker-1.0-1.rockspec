@@ -18,5 +18,8 @@ dependencies = {
   -- TODO: add luasockets dependency
 }
 build = {
-  -- TODO: add here
+  type = "builtin",
+  modules = {
+     snowplow = "lib/snowplow.lua"
+  }
 }
