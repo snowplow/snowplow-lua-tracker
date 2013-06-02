@@ -27,7 +27,7 @@ describe("Integration tests with no issues", function()
     t:setAppId("wow-ext-1")
     local s, msg = t:trackStructEvent( "shop", "add-to-basket", nil, "units", 2, 1369330909 )
 
-    -- assert.is_false(s)
+    assert.is_true(s)
     assert.is_nil(msg)
   end)
 
@@ -38,7 +38,7 @@ describe("Integration tests with no issues", function()
     t:setScreenResolution(1068, 720)
     local s, msg = t:trackUnstructEvent( "save-game", { save_id = "4321", level = 23, difficultyLevel = "HARD", dl_content = true }, 1369330929 )
 
-    -- assert.is_true(s)
+    assert.is_true(s)
     assert.is_nil(msg)
   end)
 
