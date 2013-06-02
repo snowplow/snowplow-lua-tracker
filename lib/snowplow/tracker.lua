@@ -115,7 +115,7 @@ function httpGet(uri)
 
   result, statusCode, content = http.request( uri )
 
-  if statusCode == "host not found" then
+  if statusCode == "host not found" or statusCode == "No address associated with name" then
     return false, "Host [" .. uri .. "] not found (possible connectivity error)"
   else
     local code = tonumber(statusCode)
