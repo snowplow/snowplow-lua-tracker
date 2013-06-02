@@ -33,7 +33,7 @@ describe("tracker", function()
     assert.are.same(t.config, {
       encodeBase64 = true,
       platform     = "pc",
-      version      = "lua-0.1.0"
+      version      = "lua-1.0-1"
       })
 
     -- These are not set by default
