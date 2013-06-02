@@ -131,7 +131,7 @@ describe("tracker", function()
     assert.has_error(f, "dtm is required and must be a positive integer, not [false]")
   end)
   it("trackScreenView() should call httpGet() with the correct payload in the querystring", function()
-    t:trackScreenView( "Game HUD 2", nil, 1369330916 )
+    local s, msg = t:trackScreenView( "Game HUD 2", nil, 1369330916 )
     assert.spy(t._httpGet).was_called_with("http://d3rkrsqld9gmqf.cloudfront.net/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv=lua%2D0%2E1%2E0&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32")
   end)
 

@@ -19,6 +19,7 @@ local http     = require( "socket.http" )
 local validate = require( "validate" )
 local payload  = require( "payload" )
 local set      = require( "lib.set" )
+local ss       = require( "lib.utils" ).safeString -- Alias
 
 local tracker = {} -- The module
 local Tracker = {} -- The class
@@ -114,11 +115,13 @@ function httpGet(uri)
 
   result, statusCode, content = http.request( uri )
 
-  local status
-  -- Failure if statusCode is not a positive integer (e.g. "host not found")
-  status = false
+  if statusCode == "host not found" then
+    return false, "Host [" .. uri .. "] not found (possible connectivity error)"
+  elseif type(value) ~= "number" or value ~= math.floor(value) or value < 0 then
+    return false, "Unrecognised status code [" .. ss(statusCode) .. "]"
+  end
 
-  return status
+  return true
 end
 
 -- --------------------------------------------------------------
@@ -381,6 +384,7 @@ if _TEST then
   argument.
   --]]--
   end
+
 end
 
 -- --------------------------------------------------------------

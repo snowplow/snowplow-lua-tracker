@@ -17,6 +17,7 @@
 
 local snowplow = require("snowplow")
 local validate = require("validate")
+local ss       = require("lib.utils").safeString -- Alias
 
 local function assertTracker(tracker, collectorUri)
   assert.are.equal(tracker.collectorUri, collectorUri)
@@ -35,7 +36,7 @@ describe("snowplow", function()
       return function() snowplow.newTrackerForUri(host) end
     end
     local err = function(value)
-      return "host is required and must be a non-empty string, not [" .. validate._nts(value) .. "]"
+      return "host is required and must be a non-empty string, not [" .. ss(value) .. "]"
     end
     assert.has_error(f(""), err(""))
     assert.has_error(f({}), err("{}"))
@@ -47,7 +48,7 @@ describe("snowplow", function()
       return function() snowplow.newTrackerForCf(cfSubdomain) end
     end
     local err = function(value)
-      return "cfSubdomain is required and must be a non-empty string, not [" .. validate._nts(value) .. "]"
+      return "cfSubdomain is required and must be a non-empty string, not [" .. ss(value) .. "]"
     end
     assert.has_error(f(""), err(""))
     assert.has_error(f({}), err("{}"))

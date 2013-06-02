@@ -58,7 +58,7 @@ describe("Integration tests with bad config", function()
     t1:encodeBase64( false )
     status, err = pcall( t1.platform, t1, false )
     assert.are.equal( status, false )
-    assert.are.equal( err, "lib/snowplow/validate.lua:94: platform must be a string from the set {pc, mob, cnsl, tv, iot}, not [false]" )
+    assert.are.equal( err, "lib/snowplow/validate.lua:73: platform must be a string from the set {pc, mob, cnsl, tv, iot}, not [false]" )
 
     assert.has_no.errors( function() t1:platform( "cnsl" ) end )
     assert.has_no.errors( function() t1:trackScreenView( "Test", "23", 1368725287 ) end )

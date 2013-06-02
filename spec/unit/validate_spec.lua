@@ -17,6 +17,7 @@
 
 local validate = require("validate")
 local set      = require("lib.set")
+local ss       = require("lib.utils").safeString -- Alias
 
 local fieldName = "TestField"
 
@@ -24,7 +25,7 @@ local function assertDataTable(dataTable, validator)
   for i, t in ipairs(dataTable) do
     local f = function () validator(fieldName, t[1]) end
 
-    if i > 1 then
+    if i > 1 then -- Skip header row
       if t[2] == nil then
         assert.has_no.errors(f)   
       else
@@ -36,30 +37,10 @@ end
 
 describe("validate", function()
 
-  it("_nts() should work correctly", function()
-
-    local dataTable = {
-      { "INPUT"            , "EXPECTED"  },
-      { true               , "true"      },
-      { false              , "false"     },
-      { 23                 , "23"        },
-      { nil                , "<nil>"     },
-      { {}                 , "{}"        },
-      { { a = 1, b = "2" } , "<table>"   }
-    }
-
-    for i, t in ipairs(dataTable) do
-      if i > 1 then
-        assert.are.equal( validate._nts(t[1]), t[2] ) 
-      end
-    end    
-
-  end )
-
   it("isBoolean() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a boolean, not [" .. validate._nts(value) .. "]"
+      return fieldName .. " is required and must be a boolean, not [" .. ss(value) .. "]"
     end
 
     local dataTable = {
@@ -76,7 +57,7 @@ describe("validate", function()
   it("isNonEmptyTable() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a non-empty table, not [" .. validate._nts(value) .. "]"
+      return fieldName .. " is required and must be a non-empty table, not [" .. ss(value) .. "]"
     end
 
     local dataTable = {
@@ -97,7 +78,7 @@ describe("validate", function()
   it("isTableOrNil() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " must be a table or nil, not [" .. validate._nts(value) .. "]"
+      return fieldName .. " must be a table or nil, not [" .. ss(value) .. "]"
     end
 
     local dataTable = {
@@ -118,7 +99,7 @@ describe("validate", function()
   it("isNonEmptyString() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a non-empty string, not [" .. validate._nts(value) .. "]"
+      return fieldName .. " is required and must be a non-empty string, not [" .. ss(value) .. "]"
     end
 
     local dataTable = {
@@ -138,7 +119,7 @@ describe("validate", function()
   it("isStringOrNil() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " must be a string or nil, not [" .. validate._nts(value) .. "]"
+      return fieldName .. " must be a string or nil, not [" .. ss(value) .. "]"
     end
 
     local dataTable = {
@@ -160,7 +141,7 @@ describe("validate", function()
     local s = set.newSet { "a", "c", "f" }
 
     local err = function(value)
-      return fieldName .. " must be a string from the set " .. s:toString() .. ", not [" .. validate._nts(value) .. "]"
+      return fieldName .. " must be a string from the set " .. s:toString() .. ", not [" .. ss(value) .. "]"
     end
 
     local setValidator = function(name, value)
@@ -186,7 +167,7 @@ describe("validate", function()
   it("isNumber() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a number, not [" .. validate._nts(value) .. "]"
+      return fieldName .. " is required and must be a number, not [" .. ss(value) .. "]"
     end
 
     local dataTable = {
@@ -206,7 +187,7 @@ describe("validate", function()
   it("isNumberOrNil() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " must be a number or nil, not [" .. validate._nts(value) .. "]"
+      return fieldName .. " must be a number or nil, not [" .. ss(value) .. "]"
     end
 
     local dataTable = {
@@ -226,7 +207,7 @@ describe("validate", function()
   it("isPositiveInteger() should validate correctly", function()
 
     local err = function(value)
-      return fieldName .. " is required and must be a positive integer, not [" .. validate._nts(value) .. "]"
+      return fieldName .. " is required and must be a positive integer, not [" .. ss(value) .. "]"
     end
 
     local dataTable = {

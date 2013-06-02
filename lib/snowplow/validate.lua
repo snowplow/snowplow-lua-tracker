@@ -15,30 +15,9 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
+local ss       = require( "lib.utils" ).safeString -- Alias
+
 local validate = {}
-
--- --------------------------------------------------------------
--- Private helpers
-
-local function nts(value) -- Nil to string
-  local v
-  if value == nil then v = "<nil>" else v = value end
-  if type(value) == "table" then
-    if next(value) == nil then
-      v = "{}"
-    else
-      v = "<table>"
-    end
-  end
-  return tostring(v)
-end
-
--- --------------------------------------------------------------
--- Make privates public for testing
-
-if _TEST then
-  validate._nts = nts
-end
 
 -- --------------------------------------------------------------
 -- Boolean validations
@@ -46,7 +25,7 @@ end
 validate.isBoolean = function(name, value)
 
   if type(value) ~= "boolean" then
-    error(name .. " is required and must be a boolean, not [" .. nts(value) .. "]")
+    error(name .. " is required and must be a boolean, not [" .. ss(value) .. "]")
   end
 end
 
@@ -56,14 +35,14 @@ end
 validate.isNonEmptyTable = function(name, value)
 
   if type(value) ~= "table" or next(value) == nil then
-    error(name .. " is required and must be a non-empty table, not [" .. nts(value) .. "]")
+    error(name .. " is required and must be a non-empty table, not [" .. ss(value) .. "]")
   end
 end
 
 validate.isTableOrNil = function(name, value)
 
   if type(value) ~= "table" and value ~= nil then
-    error(name .. " must be a table or nil, not [" .. nts(value) .. "]")
+    error(name .. " must be a table or nil, not [" .. ss(value) .. "]")
   end
 end
 
@@ -73,14 +52,14 @@ end
 validate.isNonEmptyString = function(name, value)
 
   if type(value) ~= "string" or value == "" then
-    error(name .. " is required and must be a non-empty string, not [" .. nts(value) .. "]")
+    error(name .. " is required and must be a non-empty string, not [" .. ss(value) .. "]")
   end
 end
 
 validate.isStringOrNil = function(name, value)
 
   if type(value) ~= "string" and value ~= nil then
-    error(name .. " must be a string or nil, not [" .. nts(value) .. "]")
+    error(name .. " must be a string or nil, not [" .. ss(value) .. "]")
   end
 end
 
@@ -91,7 +70,7 @@ validate.isStringFromSet = function(set, name, value)
   --]]--
 
   if type(value) ~= "string" or not set:contains(value) then
-    error(name .. " must be a string from the set " .. set:toString() .. ", not [" .. nts(value) .. "]" )
+    error(name .. " must be a string from the set " .. set:toString() .. ", not [" .. ss(value) .. "]" )
   end
 end
 
@@ -101,21 +80,21 @@ end
 validate.isNumber = function(name, value)
 
   if type(value) ~= "number" then
-    error(name .. " is required and must be a number, not [" .. nts(value) .. "]")
+    error(name .. " is required and must be a number, not [" .. ss(value) .. "]")
   end
 end
 
 validate.isNumberOrNil = function(name, value)
 
   if type(value) ~= "number" and value ~= nil then
-    error(name .. " must be a number or nil, not [" .. nts(value) .. "]")
+    error(name .. " must be a number or nil, not [" .. ss(value) .. "]")
   end
 end
 
 validate.isPositiveInteger = function(name, value)
 
   if type(value) ~= "number" or value ~= math.floor(value) or value < 0 then
-    error(name .. " is required and must be a positive integer, not [" .. nts(value) .. "]")
+    error(name .. " is required and must be a positive integer, not [" .. ss(value) .. "]")
   end
 end
 
