@@ -28,15 +28,15 @@ describe("json", function()
       { { myTemp = 23.3, myUnit = "celsius"}                                 , '{"myTemp":23.3,"myUnit":"celsius"}'                                                                 },
       { { event      = "page_ping",
           mobile     = true,
-          properties = { min_x = 0, max_x = 960, min_y = -12, max_y = 1080 }
-        }                                                                    , '{"event":"page_ping","mobile":true,"properties":{"max_x":960,"max_y":1080,"min_x":0,"min_y":-12}}'  },
+          properties = { min_x_INT = 0, max_x = 960, min_y = -12, max_y = 1080 }
+        }                                                                    , '{"event":"page_ping","mobile":true,"properties":{"max_x":960,"max_y":1080,"min_x_INT":0,"min_y":-12}}'  },
       { { event      = "basket_change",
           product_id = "PBZ000345",
           price      = 23.39,
           quantity   = -2,
           visitor    = nil, -- Sadly this doesn't make it through as "visitor": null
-          tstamp     = 1678023000
-        }                                                                    , '{"event":"basket_change","price":23.39,"product_id":"PBZ000345","quantity":-2,"tstamp":1678023000}' }
+          tstamp_TM  = 1678023000
+        }                                                                    , '{"event":"basket_change","price":23.39,"product_id":"PBZ000345","quantity":-2,"tstamp_TM":1678023000}' }
     }
 
     for i, v in ipairs(dataTable) do
