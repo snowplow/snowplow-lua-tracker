@@ -21,6 +21,6 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
-     snowplow = "lib/snowplow.lua"
+     snowplow = "src/snowplow.lua"
   }
 }
