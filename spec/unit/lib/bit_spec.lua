@@ -15,7 +15,7 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-require("lib.snowplow.lib.bit")
+require("src.snowplow..lib.bit")
 
 describe("subset of bit used in base64", function()
 

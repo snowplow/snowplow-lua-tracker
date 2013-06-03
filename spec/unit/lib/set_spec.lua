@@ -15,7 +15,7 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local set = require("lib.snowplow.lib.set")
+local set = require("src.snowplow..lib.set")
 
 local set1 = set.newSet { 1, 2, 3 }
 local set2 = set.newSet { "a", "b", "c" }

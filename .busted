@@ -15,8 +15,8 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local LPATH = "lib/snowplow/?.lua;" ..
-              "lib/snowplow/lib/?.lua"
+local LPATH = "src/snowplow/?.lua;" ..
+              "src/snowplow/lib/?.lua"
 
 return {
   default = {

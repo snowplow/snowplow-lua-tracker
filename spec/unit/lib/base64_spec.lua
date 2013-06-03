@@ -15,7 +15,7 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local base64 = require("lib.snowplow.lib.base64")
+local base64 = require("src.snowplow..lib.base64")
 
 describe("base64", function()
 

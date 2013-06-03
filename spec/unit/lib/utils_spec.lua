@@ -15,7 +15,7 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local utils = require("lib.snowplow.lib.utils")
+local utils = require("src.snowplow..lib.utils")
 
 describe("utils", function()
 

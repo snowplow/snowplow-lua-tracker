@@ -15,7 +15,7 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local json = require("lib.snowplow.lib.json")
+local json = require("src.snowplow..lib.json")
 
 describe("json", function()
 

@@ -15,7 +15,7 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local escape = require("lib.snowplow.lib.escape")
+local escape = require("src.snowplow..lib.escape")
 
 describe("escape.escapeUri()", function()
 
