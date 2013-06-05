@@ -12,7 +12,7 @@ description = {
      from the Lua scripting layer within your games or apps.
   ]],
   homepage = "https://github.com/snowplow/snowplow-lua-tracker",
-  license = "Apache License Version 2.0"
+  license = "Apache License 2.0"
 }
 dependencies = {
   "lua ~> 5.1",
