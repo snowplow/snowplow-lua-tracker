@@ -66,6 +66,16 @@ payload.newPayloadBuilder = function (encodeBase64)
 
     local propsJson = json:encode(properties)
 
+    -- Now we need to rename our type suffixes to fit
+    -- the format expected by Snowplow
+    local types = { "int", "flt", "geo", "dt", "tm", "tms" }
+    for _, t in ipairs(types) do
+      suffix = "\":" -- To lower risk of error
+      local old = "_" .. t:upper() .. suffix
+      local new = "$" .. t .. suffix
+      propsJson = propsJson:gsub(old, new)
+    end
+
     return propsJson
   end
 

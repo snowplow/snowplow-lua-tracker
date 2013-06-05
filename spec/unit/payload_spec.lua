@@ -32,7 +32,7 @@ describe("payload", function()
 
   it("should correctly assemble another payload", function()
 
-    local pb = payload.newPayloadBuilder( false )
+    local pb = payload.newPayloadBuilder( true )
     pb.addRaw( "e", "hello" )
     pb.addRaw( "hello_test", "test")
     
@@ -42,14 +42,14 @@ describe("payload", function()
     assert.are.equal(pb.build(), "?e=hello&hello_test=test&ev_ca=2++spaces&ev_va=%2D23%2E34")
   end)
 
-  it("should error when a validation on an add() fails", function()
+  it("should correctly assemble a payload with typed properties", function()
 
-    local pb = payload.newPayloadBuilder( true )
-    local f = function()
-      pb.add( "num", -2, validate.isPositiveInteger )
-    end
+    local pb = payload.newPayloadBuilder( false ) -- Don't Base64-encode
+    local props = { min_x_INT = 0, max_x_FLT = 960, min_y_GEO = -12, max_y_DT = 1080, time_TM = 56565, time_TMS = 56565 } -- Test all the suffixes
 
-    assert.has_error(f, "num is required and must be a positive integer, not [-2]")
+    pb.addProps( "ue_px", "ue_pr", props, validate.isNonEmptyTable )
+
+    assert.are.equal(pb.build(), "?ue_pr=%7B%22max%5Fx%24flt%22%3A960%2C%22max%5Fy%24dt%22%3A1080%2C%22min%5Fx%24int%22%3A0%2C%22min%5Fy%24geo%22%3A%2D12%2C%22time%24tm%22%3A56565%2C%22time%24tms%22%3A56565%7D")
   end)
 
   it("should error when a validation on an addRaw() fails", function()
