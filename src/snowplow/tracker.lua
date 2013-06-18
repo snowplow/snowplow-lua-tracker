@@ -32,6 +32,10 @@ local VERSION = "lua-0.1.0-1"
 local DEFAULT_ENCODE_BASE64 = true
 local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "cnsl", "iot" }
+local HTTP_ERRORS = set.newSet { "host not found",
+                                 "No address associated with name",
+                                 "No address associated with hostname"
+                               }
 
 -- --------------------------------------------------------------
 -- Factory to create a new Tracker
@@ -115,7 +119,7 @@ function httpGet(uri)
 
   result, statusCode, content = http.request( uri )
 
-  if statusCode == "host not found" or statusCode == "No address associated with name" then
+  if HTTP_ERRORS:contains(statusCode) then
     return false, "Host [" .. uri .. "] not found (possible connectivity error)"
   else
     local code = tonumber(statusCode)
