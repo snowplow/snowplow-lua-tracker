@@ -1,8 +1,7 @@
 package = "SnowplowTracker"
 version = "0.1.0-1"
 source = {
-  url = "https://github.com/snowplow/snowplow-lua-tracker.git",
-  tag = "0.1.0"
+  url = "http://snowplow-hosted-assets.s3.amazonaws.com/1-trackers/lua-tracker/snowplowtracker-0.1.0.tar.gz"
 }
 description = {
   summary = "Snowplow event tracker for Lua",
@@ -21,6 +20,6 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
-     snowplow = "src/snowplow.lua"
+     snowplow = "src/snowplow/snowplow.lua"
   }
 }
