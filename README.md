@@ -1,8 +1,12 @@
-# Lua Analytics for Snowplow [![Build Status](https://travis-ci.org/snowplow/snowplow-lua-tracker.png)](https://travis-ci.org/snowplow/snowplow-lua-tracker)
+# Lua Analytics for Snowplow 
+
+[![unsupported]][tracker-classificiation] [![Build Status](https://travis-ci.org/snowplow/snowplow-lua-tracker.png)](https://travis-ci.org/snowplow/snowplow-lua-tracker)
+
+**DEPRECATED:** This project is no longer maintained.
 
 ## Overview
 
-Add analytics to your Lua apps and Lua-scripted games with the [Snowplow] [snowplow] event tracker for [Lua] [lua].
+Add analytics to your Lua apps and Lua-scripted games with the [Snowplow][snowplow] event tracker for [Lua][lua].
 
 With this tracker you can collect event data from your Lua-based applications, Lua web servers/frameworks, or from the Lua scripting layer within your games or apps.
 
@@ -10,14 +14,14 @@ With this tracker you can collect event data from your Lua-based applications, L
 
 | Technical Docs                  | Setup Guide               | Roadmap                 | Contributing                      |
 |---------------------------------|---------------------------|-------------------------|-----------------------------------|
-| ![i1] [techdocs-image]          | ![i2] [setup-image]       | ![i3] [roadmap-image]   | ![i4] [contributing-image]        |
-| **[Technical Docs] [techdocs]** | **[Setup Guide] [setup]** | **[Roadmap] [roadmap]** | **[Contributing] [contributing]** |
+| ![i1][techdocs-image]          | ![i2][setup-image]       | ![i3][roadmap-image]   | ![i4][contributing-image]        |
+| **[Technical Docs][techdocs]** | **[Setup Guide][setup]** | **[Roadmap][roadmap]** | **[Contributing][contributing]** |
 
 ## Copyright and license
 
 The Snowplow Lua Tracker is copyright 2013 Snowplow Analytics Ltd.
 
-Licensed under the **[Apache License, Version 2.0] [license]** (the "License");
+Licensed under the **[Apache License, Version 2.0][license]** (the "License");
 you may not use this software except in compliance with the License.
 
 Unless required by applicable law or agreed to in writing, software
@@ -41,3 +45,6 @@ limitations under the License.
 [contributing]: https://github.com/snowplow/snowplow/wiki/Lua-Tracker-Contributing
 
 [license]: http://www.apache.org/licenses/LICENSE-2.0
+
+[tracker-classificiation]: https://github.com/snowplow/snowplow/wiki/Tracker-Maintenance-Classification
+[unsupported]: https://img.shields.io/static/v1?style=flat&label=Snowplow&message=Unsupported&color=24292e&labelColor=lightgrey&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAeFBMVEVMaXGXANeYANeXANZbAJmXANeUANSQAM+XANeMAMpaAJhZAJeZANiXANaXANaOAM2WANVnAKWXANZ9ALtmAKVaAJmXANZaAJlXAJZdAJxaAJlZAJdbAJlbAJmQAM+UANKZANhhAJ+EAL+BAL9oAKZnAKVjAKF1ALNBd8J1AAAAKHRSTlMAa1hWXyteBTQJIEwRgUh2JjJon21wcBgNfmc+JlOBQjwezWF2l5dXzkW3/wAAAHpJREFUeNokhQOCA1EAxTL85hi7dXv/E5YPCYBq5DeN4pcqV1XbtW/xTVMIMAZE0cBHEaZhBmIQwCFofeprPUHqjmD/+7peztd62dWQRkvrQayXkn01f/gWp2CrxfjY7rcZ5V7DEMDQgmEozFpZqLUYDsNwOqbnMLwPAJEwCopZxKttAAAAAElFTkSuQmCC 
