@@ -18,24 +18,21 @@
 local utils = require("src.snowplow..lib.utils")
 
 describe("utils", function()
-
   it("safeString() should work correctly", function()
-
     local dataTable = {
-      { "INPUT"            , "EXPECTED"  },
-      { true               , "true"      },
-      { false              , "false"     },
-      { 23                 , "23"        },
-      { nil                , "<nil>"     },
-      { {}                 , "{}"        },
-      { { a = 1, b = "2" } , "<table>"   }
+      { "INPUT", "EXPECTED" },
+      { true, "true" },
+      { false, "false" },
+      { 23, "23" },
+      { nil, "<nil>" },
+      { {}, "{}" },
+      { { a = 1, b = "2" }, "<table>" },
     }
 
     for i, t in ipairs(dataTable) do
       if i > 1 then -- Skip header row
-        assert.are.equal( utils.safeString( t[1] ), t[2] ) 
+        assert.are.equal(utils.safeString(t[1]), t[2])
       end
     end
-
   end)
 end)
