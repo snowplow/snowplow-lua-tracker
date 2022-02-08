@@ -22,58 +22,48 @@ Set.__index = Set
 -- --------------------------------------------------------------
 -- Factory to create a Set
 
+-- Creates a new set from the supplied table.
+-- Source: http://www.lua.org/pil/13.1.html
+-- @param t table: The table containing the values for this set
+-- @return Set: The new set
 function set.newSet(t)
-  --[[--
-  Creates a new set from the supplied table.
-  Source: http://www.lua.org/pil/13.1.html
-
-  @Parameter: t
-    The table containing the values for this set
-  --]]--
-
-  local s = {}
-  setmetatable(s, Set)
-  for _, l in ipairs(t) do s[l] = true end
-  return s
+	local s = {}
+	setmetatable(s, Set)
+	for _, l in ipairs(t) do
+		s[l] = true
+	end
+	return s
 end
 
 -- --------------------------------------------------------------
 -- Class methods
 
+-- @param self Set: The set to check
+-- @param value any: The value to look for in our set
+-- @return boolean: If the set contains the value
 function Set:contains(value)
-  --[[--
-  Does the set contain this value?
+	local c
+	if self[value] == true then
+		c = true
+	else
+		c = false
+	end
 
-  @Parameter: self
-  @Parameter: key
-    The value to look for in our set
-  --]]--
-
-  local c
-  if self[value] == true then
-    c = true
-  else
-    c = false
-  end
-
-  return c
+	return c
 end
 
+-- Convert a set to a string representation
+-- Source: http://www.lua.org/pil/13.1.html
+-- @param self Set: The set to convert
+-- @return string: The string representation of the set
 function Set:toString()
-  --[[--
-  Convert a set to a string representation
-  Source: http://www.lua.org/pil/13.1.html
-
-  @Parameter: self
-  --]]--
-
-  local s = "{"
-  local sep = ""
-  for e in pairs(self) do
-    s = s .. sep .. e
-    sep = ", "
-  end
-  return s .. "}"
+	local s = "{"
+	local sep = ""
+	for e in pairs(self) do
+		s = s .. sep .. e
+		sep = ", "
+	end
+	return s .. "}"
 end
 
 -- --------------------------------------------------------------
