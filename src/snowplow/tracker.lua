@@ -15,7 +15,7 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local http = require("socket.http")
+local curl = require("curl")
 local validate = require("validate")
 local payload = require("payload")
 local set = require("lib.set")
@@ -97,22 +97,27 @@ end
 -- @param uri string: The URI (including querystring) to GET
 -- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
 function httpGet(uri)
-  result, statusCode, content = http.request(uri)
+  -- `resp` is the table `:getinfo` reads from
+	local resp = {}
+	local c = curl.easy({
+		url = uri,
+	}):setopt_writefunction(table.insert, resp):perform()
+	local statusCode = c:getinfo(curl.INFO_RESPONSE_CODE)
 
-  if HTTP_ERRORS:contains(statusCode) then
-    return false, "Host [" .. uri .. "] not found (possible connectivity error)"
-  else
-    local code = tonumber(statusCode)
-    if code == nil or code ~= math.floor(code) or code < 0 or code >= 600 then
-      return false, "Unrecognised status code [" .. ss(statusCode) .. "]"
-    elseif code >= 400 and code < 500 then
-      return false, "HTTP status code [" .. ss(statusCode) .. "] is a client error"
-    elseif code >= 500 then
-      return false, "HTTP status code [" .. ss(statusCode) .. "] is a server error"
-    end
-  end
+	if HTTP_ERRORS:contains(statusCode) then
+		return false, "Host [" .. uri .. "] not found (possible connectivity error)"
+	else
+		local code = tonumber(statusCode)
+		if code == nil or code ~= math.floor(code) or code < 0 or code >= 600 then
+			return false, "Unrecognised status code [" .. ss(statusCode) .. "]"
+		elseif code >= 400 and code < 500 then
+			return false, "HTTP status code [" .. ss(statusCode) .. "] is a client error"
+		elseif code >= 500 then
+			return false, "HTTP status code [" .. ss(statusCode) .. "] is a server error"
+		end
+	end
 
-  return true
+	return true
 end
 
 -- --------------------------------------------------------------
