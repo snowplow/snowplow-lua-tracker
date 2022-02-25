@@ -15,62 +15,56 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local escape = require( "lib.escape" )
-local json   = require( "lib.json" )
-local base64 = require( "lib.base64" )
+local escape = require("lib.escape")
+local json = require("lib.json")
+local base64 = require("lib.base64")
 
 local payload = {}
 
 -- --------------------------------------------------------------
 -- Factory to create a payload builder closure
 
-payload.newPayloadBuilder = function (encodeBase64)
-  --[[--
-  Closure provides a fluent interface to building
-  a new payload for Snowplow.
-
-  @Parameter: encodeBase64
-    Whether properties and custom variables should
-    be sent Base64 encoded or not
-  --]]--
+payload.newPayloadBuilder = function(encodeBase64)
+  -- Closure provides a fluent interface to building a new payload for Snowplow.
+  -- @param encodeBase64 boolean: Whether properties and custom variables should be sent Base64 encoded or not
+  -- @return table: The new payload
 
   local payload = "?" -- What we're closing over
 
-  local addNvPair = function (key, value, esc)
-    --[[--
-    Helper to add a &name=value pair to our payload
-    aka querystring. Closes around payload
-    --]]--
-
+  -- Helper to add a &name=value pair to our payload aka querystring. Closes around payload
+  -- @param key string: The name of the property
+  -- @param value string: The value to add to the payload
+  -- @param esc boolean: If true, value will be escaped
+  local addNvPair = function(key, value, esc)
     local a, v
 
     if value ~= nil and value ~= "" then
-      if payload:len() > 1 then a = "&" else a = "" end
-      if esc then v = escape.escapeUri( value ) else v = value end
+      if payload:len() > 1 then
+        a = "&"
+      else
+        a = ""
+      end
+      if esc then
+        v = escape.escapeUri(value)
+      else
+        v = value
+      end
       payload = payload .. a .. key .. "=" .. v
     end
   end
 
-  local toPropertiesJson = function (properties)
-    --[[--
-    Converts a _non-nested_ Lua table into a JSON
-    of properties.
-    
-    @Parameter: properties
-      A non-nested Lua table of properties, to be
-      converted to JSON format
-    --]]--
-
-    -- TODO: add validation: check for nesting etc
-    -- TODO: check data types
-
+  -- Converts a _non-nested_ Lua table into a JSON of properties.
+  -- @param properties table: A non-nested Lua table of properties, to be converted to JSON format
+  -- TODO: add validation: check for nesting etc
+  -- TODO: check data types
+  local toPropertiesJson = function(properties)
     local propsJson = json:encode(properties)
 
     -- Now we need to rename our type suffixes to fit
     -- the format expected by Snowplow
     local types = { "int", "flt", "geo", "dt", "tm", "tms" }
     for _, t in ipairs(types) do
-      suffix = "\":" -- To lower risk of error
+      suffix = '":' -- To lower risk of error
       local old = "_" .. t:upper() .. suffix
       local new = "$" .. t .. suffix
       propsJson = propsJson:gsub(old, new)
@@ -79,58 +73,57 @@ payload.newPayloadBuilder = function (encodeBase64)
     return propsJson
   end
 
-  local add = function (key, value, validate)
-    --[[--
-    Add a &name=value pair with the value encoded,
-    --]]--
+  -- Add a &name=value pair with the value encoded
+  -- @param key string: The name of the property
+  -- @param value string: The value to add to the payload
+  -- @param validate function or nil: If present, will be called with value to validate it
+  local add = function(key, value, validate)
     if type(validate) == "function" then
-      validate( key, value )
+      validate(key, value)
     end
-    addNvPair( key, value, true )
+    addNvPair(key, value, true)
   end
 
-  local addRaw = function (key, value, validate)
-    --[[--
-    Add a &name=value pair with the value
-    not encoded.
-    --]]--
+  -- Add a &name=value pair with the value not encoded.
+  -- @param key string: The name of the property
+  -- @param value string: The value to add to the payload
+  -- @param validate function or nil: If present, will be called with value to validate it
+  local addRaw = function(key, value, validate)
     if type(validate) == "function" then
-      validate( key, value )
+      validate(key, value)
     end
-    addNvPair( key, value, false )
+    addNvPair(key, value, false)
   end
 
-  local addProps = function (keyIfEnc, key, value, validate)
-    --[[--
-    Add a &name=value pair with the value
-    base64 encoded, unless encodeBase64 is set
-    to false (in which case URI escape).
-    --]]--
-
+  -- Add a &name=value pair with the value base64 encoded, unless encodeBase64 is set to false (in which case URI escape).
+  -- @param keyIfEnc string: The key name if the value is encoded - ue_pr: Unencoded, ue_px: Encoded
+  -- @param key string: The name of the property
+  -- @param value string: The value to add to the payload
+  -- @param validate function or nil: If present, will be called with value to validate it
+  local addProps = function(keyIfEnc, key, value, validate)
     if type(validate) == "function" then
-      validate( ( keyIfEnc .. "|" .. key ), value )
+      validate((keyIfEnc .. "|" .. key), value)
     end
-    props = toPropertiesJson( value )
+    props = toPropertiesJson(value)
 
     if encodeBase64 then
-      addNvPair( keyIfEnc, base64.encode( props ), false) -- Base64 encode, no URL-encoding
+      addNvPair(keyIfEnc, base64.encode(props), false) -- Base64 encode, no URL-encoding
     else
-      addNvPair( key, props, true ) -- URL-encoding
+      addNvPair(key, props, true) -- URL-encoding
     end
   end
 
-  local build = function ()
-    --[[--
-    Our "builder" returns the payload string.
-    --]]--
+  -- Our "builder" returns the payload string.
+  -- @return string
+  local build = function()
     return payload
   end
 
   return {
-    add      = add,
-    addRaw   = addRaw,
+    add = add,
+    addRaw = addRaw,
     addProps = addProps,
-    build    = build
+    build = build,
   }
 end
 

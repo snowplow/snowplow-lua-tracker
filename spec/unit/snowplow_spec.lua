@@ -17,7 +17,7 @@
 
 local snowplow = require("snowplow")
 local validate = require("validate")
-local ss       = require("lib.utils").safeString -- Alias
+local ss = require("lib.utils").safeString -- Alias
 
 local function assertTracker(tracker, collectorUri)
   assert.are.equal(tracker.collectorUri, collectorUri)
@@ -27,13 +27,14 @@ local function assertTracker(tracker, collectorUri)
 end
 
 describe("snowplow", function()
-  
   -- --------------------------------------------------------------
   -- Test error handling on constructors
 
   it("newTrackerForUri() should error unless passed a non-empty string", function()
     local f = function(host)
-      return function() snowplow.newTrackerForUri(host) end
+      return function()
+        snowplow.newTrackerForUri(host)
+      end
     end
     local err = function(value)
       return "host is required and must be a non-empty string, not [" .. ss(value) .. "]"
@@ -45,7 +46,9 @@ describe("snowplow", function()
 
   it("newTrackerForCf() should error unless passed a non-empty string", function()
     local f = function(cfSubdomain)
-      return function() snowplow.newTrackerForCf(cfSubdomain) end
+      return function()
+        snowplow.newTrackerForCf(cfSubdomain)
+      end
     end
     local err = function(value)
       return "cfSubdomain is required and must be a non-empty string, not [" .. ss(value) .. "]"
@@ -59,15 +62,12 @@ describe("snowplow", function()
   -- Verify constructed tracker tables
 
   it("newTrackerForUri() should correctly create a tracker", function()
-
     local t = snowplow.newTrackerForUri("c.snplow.com")
     assertTracker(t, "http://c.snplow.com/i")
   end)
 
   it("newTrackerForCf() should correctly create a tracker", function()
-
     local t = snowplow.newTrackerForCf("d3rkrsqld9gmqf")
     assertTracker(t, "http://d3rkrsqld9gmqf.cloudfront.net/i")
   end)
-
 end)
