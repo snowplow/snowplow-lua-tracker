@@ -17,15 +17,14 @@
 
 local set = require("src.snowplow..lib.set")
 
-local set1 = set.newSet { 1, 2, 3 }
-local set2 = set.newSet { "a", "b", "c" }
+local set1 = set.newSet({ 1, 2, 3 })
+local set2 = set.newSet({ "a", "b", "c" })
 
 describe("set", function()
-
   it("should compare sets correctly", function()
-    local set3 = set.newSet { 1, 2, 3 }
-  	assert.are.same(set1, set3)
-  	assert.are_not.same(set2, set3)
+    local set3 = set.newSet({ 1, 2, 3 })
+    assert.are.same(set1, set3)
+    assert.are_not.same(set2, set3)
     assert.are_not.same(set1, { 1, 2, 3 })
   end)
 
@@ -35,10 +34,9 @@ describe("set", function()
   end)
 
   it("should be convertable to a string", function()
-    local set3 = set.newSet {}
+    local set3 = set.newSet({})
     assert.are.equal(set1:toString(), "{1, 2, 3}")
     assert.are.equal(set2:toString(), "{a, c, b}") -- Lua changes order for some reason
     assert.are.equal(set3:toString(), "{}")
   end)
-
 end)

@@ -20,18 +20,16 @@ local utils = {}
 -- --------------------------------------------------------------
 -- String utils
 
+-- Converts a value to a safe string representation.
+-- @param value any: A value hopefully representable as a string
+-- @return string: Best-approximation string representation of the value
 utils.safeString = function(value)
-  --[[--
-  Converts a value to a safe string representation.
-
-  @Parameter: value
-    A value hopefully representable as a string
-
-  @Return Best-approximation string representation of the value
-  --]]--
-
   local v
-  if value == nil then v = "<nil>" else v = value end
+  if value == nil then
+    v = "<nil>"
+  else
+    v = value
+  end
   if type(value) == "table" then
     if next(value) == nil then
       v = "{}"
