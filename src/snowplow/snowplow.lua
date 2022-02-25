@@ -27,8 +27,8 @@ local snowplow = {}
 -- @param uri string: The full URI to the Snowplow collector
 -- @return tracker table: The new tracker
 local function initTracker(uri)
-	local tracker = tracker.newTracker(uri, config)
-	return tracker
+  local tracker = tracker.newTracker(uri, config)
+  return tracker
 end
 
 -- Helper to generate the collector url from a collector host name.
@@ -36,7 +36,7 @@ end
 -- @param host string: The host name of the collector
 -- @return string: The full collector URI
 local function asCollectorUri(host)
-	return "http://" .. host .. "/i"
+  return "http://" .. host .. "/i"
 end
 
 -- Helper to generate the collector url from a CloudFront distribution subdomain.
@@ -44,7 +44,7 @@ end
 -- @param cfSubdomain string The CloudFront subdomain on which the collector's distribution is hosted
 -- @return string: The full collector URI
 local function collectorUriFromCf(cfSubdomain)
-	return asCollectorUri(cfSubdomain .. ".cloudfront.net")
+  return asCollectorUri(cfSubdomain .. ".cloudfront.net")
 end
 
 -- --------------------------------------------------------------
@@ -54,18 +54,18 @@ end
 -- @param host string: The host (i.e. full domain) on which the collector is running
 -- @return tracker table: The new tracker
 function snowplow.newTrackerForUri(host)
-	validate.isNonEmptyString("host", host)
-	local uri = asCollectorUri(host)
-	return initTracker(uri)
+  validate.isNonEmptyString("host", host)
+  local uri = asCollectorUri(host)
+  return initTracker(uri)
 end
 
 -- Create a new Snowplow tracker talking to a CloudFront-based collector on the given subdomain.
 -- @param cfSubdomain string: The CloudFront subdomain on which the collector is running
 -- @return tracker table: The new tracker
 function snowplow.newTrackerForCf(cfSubdomain)
-	validate.isNonEmptyString("cfSubdomain", cfSubdomain)
-	local uri = collectorUriFromCf(cfSubdomain)
-	return initTracker(uri)
+  validate.isNonEmptyString("cfSubdomain", cfSubdomain)
+  local uri = collectorUriFromCf(cfSubdomain)
+  return initTracker(uri)
 end
 
 -- --------------------------------------------------------------

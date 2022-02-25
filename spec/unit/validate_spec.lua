@@ -22,198 +22,198 @@ local ss = require("lib.utils").safeString -- Alias
 local fieldName = "TestField"
 
 local function assertDataTable(dataTable, validator)
-	for i, t in ipairs(dataTable) do
-		local f = function()
-			validator(fieldName, t[1])
-		end
+  for i, t in ipairs(dataTable) do
+    local f = function()
+      validator(fieldName, t[1])
+    end
 
-		if i > 1 then -- Skip header row
-			if t[2] == nil then
-				assert.has_no.errors(f)
-			else
-				assert.has_error(f, t[2])
-			end
-		end
-	end
+    if i > 1 then -- Skip header row
+      if t[2] == nil then
+        assert.has_no.errors(f)
+      else
+        assert.has_error(f, t[2])
+      end
+    end
+  end
 end
 
 describe("validate", function()
-	it("isBoolean() should validate correctly", function()
-		local err = function(value)
-			return fieldName .. " is required and must be a boolean, not [" .. ss(value) .. "]"
-		end
+  it("isBoolean() should validate correctly", function()
+    local err = function(value)
+      return fieldName .. " is required and must be a boolean, not [" .. ss(value) .. "]"
+    end
 
-		local dataTable = {
-			{ "INPUT", "EXPECTED" },
-			{ true, nil },
-			{ false, nil },
-			{ 23, err(23) },
-			{ "hello", err("hello") },
-		}
+    local dataTable = {
+      { "INPUT", "EXPECTED" },
+      { true, nil },
+      { false, nil },
+      { 23, err(23) },
+      { "hello", err("hello") },
+    }
 
-		assertDataTable(dataTable, validate.isBoolean)
-	end)
+    assertDataTable(dataTable, validate.isBoolean)
+  end)
 
-	it("isNonEmptyTable() should validate correctly", function()
-		local err = function(value)
-			return fieldName .. " is required and must be a non-empty table, not [" .. ss(value) .. "]"
-		end
+  it("isNonEmptyTable() should validate correctly", function()
+    local err = function(value)
+      return fieldName .. " is required and must be a non-empty table, not [" .. ss(value) .. "]"
+    end
 
-		local dataTable = {
-			{ "INPUT", "EXPECTED" },
-			{ { "hello" }, nil },
-			{ { 1, 2 }, nil },
-			{ { a = 1, b = c }, nil },
-			{ { a = true, b = false }, nil },
-			{ nil, err("<nil>") },
-			{ {}, err("{}") },
-			{ "hello", err("hello") },
-			{ 23.3, err(23.3) },
-		}
+    local dataTable = {
+      { "INPUT", "EXPECTED" },
+      { { "hello" }, nil },
+      { { 1, 2 }, nil },
+      { { a = 1, b = c }, nil },
+      { { a = true, b = false }, nil },
+      { nil, err("<nil>") },
+      { {}, err("{}") },
+      { "hello", err("hello") },
+      { 23.3, err(23.3) },
+    }
 
-		assertDataTable(dataTable, validate.isNonEmptyTable)
-	end)
+    assertDataTable(dataTable, validate.isNonEmptyTable)
+  end)
 
-	it("isTableOrNil() should validate correctly", function()
-		local err = function(value)
-			return fieldName .. " must be a table or nil, not [" .. ss(value) .. "]"
-		end
+  it("isTableOrNil() should validate correctly", function()
+    local err = function(value)
+      return fieldName .. " must be a table or nil, not [" .. ss(value) .. "]"
+    end
 
-		local dataTable = {
-			{ "INPUT", "EXPECTED" },
-			{ { "hello" }, nil },
-			{ { 1, 2 }, nil },
-			{ { a = 1, b = "c" }, nil },
-			{ { a = true, b = false }, nil },
-			{ nil, nil }, -- Difference from the above
-			{ {}, nil }, -- Difference from the above
-			{ "hello", err("hello") },
-			{ 23.3, err(23.3) },
-		}
+    local dataTable = {
+      { "INPUT", "EXPECTED" },
+      { { "hello" }, nil },
+      { { 1, 2 }, nil },
+      { { a = 1, b = "c" }, nil },
+      { { a = true, b = false }, nil },
+      { nil, nil }, -- Difference from the above
+      { {}, nil }, -- Difference from the above
+      { "hello", err("hello") },
+      { 23.3, err(23.3) },
+    }
 
-		assertDataTable(dataTable, validate.isTableOrNil)
-	end)
+    assertDataTable(dataTable, validate.isTableOrNil)
+  end)
 
-	it("isNonEmptyString() should validate correctly", function()
-		local err = function(value)
-			return fieldName .. " is required and must be a non-empty string, not [" .. ss(value) .. "]"
-		end
+  it("isNonEmptyString() should validate correctly", function()
+    local err = function(value)
+      return fieldName .. " is required and must be a non-empty string, not [" .. ss(value) .. "]"
+    end
 
-		local dataTable = {
-			{ "INPUT", "EXPECTED" },
-			{ "a string", nil },
-			{ "another", nil },
-			{ "", err("") },
-			{ nil, err("<nil>") },
-			{ {}, err("{}") },
-			{ { a = 1, b = c }, err("<table>") },
-			{ 23.3, err(23.3) },
-		}
+    local dataTable = {
+      { "INPUT", "EXPECTED" },
+      { "a string", nil },
+      { "another", nil },
+      { "", err("") },
+      { nil, err("<nil>") },
+      { {}, err("{}") },
+      { { a = 1, b = c }, err("<table>") },
+      { 23.3, err(23.3) },
+    }
 
-		assertDataTable(dataTable, validate.isNonEmptyString)
-	end)
+    assertDataTable(dataTable, validate.isNonEmptyString)
+  end)
 
-	it("isStringOrNil() should validate correctly", function()
-		local err = function(value)
-			return fieldName .. " must be a string or nil, not [" .. ss(value) .. "]"
-		end
+  it("isStringOrNil() should validate correctly", function()
+    local err = function(value)
+      return fieldName .. " must be a string or nil, not [" .. ss(value) .. "]"
+    end
 
-		local dataTable = {
-			{ "INPUT", "EXPECTED" },
-			{ "a string", nil },
-			{ "another", nil },
-			{ "", nil }, -- Difference from the above
-			{ nil, nil }, -- Difference from the above
-			{ {}, err("{}") },
-			{ { a = 1, b = c }, err("<table>") },
-			{ 23.3, err(23.3) },
-		}
+    local dataTable = {
+      { "INPUT", "EXPECTED" },
+      { "a string", nil },
+      { "another", nil },
+      { "", nil }, -- Difference from the above
+      { nil, nil }, -- Difference from the above
+      { {}, err("{}") },
+      { { a = 1, b = c }, err("<table>") },
+      { 23.3, err(23.3) },
+    }
 
-		assertDataTable(dataTable, validate.isStringOrNil)
-	end)
+    assertDataTable(dataTable, validate.isStringOrNil)
+  end)
 
-	it("isStringFromSet() should validate correctly", function()
-		local s = set.newSet({ "a", "c", "f" })
+  it("isStringFromSet() should validate correctly", function()
+    local s = set.newSet({ "a", "c", "f" })
 
-		local err = function(value)
-			return fieldName .. " must be a string from the set " .. s:toString() .. ", not [" .. ss(value) .. "]"
-		end
+    local err = function(value)
+      return fieldName .. " must be a string from the set " .. s:toString() .. ", not [" .. ss(value) .. "]"
+    end
 
-		local setValidator = function(name, value)
-			return validate.isStringFromSet(s, name, value)
-		end
+    local setValidator = function(name, value)
+      return validate.isStringFromSet(s, name, value)
+    end
 
-		local dataTable = {
-			{ "INPUT", "EXPECTED" },
-			{ "a", nil },
-			{ "f", nil },
-			{ "g", err("g") },
-			{ "hello", err("hello") },
-			{ "", err("") },
-			{ nil, err("<nil>") },
-			{ {}, err("{}") },
-			{ { a = 1, b = c }, err("<table>") },
-			{ 23.3, err(23.3) },
-		}
+    local dataTable = {
+      { "INPUT", "EXPECTED" },
+      { "a", nil },
+      { "f", nil },
+      { "g", err("g") },
+      { "hello", err("hello") },
+      { "", err("") },
+      { nil, err("<nil>") },
+      { {}, err("{}") },
+      { { a = 1, b = c }, err("<table>") },
+      { 23.3, err(23.3) },
+    }
 
-		assertDataTable(dataTable, setValidator)
-	end)
+    assertDataTable(dataTable, setValidator)
+  end)
 
-	it("isNumber() should validate correctly", function()
-		local err = function(value)
-			return fieldName .. " is required and must be a number, not [" .. ss(value) .. "]"
-		end
+  it("isNumber() should validate correctly", function()
+    local err = function(value)
+      return fieldName .. " is required and must be a number, not [" .. ss(value) .. "]"
+    end
 
-		local dataTable = {
-			{ "INPUT", "EXPECTED" },
-			{ 23, nil },
-			{ 0, nil },
-			{ -10.586, nil },
-			{ 4523000.29, nil },
-			{ nil, err("<nil>") },
-			{ "hello", err("hello") },
-			{ { a = 1, b = c }, err("<table>") },
-		}
+    local dataTable = {
+      { "INPUT", "EXPECTED" },
+      { 23, nil },
+      { 0, nil },
+      { -10.586, nil },
+      { 4523000.29, nil },
+      { nil, err("<nil>") },
+      { "hello", err("hello") },
+      { { a = 1, b = c }, err("<table>") },
+    }
 
-		assertDataTable(dataTable, validate.isNumber)
-	end)
+    assertDataTable(dataTable, validate.isNumber)
+  end)
 
-	it("isNumberOrNil() should validate correctly", function()
-		local err = function(value)
-			return fieldName .. " must be a number or nil, not [" .. ss(value) .. "]"
-		end
+  it("isNumberOrNil() should validate correctly", function()
+    local err = function(value)
+      return fieldName .. " must be a number or nil, not [" .. ss(value) .. "]"
+    end
 
-		local dataTable = {
-			{ "INPUT", "EXPECTED" },
-			{ 23, nil },
-			{ 0, nil },
-			{ -10.586, nil },
-			{ 4523000.29, nil },
-			{ nil, nil }, -- Only difference from the above
-			{ "hello", err("hello") },
-			{ { a = 1, b = c }, err("<table>") },
-		}
+    local dataTable = {
+      { "INPUT", "EXPECTED" },
+      { 23, nil },
+      { 0, nil },
+      { -10.586, nil },
+      { 4523000.29, nil },
+      { nil, nil }, -- Only difference from the above
+      { "hello", err("hello") },
+      { { a = 1, b = c }, err("<table>") },
+    }
 
-		assertDataTable(dataTable, validate.isNumberOrNil)
-	end)
+    assertDataTable(dataTable, validate.isNumberOrNil)
+  end)
 
-	it("isPositiveInteger() should validate correctly", function()
-		local err = function(value)
-			return fieldName .. " is required and must be a positive integer, not [" .. ss(value) .. "]"
-		end
+  it("isPositiveInteger() should validate correctly", function()
+    local err = function(value)
+      return fieldName .. " is required and must be a positive integer, not [" .. ss(value) .. "]"
+    end
 
-		local dataTable = {
-			{ "INPUT", "EXPECTED" },
-			{ 23, nil },
-			{ 0, nil },
-			{ 452300.29, err("452300.29") },
-			{ -1, err("-1") },
-			{ -10.586, err("-10.586") },
-			{ nil, err("<nil>") },
-			{ "hello", err("hello") },
-			{ { a = 1, b = c }, err("<table>") },
-		}
+    local dataTable = {
+      { "INPUT", "EXPECTED" },
+      { 23, nil },
+      { 0, nil },
+      { 452300.29, err("452300.29") },
+      { -1, err("-1") },
+      { -10.586, err("-10.586") },
+      { nil, err("<nil>") },
+      { "hello", err("hello") },
+      { { a = 1, b = c }, err("<table>") },
+    }
 
-		assertDataTable(dataTable, validate.isPositiveInteger)
-	end)
+    assertDataTable(dataTable, validate.isPositiveInteger)
+  end)
 end)

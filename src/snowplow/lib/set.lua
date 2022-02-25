@@ -27,12 +27,12 @@ Set.__index = Set
 -- @param t table: The table containing the values for this set
 -- @return Set: The new set
 function set.newSet(t)
-	local s = {}
-	setmetatable(s, Set)
-	for _, l in ipairs(t) do
-		s[l] = true
-	end
-	return s
+  local s = {}
+  setmetatable(s, Set)
+  for _, l in ipairs(t) do
+    s[l] = true
+  end
+  return s
 end
 
 -- --------------------------------------------------------------
@@ -42,14 +42,14 @@ end
 -- @param value any: The value to look for in our set
 -- @return boolean: If the set contains the value
 function Set:contains(value)
-	local c
-	if self[value] == true then
-		c = true
-	else
-		c = false
-	end
+  local c
+  if self[value] == true then
+    c = true
+  else
+    c = false
+  end
 
-	return c
+  return c
 end
 
 -- Convert a set to a string representation
@@ -57,13 +57,13 @@ end
 -- @param self Set: The set to convert
 -- @return string: The string representation of the set
 function Set:toString()
-	local s = "{"
-	local sep = ""
-	for e in pairs(self) do
-		s = s .. sep .. e
-		sep = ", "
-	end
-	return s .. "}"
+  local s = "{"
+  local sep = ""
+  for e in pairs(self) do
+    s = s .. sep .. e
+    sep = ", "
+  end
+  return s .. "}"
 end
 
 -- --------------------------------------------------------------

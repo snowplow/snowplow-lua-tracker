@@ -26,17 +26,17 @@ local escape = {}
 -- @param string s: The string to escape
 -- @return string: The escaped string
 escape.escapeUri = function(s)
-	s = string.gsub(s, "\n", "\r\n")
-	s = string.gsub(
-		s,
-		"([^0-9a-zA-Z ])", -- Locale independent
-		function(c)
-			return string.format("%%%02X", string.byte(c))
-		end
-	)
-	s = string.gsub(s, " ", "+")
+  s = string.gsub(s, "\n", "\r\n")
+  s = string.gsub(
+    s,
+    "([^0-9a-zA-Z ])", -- Locale independent
+    function(c)
+      return string.format("%%%02X", string.byte(c))
+    end
+  )
+  s = string.gsub(s, " ", "+")
 
-	return s
+  return s
 end
 
 -- --------------------------------------------------------------
