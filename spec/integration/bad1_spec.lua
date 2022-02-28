@@ -63,12 +63,9 @@ describe("Integration tests with bad config", function()
   it("should be reusable if the error is caught", function()
     local t1 = snowplow.newTrackerForCf("d3rkrsqld9gmqf")
     t1:encodeBase64(false)
-    status, err = pcall(t1.platform, t1, false)
+    local status, err = pcall(t1.platform, t1, false)
     assert.are.equal(status, false)
-    assert.are.equal(
-      err,
-      "src/snowplow/validate.lua:73: platform must be a string from the set {pc, mob, cnsl, tv, iot}, not [false]"
-    )
+    assert.is_not_nil(err:find("platform must be a string from the set {cnsl, iot, mob, pc, tv}, not %[false%]"))
 
     assert.has_no.errors(function()
       t1:platform("cnsl")

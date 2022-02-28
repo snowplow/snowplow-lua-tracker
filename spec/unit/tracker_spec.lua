@@ -20,7 +20,18 @@ local tracker = require("tracker")
 local collectorUri = "http://d3rkrsqld9gmqf.cloudfront.net/i"
 
 describe("tracker", function()
-  local t = tracker.newTracker(collectorUri)
+  setup(function()
+    _G._TEST = true
+  end)
+
+  teardown(function()
+    _G._TEST = nil
+  end)
+
+  local t
+  before_each(function()
+    t = tracker.newTracker(collectorUri)
+  end)
 
   -- --------------------------------------------------------------
   -- Constructor tests
@@ -61,7 +72,7 @@ describe("tracker", function()
     local f = function()
       t:platform("fake")
     end
-    assert.has_error(f, "platform must be a string from the set {pc, mob, cnsl, tv, iot}, not [fake]")
+    assert.has_error(f, "platform must be a string from the set {cnsl, iot, mob, pc, tv}, not [fake]")
   end)
 
   it("encodeBase64() should update the Tracker's encodeBase64 configuration setting", function()
@@ -135,8 +146,6 @@ describe("tracker", function()
   -- --------------------------------------------------------------
   -- track...() tests
 
-  spy.on(t, "_httpGet")
-
   it("trackScreenView() should error unless name is a non-empty string", function()
     local f = function()
       t:trackScreenView(-23, "23")
@@ -159,8 +168,16 @@ describe("tracker", function()
   end)
 
   it("trackScreenView() should call httpGet() with the correct payload in the querystring", function()
+    stub(t, "_httpGet")
+    t:setUserId("user123")
+    t:setAppId("wow-ext-1")
+    t:platform("tv")
+    t:setColorDepth(32)
+    t:setScreenResolution(1068, 720)
+    t:setViewport(420, 360)
+
     local s, msg = t:trackScreenView("Game HUD 2", nil, 1369330916)
-    assert.spy(t._httpGet).was_called_with(
+    assert.stub(t._httpGet).was_called_with(
       "http://d3rkrsqld9gmqf.cloudfront.net/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv=lua-0.1.0-1&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
     )
   end)
@@ -208,8 +225,15 @@ describe("tracker", function()
   end)
 
   it("trackStructEvent() should call httpGet() with the correct payload in the querystring", function()
+    stub(t, "_httpGet")
+    t:setUserId("user123")
+    t:setAppId("wow-ext-1")
+    t:platform("tv")
+    t:setColorDepth(32)
+    t:setScreenResolution(1068, 720)
+    t:setViewport(420, 360)
     t:trackStructEvent("shop", "add-to-basket", nil, "units", 2, 1369330909)
-    assert.spy(t._httpGet).was_called_with(
+    assert.stub(t._httpGet).was_called_with(
       "http://d3rkrsqld9gmqf.cloudfront.net/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2&dtm=1369330909000&p=tv&tv=lua-0.1.0-1&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
     )
   end)
@@ -230,7 +254,7 @@ describe("tracker", function()
     local f2 = function()
       t:trackUnstructEvent("save-game", 23.0)
     end
-    assert.has_error(f2, "ue_px|ue_pr is required and must be a non-empty table, not [23]")
+    assert.has_error(f2, "ue_px|ue_pr is required and must be a non-empty table, not [23.0]")
   end)
 
   it("trackUnstructEvent() should error unless tstamp is a positive integer", function()
@@ -241,26 +265,40 @@ describe("tracker", function()
   end)
 
   it("trackUnstructEvent() should call httpGet() with the correct URL-encoded payload in the querystring", function()
+    stub(t, "_httpGet")
     t:encodeBase64(false)
+    t:setUserId("user123")
+    t:setAppId("wow-ext-1")
+    t:platform("tv")
+    t:setColorDepth(32)
+    t:setScreenResolution(1068, 720)
+    t:setViewport(420, 360)
     t:trackUnstructEvent(
       "save-game",
       { save_id = "4321", level_INT = 23, difficultyLevel = "HARD", dl_content = true },
       1369330929
     )
-    assert.spy(t._httpGet).was_called_with(
+    assert.stub(t._httpGet).was_called_with(
       "http://d3rkrsqld9gmqf.cloudfront.net/i?e=ue&ue_na=save%2Dgame&ue_pr=%7B%22difficultyLevel%22%3A%22HARD%22%2C%22dl%5Fcontent%22%3Atrue%2C%22level%24int%22%3A23%2C%22save%5Fid%22%3A%224321%22%7D&dtm=1369330929000&p=tv&tv=lua-0.1.0-1&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
     )
   end)
 
   it("trackUnstructEvent() should call httpGet() with the correct Base64-encoded payload in the querystring", function()
+    stub(t, "_httpGet")
     t:encodeBase64(true)
+    t:setUserId("user123")
+    t:setAppId("wow-ext-1")
+    t:platform("tv")
+    t:setColorDepth(32)
+    t:setScreenResolution(1068, 720)
+    t:setViewport(420, 360)
     t:trackUnstructEvent(
       "load-game",
       { save_id = "4321", level_INT = 23, difficultyLevel = "HARD", dl_content = true },
       1369330929
     )
-    assert.spy(t._httpGet).was_called_with(
-      "http://d3rkrsqld9gmqf.cloudfront.net/i?e=ue&ue_na=load%2Dgame&ue_px=eyJkaWZmaWN1bHR5TGV2ZWwiOiJIQVJEIiwiZGxfY29udGVudCI6dHJ1ZSwibGV2ZWwkaW50IjoyMywic2F2ZV9pZCI6IjQzMjEifQ&dtm=1369330929000&p=tv&tv=lua-0.1.0-1&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
+    assert.stub(t._httpGet).was_called_with(
+      "http://d3rkrsqld9gmqf.cloudfront.net/i?e=ue&ue_na=load%2Dgame&ue_px=eyJkaWZmaWN1bHR5TGV2ZWwiOiJIQVJEIiwiZGxfY29udGVudCI6dHJ1ZSwibGV2ZWwkaW50IjoyMywic2F2ZV9pZCI6IjQzMjEifQ==&dtm=1369330929000&p=tv&tv=lua-0.1.0-1&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
     )
   end)
 end)
