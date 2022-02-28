@@ -17,7 +17,7 @@
 
 local escape = require("lib.escape")
 local json = require("lib.json")
-local base64 = require("lib.base64")
+local base64 = require("base64")
 
 local payload = {}
 
@@ -107,6 +107,9 @@ payload.newPayloadBuilder = function(encodeBase64)
     props = toPropertiesJson(value)
 
     if encodeBase64 then
+      if #props <= 0 then
+        error("Props cannot be an empty table")
+      end
       addNvPair(keyIfEnc, base64.encode(props), false) -- Base64 encode, no URL-encoding
     else
       addNvPair(key, props, true) -- URL-encoding

@@ -36,6 +36,30 @@ function set.newSet(t)
 end
 
 -- --------------------------------------------------------------
+-- Private methods
+
+-- Creates an iterator over the set in key-sorted order.
+-- @param s Set: The set to iterate over
+-- @return function: The iterator function
+local function pairsByKeys(s)
+  local a = {}
+  for n in pairs(s) do
+    table.insert(a, n)
+  end
+  table.sort(a)
+  local i = 0
+  local iter = function()
+    i = i + 1
+    if a[i] == nil then
+      return nil
+    else
+      return a[i]
+    end
+  end
+  return iter
+end
+
+-- --------------------------------------------------------------
 -- Class methods
 
 -- @param self Set: The set to check
@@ -52,14 +76,14 @@ function Set:contains(value)
   return c
 end
 
--- Convert a set to a string representation
+-- Convert a set to a string key-sorted string representation
 -- Source: http://www.lua.org/pil/13.1.html
 -- @param self Set: The set to convert
 -- @return string: The string representation of the set
 function Set:toString()
   local s = "{"
   local sep = ""
-  for e in pairs(self) do
+  for e in pairsByKeys(self) do
     s = s .. sep .. e
     sep = ", "
   end
