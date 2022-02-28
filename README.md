@@ -10,6 +10,56 @@ Add analytics to your Lua apps and Lua-scripted games with the [Snowplow][snowpl
 
 With this tracker you can collect event data from your Lua-based applications, Lua web servers/frameworks, or from the Lua scripting layer within your games or apps.
 
+## Maintainer quick start
+
+### Build Requirements
+
+Ensure you have the following installed on your system:
+
+- [Lua](https://www.lua.org/) version >= 5.1
+- [Luarocks](https://luarocks.org/) (Lua's dependency manager)
+- curl
+
+If using `brew`, simply run:
+
+```sh
+brew install lua luarocks curl
+```
+
+### Installing dependencies
+
+```sh
+luarocks install snowplowtracker-0.2.0-1 --deps-only
+```
+
+**_Note:_** You may need to pass in your path to curl with `CURL_DIR`, if luarocks cannot find it. An example if curl was installed via `brew`:
+
+```sh
+luarocks install snowplowtracker-0.2.0-1.rockspec --deps-only CURL_DIR=/usr/local/Cellar/curl/7.81.0
+```
+
+### Building the project
+
+With all dependencies installed, run:
+
+```sh
+luarocks build
+```
+
+## Tests
+
+To run tests, you will need `busted`:
+
+```sh
+luarocks install busted
+```
+
+Once installed, to run all tests:
+
+```sh
+busted
+```
+
 ## Find out more
 
 | Technical Docs                  | Setup Guide               | Roadmap                 | Contributing                      |

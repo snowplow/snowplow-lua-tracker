@@ -15,7 +15,7 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local http = require("socket.http")
+local curl = require("curl")
 local validate = require("validate")
 local payload = require("payload")
 local set = require("lib.set")
@@ -97,7 +97,12 @@ end
 -- @param uri string: The URI (including querystring) to GET
 -- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
 function httpGet(uri)
-  result, statusCode, content = http.request(uri)
+  -- `resp` is the table `:getinfo` reads from
+  local resp = {}
+  local c = curl.easy({
+    url = uri,
+  }):setopt_writefunction(table.insert, resp):perform()
+  local statusCode = c:getinfo(curl.INFO_RESPONSE_CODE)
 
   if HTTP_ERRORS:contains(statusCode) then
     return false, "Host [" .. uri .. "] not found (possible connectivity error)"
