@@ -45,7 +45,7 @@ describe("base64", function()
     end
   end)
 
-  it("should error on nil, empty strings and other datatypes", function()
+  it("should error on nil and other datatypes", function()
     local badValues = { nil, 1, true, false, 34.5 }
 
     for i, v in pairs(badValues) do
