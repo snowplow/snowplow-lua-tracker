@@ -15,9 +15,18 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local snowplow = require("snowplow")
+local snowplow
 
 describe("Integration tests with HTTP/collector problems", function()
+  setup(function()
+    _G._TEST = true
+    snowplow = require("snowplow")
+  end)
+
+  teardown(function()
+    _G._TEST = nil
+  end)
+
   it("should return false and an error message if a CloudFront collector cannot be found", function()
     local t = snowplow.newTrackerForCf("fake") -- Doesn't exist
     t:encodeBase64(false)
