@@ -32,11 +32,6 @@ local VERSION = "lua-0.1.0-1"
 local DEFAULT_ENCODE_BASE64 = true
 local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.newSet({ "pc", "tv", "mob", "cnsl", "iot" })
-local HTTP_ERRORS = set.newSet({
-  "host not found",
-  "No address associated with name",
-  "No address associated with hostname",
-})
 
 -- --------------------------------------------------------------
 -- Factory to create a new Tracker
@@ -101,10 +96,13 @@ function httpGet(uri)
   local resp = {}
   local c = curl.easy({
     url = uri,
-  }):setopt_writefunction(table.insert, resp):perform()
+  }):setopt_writefunction(table.insert, resp)
+  local _, err = pcall(function()
+    c:perform()
+  end)
   local statusCode = c:getinfo(curl.INFO_RESPONSE_CODE)
 
-  if HTTP_ERRORS:contains(statusCode) then
+  if err ~= nil then
     return false, "Host [" .. uri .. "] not found (possible connectivity error)"
   else
     local code = tonumber(statusCode)
@@ -160,6 +158,7 @@ end
 -- Defaults to true.
 -- @param encode boolean: whether to base64-encode or not
 function Tracker:encodeBase64(encode)
+  validate.isBoolean("encode", encode)
   self.config.encodeBase64 = encode
 end
 
