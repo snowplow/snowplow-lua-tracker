@@ -19,7 +19,7 @@ local base64 = require("base64")
 
 describe("base64", function()
   it("should Base64 encode strings correctly", function()
-    local dataTable = {
+    local data_table = {
       { "INPUT", "EXPECTED" },
       { "JohnSmith", "Sm9oblNtaXRo" },
       { "john+smith", "am9obitzbWl0aA==" },
@@ -36,7 +36,7 @@ describe("base64", function()
       },
     }
 
-    for i, v in ipairs(dataTable) do
+    for i, v in ipairs(data_table) do
       if i > 1 then
         local input = v[1]
         local expected = base64.encode(input)
@@ -46,9 +46,9 @@ describe("base64", function()
   end)
 
   it("should error on nil and other datatypes", function()
-    local badValues = { nil, 1, true, false, 34.5 }
+    local bad_values = { nil, 1, true, false, 34.5 }
 
-    for i, v in pairs(badValues) do
+    for i, v in pairs(bad_values) do
       assert.has_error(function()
         base64.encode(v)
       end)

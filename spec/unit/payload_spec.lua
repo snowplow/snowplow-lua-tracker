@@ -20,27 +20,27 @@ local validate = require("validate")
 
 describe("payload", function()
   it("should correctly assemble a payload", function()
-    local pb = payload.newPayloadBuilder(true)
-    pb.addRaw("e", "sv")
+    local pb = payload.new_payload_builder(true)
+    pb.add_raw("e", "sv")
     pb.add("sv_na", "Welcome")
-    pb.add("sv_id", "231", validate.isStringOrNil)
+    pb.add("sv_id", "231", validate.is_string_or_nil)
 
     assert.are.equal(pb.build(), "?e=sv&sv_na=Welcome&sv_id=231")
   end)
 
   it("should correctly assemble another payload", function()
-    local pb = payload.newPayloadBuilder(true)
-    pb.addRaw("e", "hello")
-    pb.addRaw("hello_test", "test")
+    local pb = payload.new_payload_builder(true)
+    pb.add_raw("e", "hello")
+    pb.add_raw("hello_test", "test")
 
-    pb.add("ev_ca", "2  spaces", validate.isNonEmptyString)
-    pb.add("ev_va", -23.34, validate.isNumberOrNil)
+    pb.add("ev_ca", "2  spaces", validate.is_non_empty_string)
+    pb.add("ev_va", -23.34, validate.is_number_or_nil)
 
     assert.are.equal(pb.build(), "?e=hello&hello_test=test&ev_ca=2++spaces&ev_va=%2D23%2E34")
   end)
 
   it("should correctly assemble a payload with typed properties", function()
-    local pb = payload.newPayloadBuilder(false) -- Don't Base64-encode
+    local pb = payload.new_payload_builder(false) -- Don't Base64-encode
     local props = {
       min_x_INT = 0,
       max_x_FLT = 960,
@@ -50,7 +50,7 @@ describe("payload", function()
       time_TMS = 56565,
     } -- Test all the suffixes
 
-    pb.addProps("ue_px", "ue_pr", props, validate.isNonEmptyTable)
+    pb.add_props("ue_px", "ue_pr", props, validate.is_non_empty_table)
 
     assert.are.equal(
       pb.build(),
@@ -58,11 +58,11 @@ describe("payload", function()
     )
   end)
 
-  it("should error when a validation on an addRaw() fails", function()
-    local pb = payload.newPayloadBuilder(false)
-    pb.add("ev_la", nil, validate.isStringOrNil)
+  it("should error when a validation on an add_raw() fails", function()
+    local pb = payload.new_payload_builder(false)
+    pb.add("ev_la", nil, validate.is_string_or_nil)
     local f = function()
-      pb.addRaw("flag", "falsy", validate.isBoolean)
+      pb.add_raw("flag", "falsy", validate.is_boolean)
     end
 
     assert.has_error(f, "flag is required and must be a boolean, not [falsy]")

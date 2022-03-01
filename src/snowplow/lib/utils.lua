@@ -23,7 +23,7 @@ local utils = {}
 -- Converts a value to a safe string representation.
 -- @param value any: A value hopefully representable as a string
 -- @return string: Best-approximation string representation of the value
-utils.safeString = function(value)
+utils.safe_string = function(value)
   local v
   if value == nil then
     v = "<nil>"
@@ -37,7 +37,7 @@ utils.safeString = function(value)
       v = "<table>"
     end
   end
-  return tostring(v)
+  return to_string(v)
 end
 
 -- --------------------------------------------------------------

@@ -17,11 +17,11 @@
 
 local snowplow = require("snowplow")
 local validate = require("validate")
-local ss = require("lib.utils").safeString -- Alias
+local ss = require("lib.utils").safe_string -- Alias
 
-local function assertTracker(tracker, collectorUri)
-  assert.are.equal(tracker.collectorUri, collectorUri)
-  assert.are.equal(tracker.config.encodeBase64, true)
+local function assert_tracker(tracker, collector_uri)
+  assert.are.equal(tracker.collector_uri, collector_uri)
+  assert.are.equal(tracker.config.encode_base64, true)
   assert.are.equal(tracker.config.platform, "pc")
   assert.are.equal(tracker.config.version, "lua-0.1.0-1")
 end
@@ -30,10 +30,10 @@ describe("snowplow", function()
   -- --------------------------------------------------------------
   -- Test error handling on constructors
 
-  it("newTrackerForUri() should error unless passed a non-empty string", function()
+  it("new_tracker_for_uri() should error unless passed a non-empty string", function()
     local f = function(host)
       return function()
-        snowplow.newTrackerForUri(host)
+        snowplow.new_tracker_for_uri(host)
       end
     end
     local err = function(value)
@@ -44,14 +44,14 @@ describe("snowplow", function()
     assert.has_error(f(-23.04), err("-23.04"))
   end)
 
-  it("newTrackerForCf() should error unless passed a non-empty string", function()
-    local f = function(cfSubdomain)
+  it("new_tracker_for_cf() should error unless passed a non-empty string", function()
+    local f = function(cf_subdomain)
       return function()
-        snowplow.newTrackerForCf(cfSubdomain)
+        snowplow.new_tracker_for_cf(cf_subdomain)
       end
     end
     local err = function(value)
-      return "cfSubdomain is required and must be a non-empty string, not [" .. ss(value) .. "]"
+      return "cf_subdomain is required and must be a non-empty string, not [" .. ss(value) .. "]"
     end
     assert.has_error(f(""), err(""))
     assert.has_error(f({}), err("{}"))
@@ -61,13 +61,13 @@ describe("snowplow", function()
   -- --------------------------------------------------------------
   -- Verify constructed tracker tables
 
-  it("newTrackerForUri() should correctly create a tracker", function()
-    local t = snowplow.newTrackerForUri("c.snplow.com")
-    assertTracker(t, "http://c.snplow.com/i")
+  it("new_tracker_for_uri() should correctly create a tracker", function()
+    local t = snowplow.new_tracker_for_uri("c.snplow.com")
+    assert_tracker(t, "http://c.snplow.com/i")
   end)
 
-  it("newTrackerForCf() should correctly create a tracker", function()
-    local t = snowplow.newTrackerForCf("d3rkrsqld9gmqf")
-    assertTracker(t, "http://d3rkrsqld9gmqf.cloudfront.net/i")
+  it("new_tracker_for_cf() should correctly create a tracker", function()
+    local t = snowplow.new_tracker_for_cf("d3rkrsqld9gmqf")
+    assert_tracker(t, "http://d3rkrsqld9gmqf.cloudfront.net/i")
   end)
 end)

@@ -19,7 +19,7 @@ local curl = require("curl")
 local validate = require("validate")
 local payload = require("payload")
 local set = require("lib.set")
-local ss = require("lib.utils").safeString -- Alias
+local ss = require("lib.utils").safe_string -- Alias
 
 local tracker = {} -- The module
 local Tracker = {} -- The class
@@ -31,20 +31,20 @@ Tracker.__index = Tracker
 local VERSION = "lua-0.1.0-1"
 local DEFAULT_ENCODE_BASE64 = true
 local DEFAULT_PLATFORM = "pc"
-local SUPPORTED_PLATFORMS = set.newSet({ "pc", "tv", "mob", "cnsl", "iot" })
+local SUPPORTED_PLATFORMS = set.new_set({ "pc", "tv", "mob", "cnsl", "iot" })
 
 -- --------------------------------------------------------------
 -- Factory to create a new Tracker
 
 -- Creates a new tracker.
--- @param collectorUri string: the full URI to the Snowplow collector
+-- @param collector_uri string: the full URI to the Snowplow collector
 -- @return table: The new tracker
-function tracker.newTracker(collectorUri)
+function tracker.new_tracker(collector_uri)
   local trck = {}
   setmetatable(trck, Tracker)
-  trck.collectorUri = collectorUri
+  trck.collector_uri = collector_uri
   trck.config = {
-    encodeBase64 = DEFAULT_ENCODE_BASE64,
+    encode_base64 = DEFAULT_ENCODE_BASE64,
     platform = DEFAULT_PLATFORM,
     version = VERSION,
   }
@@ -57,11 +57,11 @@ end
 
 -- Generates a moderately-unique six-digit transaction ID - essentially a nonce to make sure this event isn't recorded twice.
 -- @return string: The transaction ID
-function getTransactionId()
+function get_transaction_id()
   local tid
   math.randomseed(os.time())
   local rand = math.random(100000, 999999)
-  tid = tostring(rand)
+  tid = to_string(rand)
 
   -- To handle testing
   -- TODO: is there a cleaner way of doing this? DI or a mock or something?
@@ -75,7 +75,7 @@ end
 -- Gets the current timestamp as total milliseconds since epoch.
 -- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return number: The timestamp
-function getTimestamp(tstamp)
+function get_timestamp(tstamp)
   local timestamp
   if tstamp == nil then
     timestamp = os.time()
@@ -84,14 +84,14 @@ function getTimestamp(tstamp)
   else
     timestamp = tstamp -- Hope the calling code deals with the error
   end
-
+  local testVar
   return timestamp
 end
 
 -- GETs the given URI: this is how our event data is transmitted to the Snowplow collector.
 -- @param uri string: The URI (including querystring) to GET
 -- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
-function httpGet(uri)
+function http_get(uri)
   -- `resp` is the table `:getinfo` reads from
   local resp = {}
   local c = curl.easy({
@@ -100,18 +100,18 @@ function httpGet(uri)
   local _, err = pcall(function()
     c:perform()
   end)
-  local statusCode = c:getinfo(curl.INFO_RESPONSE_CODE)
+  local status_code = c:getinfo(curl.INFO_RESPONSE_CODE)
 
   if err ~= nil then
     return false, "Host [" .. uri .. "] not found (possible connectivity error)"
   else
-    local code = tonumber(statusCode)
+    local code = tonumber(status_code)
     if code == nil or code ~= math.floor(code) or code < 0 or code >= 600 then
-      return false, "Unrecognised status code [" .. ss(statusCode) .. "]"
+      return false, "Unrecognised status code [" .. ss(status_code) .. "]"
     elseif code >= 400 and code < 500 then
-      return false, "HTTP status code [" .. ss(statusCode) .. "] is a client error"
+      return false, "HTTP status code [" .. ss(status_code) .. "] is a client error"
     elseif code >= 500 then
-      return false, "HTTP status code [" .. ss(statusCode) .. "] is a server error"
+      return false, "HTTP status code [" .. ss(status_code) .. "] is a server error"
     end
   end
 
@@ -123,31 +123,31 @@ end
 
 -- Tracks any given SnowPlow event, by sending the specific event_pairs to the SnowPlow collector.
 -- @param: self table: The Tracker instance
--- @param pb table: A partially populated payloadBuilder closure. We will finish populating it in this method, then build() it
+-- @param pb table: A partially populated payload_builder closure. We will finish populating it in this method, then build() it
 -- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
 function track(self, pb)
   -- Add the standard name-value pairs
   pb.add("p", self.config.platform)
-  pb.addRaw("tv", self.config.version)
-  pb.add("tid", getTransactionId())
+  pb.add_raw("tv", self.config.version)
+  pb.add("tid", get_transaction_id())
 
   -- Add the fields which may have been set
-  pb.add("uid", self.userId)
-  pb.add("aid", self.appId)
-  pb.addRaw("res", self.screenResolution)
-  pb.addRaw("vp", self.viewport)
-  pb.addRaw("cd", self.colorDepth)
+  pb.add("uid", self.user_id)
+  pb.add("aid", self.app_id)
+  pb.add_raw("res", self.screen_resolution)
+  pb.add_raw("vp", self.viewport)
+  pb.add_raw("cd", self.color_depth)
 
-  -- Now build the payloadBuilder
-  local uri = self.collectorUri .. pb.build()
+  -- Now build the payload_builder
+  local uri = self.collector_uri .. pb.build()
 
   -- For mocking
   if _TEST then
-    self._httpGet(uri)
+    self._http_get(uri)
   end
 
   -- Finally send to Snowplow
-  return httpGet(uri)
+  return http_get(uri)
 end
 
 -- --------------------------------------------------------------
@@ -157,9 +157,9 @@ end
 -- Encoding means a circa~25% space saving.
 -- Defaults to true.
 -- @param encode boolean: whether to base64-encode or not
-function Tracker:encodeBase64(encode)
-  validate.isBoolean("encode", encode)
-  self.config.encodeBase64 = encode
+function Tracker:encode_base64(encode)
+  validate.is_boolean("encode", encode)
+  self.config.encode_base64 = encode
 end
 
 -- The default platform for Lua is "pc". If you are using Lua on another platform,
@@ -168,7 +168,7 @@ end
 -- https://github.com/snowplow/snowplow/wiki/SnowPlow-Tracker-Protocol#wiki-appid
 -- @param platform string: The short-form name of the platform to set. Can be "pc", "tv", "mob", "csl" or "iot".
 function Tracker:platform(platform)
-  validate.isStringFromSet(SUPPORTED_PLATFORMS, "platform", platform)
+  validate.is_string_from_set(SUPPORTED_PLATFORMS, "platform", platform)
   self.config.platform = platform
 end
 
@@ -176,43 +176,43 @@ end
 -- Data setters
 
 -- Sets the application ID to record against each event.
--- @param appId string: The application ID to set
-function Tracker:setAppId(appId)
-  validate.isNonEmptyString("appId", appId)
-  self.appId = appId
+-- @param app_id string: The application ID to set
+function Tracker:set_app_id(app_id)
+  validate.is_non_empty_string("app_id", app_id)
+  self.app_id = app_id
 end
 
 -- Sets the business user ID.
--- @param userId string The business user ID to set.
-function Tracker:setUserId(userId)
-  validate.isNonEmptyString("userId", userId)
-  self.userId = userId
+-- @param user_id string The business user ID to set.
+function Tracker:set_user_id(user_id)
+  validate.is_non_empty_string("user_id", user_id)
+  self.user_id = user_id
 end
 
 -- If you have access to a graphics library which can tell you screen width and height, then set it here.
 -- @param width number: The screen width
 -- @param height number: The screen height
-function Tracker:setScreenResolution(width, height)
-  validate.isPositiveInteger("width", width)
-  validate.isPositiveInteger("height", height)
-  self.screenResolution = width .. "x" .. height
+function Tracker:set_screen_resolution(width, height)
+  validate.is_positive_integer("width", width)
+  validate.is_positive_integer("height", height)
+  self.screen_resolution = width .. "x" .. height
 end
 
 -- If you have access to a graphics library which can tell you the width and height of the viewport (i.e.
 -- the screen space taken up by this app), then set it here.
 -- @param width number: The viewport width
 -- @param height number: The viewport height as a number
-function Tracker:setViewport(width, height)
-  validate.isPositiveInteger("width", width)
-  validate.isPositiveInteger("height", height)
+function Tracker:set_viewport(width, height)
+  validate.is_positive_integer("width", width)
+  validate.is_positive_integer("height", height)
   self.viewport = width .. "x" .. height
 end
 
 -- If you have access to a graphics library which can tell you screen width and height, then set it here.
 -- @param depth number: The color depth on this computer
-function Tracker:setColorDepth(depth)
-  validate.isPositiveInteger("depth", depth)
-  self.colorDepth = depth
+function Tracker:set_color_depth(depth)
+  validate.is_positive_integer("depth", depth)
+  self.color_depth = depth
 end
 
 -- --------------------------------------------------------------
@@ -223,12 +223,12 @@ end
 -- @param id string: Optional unique identifier for this screen. Could be e.g. a GUID or identifier from a game CMS
 -- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return boolean: whether event was successfully collected; and the reason for failure if not
-function Tracker:trackScreenView(name, id, tstamp)
-  local pb = payload.newPayloadBuilder(self.config.encodeBase64)
-  pb.addRaw("e", "sv")
-  pb.add("sv_na", name, validate.isNonEmptyString)
-  pb.add("sv_id", id, validate.isStringOrNil)
-  pb.add("dtm", getTimestamp(tstamp), validate.isPositiveInteger)
+function Tracker:track_screen_view(name, id, tstamp)
+  local pb = payload.new_payload_builder(self.config.encode_base64)
+  pb.add_raw("e", "sv")
+  pb.add("sv_na", name, validate.is_non_empty_string)
+  pb.add("sv_id", id, validate.is_string_or_nil)
+  pb.add("dtm", get_timestamp(tstamp), validate.is_positive_integer)
 
   return track(self, pb)
 end
@@ -241,15 +241,15 @@ end
 -- @param value string: A value that you can use to provide numerical data about the user event
 -- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return boolean whether event was successfully collected; and the reason for failure if not
-function Tracker:trackStructEvent(category, action, label, property, value, tstamp)
-  local pb = payload.newPayloadBuilder(self.config.encodeBase64)
-  pb.addRaw("e", "se")
-  pb.add("se_ca", category, validate.isNonEmptyString)
-  pb.add("se_ac", action, validate.isNonEmptyString)
-  pb.add("se_la", label, validate.isStringOrNil)
-  pb.add("se_pr", property, validate.isStringOrNil)
-  pb.add("se_va", value, validate.isNumberOrNil)
-  pb.add("dtm", getTimestamp(tstamp), validate.isPositiveInteger)
+function Tracker:track_struct_event(category, action, label, property, value, tstamp)
+  local pb = payload.new_payload_builder(self.config.encode_base64)
+  pb.add_raw("e", "se")
+  pb.add("se_ca", category, validate.is_non_empty_string)
+  pb.add("se_ac", action, validate.is_non_empty_string)
+  pb.add("se_la", label, validate.is_string_or_nil)
+  pb.add("se_pr", property, validate.is_string_or_nil)
+  pb.add("se_va", value, validate.is_number_or_nil)
+  pb.add("dtm", get_timestamp(tstamp), validate.is_positive_integer)
 
   return track(self, pb)
 end
@@ -259,12 +259,12 @@ end
 -- @param properties string: The properties of the event
 -- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return: boolean whether event was successfully collected; and the reason for failure if not
-function Tracker:trackUnstructEvent(name, properties, tstamp)
-  local pb = payload.newPayloadBuilder(self.config.encodeBase64)
-  pb.addRaw("e", "ue")
-  pb.add("ue_na", name, validate.isNonEmptyString)
-  pb.addProps("ue_px", "ue_pr", properties, validate.isNonEmptyTable)
-  pb.add("dtm", getTimestamp(tstamp), validate.isPositiveInteger)
+function Tracker:track_unstruct_event(name, properties, tstamp)
+  local pb = payload.new_payload_builder(self.config.encode_base64)
+  pb.add_raw("e", "ue")
+  pb.add("ue_na", name, validate.is_non_empty_string)
+  pb.add_props("ue_px", "ue_pr", properties, validate.is_non_empty_table)
+  pb.add("dtm", get_timestamp(tstamp), validate.is_positive_integer)
 
   return track(self, pb)
 end
@@ -274,7 +274,7 @@ end
 
 if _TEST then
   -- A mock on the table to be checked by Busted. Does nothing - we will simply inspect the uri argument.
-  function Tracker._httpGet(uri) end
+  function Tracker._http_get(uri) end
 end
 
 -- --------------------------------------------------------------
