@@ -29,7 +29,7 @@ payload.new_payload_builder = function(encode_base64)
   -- @param encode_base64 boolean: Whether properties and custom variables should be sent Base64 encoded or not
   -- @return table: The new payload
 
-  local payload = "?" -- What we're closing over
+  local new_payload = "?" -- What we're closing over
 
   -- Helper to add a &name=value pair to our payload aka querystring. Closes around payload
   -- @param key string: The name of the property
@@ -39,7 +39,7 @@ payload.new_payload_builder = function(encode_base64)
     local a, v
 
     if value ~= nil and value ~= "" then
-      if payload:len() > 1 then
+      if new_payload:len() > 1 then
         a = "&"
       else
         a = ""
@@ -49,7 +49,7 @@ payload.new_payload_builder = function(encode_base64)
       else
         v = value
       end
-      payload = payload .. a .. key .. "=" .. v
+      new_payload = new_payload .. a .. key .. "=" .. v
     end
   end
 
@@ -64,7 +64,7 @@ payload.new_payload_builder = function(encode_base64)
     -- the format expected by Snowplow
     local types = { "int", "flt", "geo", "dt", "tm", "tms" }
     for _, t in ipairs(types) do
-      suffix = '":' -- To lower risk of error
+      local suffix = '":' -- To lower risk of error
       local old = "_" .. t:upper() .. suffix
       local new = "$" .. t .. suffix
       props_json = props_json:gsub(old, new)
@@ -95,7 +95,8 @@ payload.new_payload_builder = function(encode_base64)
     add_nv_pair(key, value, false)
   end
 
-  -- Add a &name=value pair with the value base64 encoded, unless encode_base64 is set to false (in which case URI escape).
+  -- Add a &name=value pair with the value base64 encoded,
+  -- unless encode_base64 is set to false (in which case URI escape).
   -- @param key_if_enc string: The key name if the value is encoded - ue_pr: Unencoded, ue_px: Encoded
   -- @param key string: The name of the property
   -- @param value string: The value to add to the payload
@@ -104,7 +105,7 @@ payload.new_payload_builder = function(encode_base64)
     if type(validate) == "function" then
       validate((key_if_enc .. "|" .. key), value)
     end
-    props = to_properties_json(value)
+    local props = to_properties_json(value)
 
     if encode_base64 then
       if #props <= 0 then
@@ -119,7 +120,7 @@ payload.new_payload_builder = function(encode_base64)
   -- Our "builder" returns the payload string.
   -- @return string
   local build = function()
-    return payload
+    return new_payload
   end
 
   return {

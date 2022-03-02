@@ -36,7 +36,8 @@ describe("Integration tests with HTTP/collector problems", function()
     assert.is_false(s)
     assert.are.equal(
       msg,
-      "Host [http://fake.cloudfront.net/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2&dtm=1369330909000&p=cnsl&tv=lua-0.1.0-1&tid=100000] not found (possible connectivity error)"
+      "Host [http://fake.cloudfront.net/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2&dtm=1369330909000"
+        .. "&p=cnsl&tv=lua-0.1.0-1&tid=100000] not found (possible connectivity error)"
     )
   end)
 
@@ -50,7 +51,8 @@ describe("Integration tests with HTTP/collector problems", function()
     assert.is_false(s)
     assert.are.equal(
       msg,
-      "Host [http://c.snplow.com/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv=lua-0.1.0-1&tid=100000&aid=wow%2Dext%2D1&res=1068x720] not found (possible connectivity error)"
+      "Host [http://c.snplow.com/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv=lua-0.1.0-1&tid=100000"
+        .. "&aid=wow%2Dext%2D1&res=1068x720] not found (possible connectivity error)"
     )
   end)
 end)

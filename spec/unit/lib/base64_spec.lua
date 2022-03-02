@@ -28,11 +28,13 @@ describe("base64", function()
       { '{"myTemp":23.3,"myUnit":"celsius"}', "eyJteVRlbXAiOjIzLjMsIm15VW5pdCI6ImNlbHNpdXMifQ==" },
       {
         '{"event":"page_ping","mobile":true,"properties":{"max_x":960,"max_y":1080,"min_x":0,"min_y":-12}}',
-        "eyJldmVudCI6InBhZ2VfcGluZyIsIm1vYmlsZSI6dHJ1ZSwicHJvcGVydGllcyI6eyJtYXhfeCI6OTYwLCJtYXhfeSI6MTA4MCwibWluX3giOjAsIm1pbl95IjotMTJ9fQ==",
+        "eyJldmVudCI6InBhZ2VfcGluZyIsIm1vYmlsZSI6dHJ1ZSwicHJvcGVydGllcyI6eyJtYXhfeCI6OTYwLCJtYXhfeSI6MTA4MCwibWluX3giOj"
+          .. "AsIm1pbl95IjotMTJ9fQ==",
       },
       {
         '{"event":"basket_change","price":23.39,"product_id":"PBZ000345","quantity":-2,"tstamp":1678023000}',
-        "eyJldmVudCI6ImJhc2tldF9jaGFuZ2UiLCJwcmljZSI6MjMuMzksInByb2R1Y3RfaWQiOiJQQlowMDAzNDUiLCJxdWFudGl0eSI6LTIsInRzdGFtcCI6MTY3ODAyMzAwMH0=",
+        "eyJldmVudCI6ImJhc2tldF9jaGFuZ2UiLCJwcmljZSI6MjMuMzksInByb2R1Y3RfaWQiOiJQQlowMDAzNDUiLCJxdWFudGl0eSI6LTIsInRzdG"
+          .. "FtcCI6MTY3ODAyMzAwMH0=",
       },
     }
 
@@ -48,7 +50,7 @@ describe("base64", function()
   it("should error on nil and other datatypes", function()
     local bad_values = { nil, 1, true, false, 34.5 }
 
-    for i, v in pairs(bad_values) do
+    for _, v in pairs(bad_values) do
       assert.has_error(function()
         base64.encode(v)
       end)

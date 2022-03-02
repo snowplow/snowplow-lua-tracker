@@ -55,9 +55,10 @@ end
 -- --------------------------------------------------------------
 -- Private static methods
 
--- Generates a moderately-unique six-digit transaction ID - essentially a nonce to make sure this event isn't recorded twice.
+-- Generates a moderately-unique six-digit transaction ID - essentially a nonce to make sure this event isn't
+-- recorded twice.
 -- @return string: The transaction ID
-function get_transaction_id()
+local function get_transaction_id()
   local tid
   math.randomseed(os.time())
   local rand = math.random(100000, 999999)
@@ -75,7 +76,7 @@ end
 -- Gets the current timestamp as total milliseconds since epoch.
 -- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return number: The timestamp
-function get_timestamp(tstamp)
+local function get_timestamp(tstamp)
   local timestamp
   if tstamp == nil then
     timestamp = os.time()
@@ -84,14 +85,13 @@ function get_timestamp(tstamp)
   else
     timestamp = tstamp -- Hope the calling code deals with the error
   end
-  local testVar
   return timestamp
 end
 
 -- GETs the given URI: this is how our event data is transmitted to the Snowplow collector.
 -- @param uri string: The URI (including querystring) to GET
 -- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
-function http_get(uri)
+local function http_get(uri)
   -- `resp` is the table `:getinfo` reads from
   local resp = {}
   local c = curl.easy({
@@ -123,9 +123,10 @@ end
 
 -- Tracks any given SnowPlow event, by sending the specific event_pairs to the SnowPlow collector.
 -- @param: self table: The Tracker instance
--- @param pb table: A partially populated payload_builder closure. We will finish populating it in this method, then build() it
+-- @param pb table: A partially populated payload_builder closure. We will finish populating it in this method, then
+-- build() it
 -- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
-function track(self, pb)
+local function track(self, pb)
   -- Add the standard name-value pairs
   pb.add("p", self.config.platform)
   pb.add_raw("tv", self.config.version)
@@ -235,7 +236,8 @@ end
 
 -- Sends a custom structured event to SnowPlow.
 -- @param category string: The name you supply for the group of objects you want to track
--- @param action string: A string that is uniquely paired with each category e.g. the type of user interaction for the object
+-- @param action string: A string that is uniquely paired with each category e.g. the type of user interaction for
+-- the object
 -- @param label string: An optional string to provide additional dimensions to the event data
 -- @param property string: An optional string describing the objector the action performed on it.
 -- @param value string: A value that you can use to provide numerical data about the user event
@@ -274,7 +276,7 @@ end
 
 if _TEST then
   -- A mock on the table to be checked by Busted. Does nothing - we will simply inspect the uri argument.
-  function Tracker._http_get(uri) end
+  function Tracker._http_get(uri) end -- luacheck: ignore
 end
 
 -- --------------------------------------------------------------

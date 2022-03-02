@@ -60,6 +60,20 @@ Once installed, to run all tests:
 busted
 ```
 
+## Luacheck
+
+[Luacheck](https://github.com/lunarmodules/luacheck), a static analyser, is used with this project. To check all files, first install luacheck:
+
+```sh
+luarocks install luacheck
+```
+
+Then run:
+
+```sh
+luacheck .
+```
+
 ## Find out more
 
 | Technical Docs                  | Setup Guide               | Roadmap                 | Contributing                      |

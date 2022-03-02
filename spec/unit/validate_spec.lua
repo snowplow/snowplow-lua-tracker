@@ -63,7 +63,7 @@ describe("validate", function()
       { "INPUT", "EXPECTED" },
       { { "hello" }, nil },
       { { 1, 2 }, nil },
-      { { a = 1, b = c }, nil },
+      { { a = 1, b = "c" }, nil },
       { { a = true, b = false }, nil },
       { nil, err("<nil>") },
       { {}, err("{}") },
@@ -106,7 +106,7 @@ describe("validate", function()
       { "", err("") },
       { nil, err("<nil>") },
       { {}, err("{}") },
-      { { a = 1, b = c }, err("<table>") },
+      { { a = 1, b = "c" }, err("<table>") },
       { 23.3, err(23.3) },
     }
 
@@ -125,7 +125,7 @@ describe("validate", function()
       { "", nil }, -- Difference from the above
       { nil, nil }, -- Difference from the above
       { {}, err("{}") },
-      { { a = 1, b = c }, err("<table>") },
+      { { a = 1, b = "c" }, err("<table>") },
       { 23.3, err(23.3) },
     }
 
@@ -152,7 +152,7 @@ describe("validate", function()
       { "", err("") },
       { nil, err("<nil>") },
       { {}, err("{}") },
-      { { a = 1, b = c }, err("<table>") },
+      { { a = 1, b = "c" }, err("<table>") },
       { 23.3, err(23.3) },
     }
 
@@ -172,7 +172,7 @@ describe("validate", function()
       { 4523000.29, nil },
       { nil, err("<nil>") },
       { "hello", err("hello") },
-      { { a = 1, b = c }, err("<table>") },
+      { { a = 1, b = "c" }, err("<table>") },
     }
 
     assert_data_table(data_table, validate.is_number)
@@ -191,7 +191,7 @@ describe("validate", function()
       { 4523000.29, nil },
       { nil, nil }, -- Only difference from the above
       { "hello", err("hello") },
-      { { a = 1, b = c }, err("<table>") },
+      { { a = 1, b = "c" }, err("<table>") },
     }
 
     assert_data_table(data_table, validate.is_number_or_nil)
@@ -211,7 +211,7 @@ describe("validate", function()
       { -10.586, err("-10.586") },
       { nil, err("<nil>") },
       { "hello", err("hello") },
-      { { a = 1, b = c }, err("<table>") },
+      { { a = 1, b = "c" }, err("<table>") },
     }
 
     assert_data_table(data_table, validate.is_positive_integer)
