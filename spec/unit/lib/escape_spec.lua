@@ -19,14 +19,14 @@ local escape = require("src.snowplow..lib.escape")
 
 describe("escape.escapeUri()", function()
   it("should URI-escape strings correctly", function()
-    local dataTable = {
+    local data_table = {
       { "INPUT", "EXPECTED" },
       { "JohnSmith", "JohnSmith" },
       { "john+smith", "john%2Bsmith" },
       { "John Smith", "John+Smith" },
     }
 
-    for i, v in ipairs(dataTable) do
+    for i, v in ipairs(data_table) do
       if i > 1 then
         local expected = escape.escapeUri(v[1])
         assert.are.equal(v[2], expected)

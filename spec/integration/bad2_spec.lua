@@ -28,10 +28,10 @@ describe("Integration tests with HTTP/collector problems", function()
   end)
 
   it("should return false and an error message if a CloudFront collector cannot be found", function()
-    local t = snowplow.newTrackerForCf("fake") -- Doesn't exist
-    t:encodeBase64(false)
+    local t = snowplow.new_tracker_for_cf("fake") -- Doesn't exist
+    t:encode_base64(false)
     t:platform("cnsl")
-    local s, msg = t:trackStructEvent("shop", "add-to-basket", nil, "units", 2, 1369330909)
+    local s, msg = t:track_struct_event("shop", "add-to-basket", nil, "units", 2, 1369330909)
 
     assert.is_false(s)
     assert.are.equal(
@@ -41,11 +41,11 @@ describe("Integration tests with HTTP/collector problems", function()
   end)
 
   it("should return false and an error message if a URI-based collector cannot be found", function()
-    local t = snowplow.newTrackerForUri("c.snplow.com") -- Doesn't exist
+    local t = snowplow.new_tracker_for_uri("c.snplow.com") -- Doesn't exist
     t:platform("tv")
-    t:setScreenResolution(1068, 720)
-    t:setAppId("wow-ext-1")
-    local s, msg = t:trackScreenView("Game HUD 2", nil, 1369330916)
+    t:set_screen_resolution(1068, 720)
+    t:set_app_id("wow-ext-1")
+    local s, msg = t:track_screen_view("Game HUD 2", nil, 1369330916)
 
     assert.is_false(s)
     assert.are.equal(

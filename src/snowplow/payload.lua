@@ -24,9 +24,9 @@ local payload = {}
 -- --------------------------------------------------------------
 -- Factory to create a payload builder closure
 
-payload.newPayloadBuilder = function(encodeBase64)
+payload.new_payload_builder = function(encode_base64)
   -- Closure provides a fluent interface to building a new payload for Snowplow.
-  -- @param encodeBase64 boolean: Whether properties and custom variables should be sent Base64 encoded or not
+  -- @param encode_base64 boolean: Whether properties and custom variables should be sent Base64 encoded or not
   -- @return table: The new payload
 
   local payload = "?" -- What we're closing over
@@ -35,7 +35,7 @@ payload.newPayloadBuilder = function(encodeBase64)
   -- @param key string: The name of the property
   -- @param value string: The value to add to the payload
   -- @param esc boolean: If true, value will be escaped
-  local addNvPair = function(key, value, esc)
+  local add_nv_pair = function(key, value, esc)
     local a, v
 
     if value ~= nil and value ~= "" then
@@ -57,8 +57,8 @@ payload.newPayloadBuilder = function(encodeBase64)
   -- @param properties table: A non-nested Lua table of properties, to be converted to JSON format
   -- TODO: add validation: check for nesting etc
   -- TODO: check data types
-  local toPropertiesJson = function(properties)
-    local propsJson = json:encode(properties)
+  local to_properties_json = function(properties)
+    local props_json = json:encode(properties)
 
     -- Now we need to rename our type suffixes to fit
     -- the format expected by Snowplow
@@ -67,10 +67,10 @@ payload.newPayloadBuilder = function(encodeBase64)
       suffix = '":' -- To lower risk of error
       local old = "_" .. t:upper() .. suffix
       local new = "$" .. t .. suffix
-      propsJson = propsJson:gsub(old, new)
+      props_json = props_json:gsub(old, new)
     end
 
-    return propsJson
+    return props_json
   end
 
   -- Add a &name=value pair with the value encoded
@@ -81,38 +81,38 @@ payload.newPayloadBuilder = function(encodeBase64)
     if type(validate) == "function" then
       validate(key, value)
     end
-    addNvPair(key, value, true)
+    add_nv_pair(key, value, true)
   end
 
   -- Add a &name=value pair with the value not encoded.
   -- @param key string: The name of the property
   -- @param value string: The value to add to the payload
   -- @param validate function or nil: If present, will be called with value to validate it
-  local addRaw = function(key, value, validate)
+  local add_raw = function(key, value, validate)
     if type(validate) == "function" then
       validate(key, value)
     end
-    addNvPair(key, value, false)
+    add_nv_pair(key, value, false)
   end
 
-  -- Add a &name=value pair with the value base64 encoded, unless encodeBase64 is set to false (in which case URI escape).
-  -- @param keyIfEnc string: The key name if the value is encoded - ue_pr: Unencoded, ue_px: Encoded
+  -- Add a &name=value pair with the value base64 encoded, unless encode_base64 is set to false (in which case URI escape).
+  -- @param key_if_enc string: The key name if the value is encoded - ue_pr: Unencoded, ue_px: Encoded
   -- @param key string: The name of the property
   -- @param value string: The value to add to the payload
   -- @param validate function or nil: If present, will be called with value to validate it
-  local addProps = function(keyIfEnc, key, value, validate)
+  local add_props = function(key_if_enc, key, value, validate)
     if type(validate) == "function" then
-      validate((keyIfEnc .. "|" .. key), value)
+      validate((key_if_enc .. "|" .. key), value)
     end
-    props = toPropertiesJson(value)
+    props = to_properties_json(value)
 
-    if encodeBase64 then
+    if encode_base64 then
       if #props <= 0 then
         error("Props cannot be an empty table")
       end
-      addNvPair(keyIfEnc, base64.encode(props), false) -- Base64 encode, no URL-encoding
+      add_nv_pair(key_if_enc, base64.encode(props), false) -- Base64 encode, no URL-encoding
     else
-      addNvPair(key, props, true) -- URL-encoding
+      add_nv_pair(key, props, true) -- URL-encoding
     end
   end
 
@@ -124,8 +124,8 @@ payload.newPayloadBuilder = function(encodeBase64)
 
   return {
     add = add,
-    addRaw = addRaw,
-    addProps = addProps,
+    add_raw = add_raw,
+    add_props = add_props,
     build = build,
   }
 end
