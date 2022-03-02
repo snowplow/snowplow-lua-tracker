@@ -17,12 +17,13 @@
 
 local snowplow = require("snowplow")
 local ss = require("lib.utils").safe_string -- Alias
+local TRACKER_VERSION = require("constants").TRACKER_VERSION
 
 local function assert_tracker(tracker, collector_uri)
   assert.are.equal(tracker.collector_uri, collector_uri)
   assert.are.equal(tracker.config.encode_base64, true)
   assert.are.equal(tracker.config.platform, "pc")
-  assert.are.equal(tracker.config.version, "lua-0.1.0-1")
+  assert.are.equal(tracker.config.version, TRACKER_VERSION)
 end
 
 describe("snowplow", function()

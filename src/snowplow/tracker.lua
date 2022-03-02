@@ -15,11 +15,12 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local curl = require("curl")
+local curl = require("cURL")
 local validate = require("validate")
 local payload = require("payload")
 local set = require("lib.set")
 local ss = require("lib.utils").safe_string -- Alias
+local TRACKER_VERSION = require("constants").TRACKER_VERSION
 
 local tracker = {} -- The module
 local Tracker = {} -- The class
@@ -28,7 +29,6 @@ Tracker.__index = Tracker
 -- --------------------------------------------------------------
 -- Constants & config
 
-local VERSION = "lua-0.1.0-1"
 local DEFAULT_ENCODE_BASE64 = true
 local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.new_set({ "pc", "tv", "mob", "cnsl", "iot" })
@@ -46,7 +46,7 @@ function tracker.new_tracker(collector_uri)
   trck.config = {
     encode_base64 = DEFAULT_ENCODE_BASE64,
     platform = DEFAULT_PLATFORM,
-    version = VERSION,
+    version = TRACKER_VERSION,
   }
 
   return trck
