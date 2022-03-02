@@ -19,7 +19,7 @@ local json = require("src.snowplow..lib.json")
 
 describe("json", function()
   it("should JSON-encode Lua tables correctly", function()
-    local dataTable = {
+    local data_table = {
       {
         "INPUT",
         "EXPECTED",
@@ -33,8 +33,8 @@ describe("json", function()
         '{"age":23,"name":"John"}',
       },
       {
-        { myTemp = 23.3, myUnit = "celsius" },
-        '{"myTemp":23.3,"myUnit":"celsius"}',
+        { my_temp = 23.3, my_unit = "celsius" },
+        '{"my_temp":23.3,"my_unit":"celsius"}',
       },
       {
         {
@@ -57,7 +57,7 @@ describe("json", function()
       },
     }
 
-    for i, v in ipairs(dataTable) do
+    for i, v in ipairs(data_table) do
       if i > 1 then
         local expected = json:encode(v[1])
         assert.are.equal(v[2], expected)
@@ -66,9 +66,9 @@ describe("json", function()
   end)
 
   it("should error on nil or other datatypes", function()
-    local badValues = { nil, "", 1, "temp => 23.C", true, false, 34.5 }
+    local bad_values = { nil, "", 1, "temp => 23.C", true, false, 34.5 }
 
-    for i, v in ipairs(badValues) do
+    for i, v in ipairs(bad_values) do
       assert.has_error(function()
         json:encode(v)
       end)

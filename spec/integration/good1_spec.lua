@@ -19,21 +19,21 @@ local snowplow = require("snowplow")
 
 describe("Integration tests with no issues", function()
   it("should return true for a valid CloudFront collector", function()
-    local t = snowplow.newTrackerForCf("d3rkrsqld9gmqf")
-    t:setViewport(420, 360)
-    t:setUserId("user123")
-    t:setAppId("wow-ext-1")
-    local s, msg = t:trackStructEvent("shop", "add-to-basket", nil, "units", 2, 1369330909)
+    local t = snowplow.new_tracker_for_cf("d3rkrsqld9gmqf")
+    t:set_viewport(420, 360)
+    t:set_user_id("user123")
+    t:set_app_id("wow-ext-1")
+    local s, msg = t:track_struct_event("shop", "add-to-basket", nil, "units", 2, 1369330909)
 
     assert.is_true(s)
     assert.is_nil(msg)
   end)
 
   it("should return true for a valid URI-based collector", function()
-    local t = snowplow.newTrackerForUri("d3rkrsqld9gmqf.cloudfront.net") -- Technically using a CloudFront collector
-    t:encodeBase64(false)
-    t:setScreenResolution(1068, 720)
-    local s, msg = t:trackUnstructEvent(
+    local t = snowplow.new_tracker_for_uri("d3rkrsqld9gmqf.cloudfront.net") -- Technically using a CloudFront collector
+    t:encode_base64(false)
+    t:set_screen_resolution(1068, 720)
+    local s, msg = t:track_unstruct_event(
       "save-game",
       { save_id = "4321", level = 23, difficultyLevel = "HARD", dl_content = true },
       1369330929

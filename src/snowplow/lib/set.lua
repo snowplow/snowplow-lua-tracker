@@ -26,7 +26,7 @@ Set.__index = Set
 -- Source: http://www.lua.org/pil/13.1.html
 -- @param t table: The table containing the values for this set
 -- @return Set: The new set
-function set.newSet(t)
+function set.new_set(t)
   local s = {}
   setmetatable(s, Set)
   for _, l in ipairs(t) do
@@ -41,7 +41,7 @@ end
 -- Creates an iterator over the set in key-sorted order.
 -- @param s Set: The set to iterate over
 -- @return function: The iterator function
-local function pairsByKeys(s)
+local function pairs_by_keys(s)
   local a = {}
   for n in pairs(s) do
     table.insert(a, n)
@@ -80,10 +80,10 @@ end
 -- Source: http://www.lua.org/pil/13.1.html
 -- @param self Set: The set to convert
 -- @return string: The string representation of the set
-function Set:toString()
+function Set:to_string()
   local s = "{"
   local sep = ""
-  for e in pairsByKeys(self) do
+  for e in pairs_by_keys(self) do
     s = s .. sep .. e
     sep = ", "
   end
