@@ -42,16 +42,16 @@ local OBJDEF = { VERSION = VERSION }
 ---------------------------------------------------------------------------
 
 local author = "-[ JSON.lua package by Jeffrey Friedl (http://regex.info/blog/lua/json), version "
-  .. to_string(VERSION)
+  .. tostring(VERSION)
   .. " ]-"
 local isArray = {
-  __to_string = function()
+  __tostring = function()
     return "JSON array"
   end,
 }
 isArray.__index = isArray
 local isObject = {
-  __to_string = function()
+  __tostring = function()
     return "JSON object"
   end,
 }
@@ -427,9 +427,9 @@ local function object_or_array(self, T, etc)
       --
       -- An empty table...
       --
-      if to_string(T) == "JSON array" then
+      if tostring(T) == "JSON array" then
         return nil
-      elseif to_string(T) == "JSON object" then
+      elseif tostring(T) == "JSON object" then
         return {}
       else
         -- have to guess, so we'll pick array, since empty arrays are likely more common than empty objects
@@ -479,10 +479,10 @@ function encode_value(self, value, parents, etc)
       --
       return "-1e+9999"
     else
-      return to_string(value)
+      return tostring(value)
     end
   elseif type(value) == "boolean" then
-    return to_string(value)
+    return tostring(value)
   elseif type(value) ~= "table" then
     self:onEncodeError("can't convert " .. type(value) .. " to JSON", etc)
   else
@@ -492,7 +492,7 @@ function encode_value(self, value, parents, etc)
     local T = value
 
     if parents[T] then
-      self:onEncodeError("table " .. to_string(T) .. " is a child of itself", etc)
+      self:onEncodeError("table " .. tostring(T) .. " is a child of itself", etc)
     else
       parents[T] = true
     end
@@ -524,7 +524,7 @@ function encode_value(self, value, parents, etc)
       --
       local PARTS = {}
       for _, key in ipairs(object_keys) do
-        local encoded_key = encode_value(self, to_string(key), parents, etc)
+        local encoded_key = encode_value(self, tostring(key), parents, etc)
         local encoded_val = encode_value(self, T[key], parents, etc)
         table.insert(PARTS, string.format("%s:%s", encoded_key, encoded_val))
       end
@@ -550,7 +550,7 @@ function OBJDEF:encode(value, etc)
   return encode_value(self, value, parents, etc)
 end
 
-function OBJDEF.__to_string()
+function OBJDEF.__tostring()
   return "JSON encode package"
 end
 

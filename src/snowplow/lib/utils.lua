@@ -37,7 +37,7 @@ utils.safe_string = function(value)
       v = "<table>"
     end
   end
-  return to_string(v)
+  return tostring(v)
 end
 
 -- --------------------------------------------------------------

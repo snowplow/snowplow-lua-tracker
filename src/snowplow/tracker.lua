@@ -61,7 +61,7 @@ function get_transaction_id()
   local tid
   math.randomseed(os.time())
   local rand = math.random(100000, 999999)
-  tid = to_string(rand)
+  tid = tostring(rand)
 
   -- To handle testing
   -- TODO: is there a cleaner way of doing this? DI or a mock or something?
