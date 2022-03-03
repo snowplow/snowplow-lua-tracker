@@ -68,7 +68,7 @@ describe("json", function()
   it("should error on nil or other datatypes", function()
     local bad_values = { nil, "", 1, "temp => 23.C", true, false, 34.5 }
 
-    for i, v in ipairs(bad_values) do
+    for _, v in ipairs(bad_values) do
       assert.has_error(function()
         json:encode(v)
       end)

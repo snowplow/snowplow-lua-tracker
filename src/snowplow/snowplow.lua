@@ -27,8 +27,7 @@ local snowplow = {}
 -- @param uri string: The full URI to the Snowplow collector
 -- @return tracker table: The new tracker
 local function init_tracker(uri)
-  local tracker = tracker.new_tracker(uri, config)
-  return tracker
+  return tracker.new_tracker(uri)
 end
 
 -- Helper to generate the collector url from a collector host name.

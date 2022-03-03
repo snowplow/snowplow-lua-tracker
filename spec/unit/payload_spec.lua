@@ -54,7 +54,8 @@ describe("payload", function()
 
     assert.are.equal(
       pb.build(),
-      "?ue_pr=%7B%22max%5Fx%24flt%22%3A960%2C%22max%5Fy%24dt%22%3A1080%2C%22min%5Fx%24int%22%3A0%2C%22min%5Fy%24geo%22%3A%2D12%2C%22time%24tm%22%3A56565%2C%22time%24tms%22%3A56565%7D"
+      "?ue_pr=%7B%22max%5Fx%24flt%22%3A960%2C%22max%5Fy%24dt%22%3A1080%2C%22min%5Fx%24int%22%3A0%2C%22min%5Fy%24geo%22%"
+        .. "3A%2D12%2C%22time%24tm%22%3A56565%2C%22time%24tms%22%3A56565%7D"
     )
   end)
 

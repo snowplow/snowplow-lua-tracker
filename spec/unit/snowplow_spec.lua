@@ -16,7 +16,6 @@
 -- License:     Apache License Version 2.0
 
 local snowplow = require("snowplow")
-local validate = require("validate")
 local ss = require("lib.utils").safe_string -- Alias
 
 local function assert_tracker(tracker, collector_uri)
