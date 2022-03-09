@@ -20,6 +20,7 @@ local snowplow
 describe("Integration tests with HTTP/collector problems", function()
   setup(function()
     _G._TEST = true
+    package.loaded["lua_uuid"] = require("spec/mocks/mock_uuid")
     snowplow = require("snowplow")
   end)
 
@@ -39,7 +40,7 @@ describe("Integration tests with HTTP/collector problems", function()
       "Host [http://fake.cloudfront.net/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2&dtm=1369330909000"
         .. "&p=cnsl&tv="
         .. t.config.version
-        .. "&tid=100000] not found (possible connectivity error)"
+        .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000] not found (possible connectivity error)"
     )
   end)
 
@@ -55,7 +56,7 @@ describe("Integration tests with HTTP/collector problems", function()
       msg,
       "Host [http://c.snplow.com/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv="
         .. t.config.version
-        .. "&tid=100000"
+        .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000"
         .. "&aid=wow%2Dext%2D1&res=1068x720] not found (possible connectivity error)"
     )
   end)

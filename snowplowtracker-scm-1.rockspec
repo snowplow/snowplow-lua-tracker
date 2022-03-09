@@ -17,7 +17,8 @@ description = {
 dependencies = {
   "lua >= 5.1",
   "lua-curl >= 0.3.13-1",
-  "base64 >= 1.5-2"
+  "base64 >= 1.5-2",
+  "lua_uuid >= 0.2.0-2"
 }
 build = {
   type = "builtin",

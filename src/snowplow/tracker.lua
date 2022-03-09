@@ -20,6 +20,7 @@ local validate = require("validate")
 local payload = require("payload")
 local set = require("lib.set")
 local ss = require("lib.utils").safe_string -- Alias
+local uuid = require("lua_uuid")
 local TRACKER_VERSION = require("constants").TRACKER_VERSION
 
 local tracker = {} -- The module
@@ -54,24 +55,6 @@ end
 
 -- --------------------------------------------------------------
 -- Private static methods
-
--- Generates a moderately-unique six-digit transaction ID - essentially a nonce to make sure this event isn't
--- recorded twice.
--- @return string: The transaction ID
-local function get_transaction_id()
-  local tid
-  math.randomseed(os.time())
-  local rand = math.random(100000, 999999)
-  tid = tostring(rand)
-
-  -- To handle testing
-  -- TODO: is there a cleaner way of doing this? DI or a mock or something?
-  if _TEST then
-    tid = "100000"
-  end
-
-  return tid
-end
 
 -- Gets the current timestamp as total milliseconds since epoch.
 -- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
@@ -130,7 +113,7 @@ local function track(self, pb)
   -- Add the standard name-value pairs
   pb.add("p", self.config.platform)
   pb.add_raw("tv", self.config.version)
-  pb.add("tid", get_transaction_id())
+  pb.add("eid", uuid())
 
   -- Add the fields which may have been set
   pb.add("uid", self.user_id)
