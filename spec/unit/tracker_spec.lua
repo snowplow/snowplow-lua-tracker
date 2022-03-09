@@ -18,6 +18,7 @@
 local tracker = require("tracker")
 
 local collector_uri = "http://d3rkrsqld9gmqf.cloudfront.net/i"
+local TRACKER_VERSION = require("constants").TRACKER_VERSION
 
 describe("tracker", function()
   setup(function()
@@ -42,7 +43,7 @@ describe("tracker", function()
     assert.are.same(t.config, {
       encode_base64 = true,
       platform = "pc",
-      version = "lua-0.1.0-1",
+      version = TRACKER_VERSION,
     })
 
     -- These are not set by default
@@ -178,7 +179,9 @@ describe("tracker", function()
 
     t:track_screen_view("Game HUD 2", nil, 1369330916)
     assert.stub(t._http_get).was_called_with(
-      "http://d3rkrsqld9gmqf.cloudfront.net/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv=lua-0.1.0-1&tid=100000"
+      "http://d3rkrsqld9gmqf.cloudfront.net/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv="
+        .. t.config.version
+        .. "&tid=100000"
         .. "&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
     )
   end)
@@ -236,7 +239,9 @@ describe("tracker", function()
     t:track_struct_event("shop", "add-to-basket", nil, "units", 2, 1369330909)
     assert.stub(t._http_get).was_called_with(
       "http://d3rkrsqld9gmqf.cloudfront.net/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2"
-        .. "&dtm=1369330909000&p=tv&tv=lua-0.1.0-1&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360"
+        .. "&dtm=1369330909000&p=tv&tv="
+        .. t.config.version
+        .. "&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360"
         .. "&cd=32"
     )
   end)
@@ -255,9 +260,10 @@ describe("tracker", function()
     assert.has_error(f, "ue_px|ue_pr is required and must be a non-empty table, not [{}]")
 
     local f2 = function()
-      t:track_unstruct_event("save-game", 23.0)
+      t:track_unstruct_event("save-game", 23)
     end
-    assert.has_error(f2, "ue_px|ue_pr is required and must be a non-empty table, not [23.0]")
+
+    assert.has_error(f2, "ue_px|ue_pr is required and must be a non-empty table, not [23]")
   end)
 
   it("track_unstruct_event() should error unless tstamp is a positive integer", function()
@@ -284,7 +290,9 @@ describe("tracker", function()
     assert.stub(t._http_get).was_called_with(
       "http://d3rkrsqld9gmqf.cloudfront.net/i?e=ue&ue_na=save%2Dgame&ue_pr=%7B%22difficultyLevel%22%3A%22HARD%22%2C%22"
         .. "dl%5Fcontent%22%3Atrue%2C%22level%24int%22%3A23%2C%22save%5Fid%22%3A%224321%22%7D&dtm=1369330929000&p=tv"
-        .. "&tv=lua-0.1.0-1&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
+        .. "&tv="
+        .. t.config.version
+        .. "&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
     )
   end)
 
@@ -306,7 +314,9 @@ describe("tracker", function()
       )
       assert.stub(t._http_get).was_called_with(
         "http://d3rkrsqld9gmqf.cloudfront.net/i?e=ue&ue_na=load%2Dgame&ue_px=eyJkaWZmaWN1bHR5TGV2ZWwiOiJIQVJEIiwiZGxfY2"
-          .. "9udGVudCI6dHJ1ZSwibGV2ZWwkaW50IjoyMywic2F2ZV9pZCI6IjQzMjEifQ==&dtm=1369330929000&p=tv&tv=lua-0.1.0-1"
+          .. "9udGVudCI6dHJ1ZSwibGV2ZWwkaW50IjoyMywic2F2ZV9pZCI6IjQzMjEifQ==&dtm=1369330929000&p=tv&tv="
+          .. t.config.version
+          .. ""
           .. "&tid=100000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
       )
     end
