@@ -19,11 +19,12 @@ Ensure you have the following installed on your system:
 - [Lua](https://www.lua.org/) version >= 5.1
 - [Luarocks](https://luarocks.org/) (Lua's dependency manager)
 - curl
+- [libuuid](https://linux.die.net/man/3/libuuid)
 
 If using `brew`, simply run:
 
 ```sh
-brew install lua luarocks curl
+brew install lua luarocks curl ossp-uuid
 ```
 
 ### Installing dependencies
@@ -32,10 +33,16 @@ brew install lua luarocks curl
 luarocks install snowplowtracker-0.2.0-1 --deps-only
 ```
 
-**_Note:_** You may need to pass in your path to curl with `CURL_DIR`, if luarocks cannot find it. An example if curl was installed via `brew`:
+**_Note:_** There are two path args you may need to pass in if luarocks cannot find them,
+ `CURL_DIR`, and `UUID_DIR` An example if curl and libuuid were installed via `brew`, depending on your architecture:
 
+**Intel MacOS**
 ```sh
-luarocks install snowplowtracker-0.2.0-1.rockspec --deps-only CURL_DIR=/usr/local/Cellar/curl/7.81.0
+luarocks install snowplowtracker-scm-1.rockspec --deps-only CURL_DIR=/usr/local/Cellar/curl/7.81.0 UUID_DIR=/usr/local/Cellar/ossp-uuid/1.6.2_2
+```
+**ARM MacOS**
+```sh
+luarocks install snowplowtracker-scm-1.rockspec --deps-only CURL_DIR=/opt/homebrew/opt/curl UUID_DIR=/opt/homebrew/opt/ossp-uuid
 ```
 
 ### Building the project
