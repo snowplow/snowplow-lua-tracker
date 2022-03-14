@@ -28,24 +28,8 @@ describe("Integration tests with HTTP/collector problems", function()
     _G._TEST = nil
   end)
 
-  it("should return false and an error message if a CloudFront collector cannot be found", function()
-    local t = snowplow.new_tracker_for_cf("fake") -- Doesn't exist
-    t:encode_base64(false)
-    t:platform("cnsl")
-    local s, msg = t:track_struct_event("shop", "add-to-basket", nil, "units", 2, 1369330909)
-
-    assert.is_false(s)
-    assert.are.equal(
-      msg,
-      "Host [http://fake.cloudfront.net/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2&dtm=1369330909000"
-        .. "&p=cnsl&tv="
-        .. t.config.version
-        .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000] not found (possible connectivity error)"
-    )
-  end)
-
-  it("should return false and an error message if a URI-based collector cannot be found", function()
-    local t = snowplow.new_tracker_for_uri("c.snplow.com") -- Doesn't exist
+  it("should return false and an error message if a collector cannot be found", function()
+    local t = snowplow.new_tracker("c.snplow.com") -- Doesn't exist
     t:platform("tv")
     t:set_screen_resolution(1068, 720)
     t:set_app_id("wow-ext-1")
@@ -54,7 +38,7 @@ describe("Integration tests with HTTP/collector problems", function()
     assert.is_false(s)
     assert.are.equal(
       msg,
-      "Host [http://c.snplow.com/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv="
+      "Host [https://c.snplow.com/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv="
         .. t.config.version
         .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000"
         .. "&aid=wow%2Dext%2D1&res=1068x720] not found (possible connectivity error)"

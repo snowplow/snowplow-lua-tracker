@@ -17,54 +17,35 @@
 
 local validate = require("validate")
 local tracker = require("tracker")
+local set = require("lib.set")
 
 local snowplow = {}
+local VALID_PROTOCOLS = set.new_set({ "http", "https" })
 
 -- --------------------------------------------------------------
 -- Static methods
 
--- Builds our new tracker using the supplied URI.
--- @param uri string: The full URI to the Snowplow collector
+-- Helper to generate the collector url from a given url.
+-- Example: as_collector_url("snplow.myshop.com") => "https://snplow.myshop.com/i"
+-- @param url string: The url of the collector
+-- @return string: The full collector URL
+local function as_collector_url(url)
+  if url:find("://") then
+    local _, _, protocol = url:find("^(%a[^:]*)")
+    validate.is_string_from_set(VALID_PROTOCOLS, "protocol", protocol)
+    return url .. "/i"
+  end
+
+  return "https://" .. url .. "/i"
+end
+
+-- Builds our new tracker using the supplied URL.
+-- @param url string: The full url to the Snowplow collector
 -- @return tracker table: The new tracker
-local function init_tracker(uri)
-  return tracker.new_tracker(uri)
-end
-
--- Helper to generate the collector url from a collector host name.
--- Example: as_collector_url("snplow.myshop.com") => "http://snplow.myshop.com/i"
--- @param host string: The host name of the collector
--- @return string: The full collector URI
-local function as_collector_uri(host)
-  return "http://" .. host .. "/i"
-end
-
--- Helper to generate the collector url from a CloudFront distribution subdomain.
--- Example: collector_uri_from_cf("f3f77d9def5") => "http://f3f77d9def5.cloudfront.net/i"
--- @param cf_subdomain string The CloudFront subdomain on which the collector's distribution is hosted
--- @return string: The full collector URI
-local function collector_uri_from_cf(cf_subdomain)
-  return as_collector_uri(cf_subdomain .. ".cloudfront.net")
-end
-
--- --------------------------------------------------------------
--- Factories to create a tracker
-
--- Create a new Snowplow tracker talking to a URI-based collector on the given host.
--- @param host string: The host (i.e. full domain) on which the collector is running
--- @return tracker table: The new tracker
-function snowplow.new_tracker_for_uri(host)
-  validate.is_non_empty_string("host", host)
-  local uri = as_collector_uri(host)
-  return init_tracker(uri)
-end
-
--- Create a new Snowplow tracker talking to a CloudFront-based collector on the given subdomain.
--- @param cf_subdomain string: The CloudFront subdomain on which the collector is running
--- @return tracker table: The new tracker
-function snowplow.new_tracker_for_cf(cf_subdomain)
-  validate.is_non_empty_string("cf_subdomain", cf_subdomain)
-  local uri = collector_uri_from_cf(cf_subdomain)
-  return init_tracker(uri)
+function snowplow.new_tracker(url)
+  validate.is_non_empty_string("url", url)
+  local collector_url = as_collector_url(url)
+  return tracker.new_tracker(collector_url)
 end
 
 -- --------------------------------------------------------------
