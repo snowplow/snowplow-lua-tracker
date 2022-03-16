@@ -62,6 +62,8 @@ jobs:
         run: |
           luarocks install snowplowtracker-scm-1.rockspec --only-deps CURL_INCDIR=/usr/include/x86_64-linux-gnu && luarocks build
 
-      - name: Run Busted
-        run: |
-          luarocks install busted && busted
+      - name: Install Busted
+        run: luarocks install busted
+
+      - name: Run Tests
+        run: ./run-tests

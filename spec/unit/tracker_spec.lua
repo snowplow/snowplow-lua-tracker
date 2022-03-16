@@ -17,7 +17,7 @@
 
 local tracker
 
-local collector_uri = "http://d3rkrsqld9gmqf.cloudfront.net/i"
+local collector_uri = "http://test.invalid/i"
 local TRACKER_VERSION = require("constants").TRACKER_VERSION
 
 describe("tracker", function()
@@ -181,7 +181,7 @@ describe("tracker", function()
 
     t:track_screen_view("Game HUD 2", nil, 1369330916)
     assert.stub(t._http_get).was_called_with(
-      "http://d3rkrsqld9gmqf.cloudfront.net/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv="
+      "http://test.invalid/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv="
         .. t.config.version
         .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000"
         .. "&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
@@ -240,7 +240,7 @@ describe("tracker", function()
     t:set_viewport(420, 360)
     t:track_struct_event("shop", "add-to-basket", nil, "units", 2, 1369330909)
     assert.stub(t._http_get).was_called_with(
-      "http://d3rkrsqld9gmqf.cloudfront.net/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2"
+      "http://test.invalid/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2"
         .. "&dtm=1369330909000&p=tv&tv="
         .. t.config.version
         .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360"
@@ -290,7 +290,7 @@ describe("tracker", function()
       1369330929
     )
     assert.stub(t._http_get).was_called_with(
-      "http://d3rkrsqld9gmqf.cloudfront.net/i?e=ue&ue_na=save%2Dgame&ue_pr=%7B%22difficultyLevel%22%3A%22HARD%22%2C%22"
+      "http://test.invalid/i?e=ue&ue_na=save%2Dgame&ue_pr=%7B%22difficultyLevel%22%3A%22HARD%22%2C%22"
         .. "dl%5Fcontent%22%3Atrue%2C%22level%24int%22%3A23%2C%22save%5Fid%22%3A%224321%22%7D&dtm=1369330929000&p=tv"
         .. "&tv="
         .. t.config.version
@@ -316,7 +316,7 @@ describe("tracker", function()
         1369330929
       )
       assert.stub(t._http_get).was_called_with(
-        "http://d3rkrsqld9gmqf.cloudfront.net/i?e=ue&ue_na=load%2Dgame&ue_px=eyJkaWZmaWN1bHR5TGV2ZWwiOiJIQVJEIiwiZGxfY2"
+        "http://test.invalid/i?e=ue&ue_na=load%2Dgame&ue_px=eyJkaWZmaWN1bHR5TGV2ZWwiOiJIQVJEIiwiZGxfY2"
           .. "9udGVudCI6dHJ1ZSwibGV2ZWwkaW50IjoyMywic2F2ZV9pZCI6IjQzMjEifQ==&dtm=1369330929000&p=tv&tv="
           .. t.config.version
           .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000"

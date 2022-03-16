@@ -61,9 +61,28 @@ To run tests, you will need `busted`:
 luarocks install busted
 ```
 
-Once installed, to run all tests:
+These tests require a Snowplow collector, so there are a couple of ways you're able to run them:
+
+### run-test script
+
+This script will handle downloading and running [Micro](https://github.com/snowplow-incubator/snowplow-micro) for the tests, you just need to run:
 
 ```sh
+./run-tests
+```
+
+You are able to use any `busted` arguments with this script, for example:
+
+```sh
+./run-tests --pattern=tracker_spec.lua
+```
+
+### Running with your own collector
+
+You are also able to run these tests with any collector by setting the `MICRO_URL` envvar to the collector URL, and then running `busted`:
+
+```sh
+set MICRO_URL=http://localhost:9090
 busted
 ```
 
