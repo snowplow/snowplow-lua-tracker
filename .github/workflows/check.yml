@@ -29,6 +29,10 @@ jobs:
           luaVersion: "5.4"
       - uses: leafo/gh-actions-luarocks@v4
 
+      - name: Specify Git protocol
+        run: |
+          git config --global url."https://".insteadOf git://
+
       - name: Install libcurl4
         run: |
           sudo apt-get update && sudo apt-get install libcurl4-gnutls-dev
@@ -53,6 +57,10 @@ jobs:
         with:
           luaVersion: ${{ matrix.luaVersion }}
       - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Specify Git protocol
+        run: |
+          git config --global url."https://".insteadOf git://
 
       - name: Install libcurl4
         run: |
