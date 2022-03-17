@@ -3,7 +3,6 @@
 cleanup() {
   # We don't need to clean up on GH actions
   if [ -z "$GITHUB_ACTION" ]; then
-    unset MICRO_URL &&
     kill "$MICRO_PID"
   fi
 }
@@ -25,9 +24,6 @@ MICRO_PID=$!
 until nc -z '0.0.0.0' 9090; do
   sleep 1
 done
-
-# Set the Micro URL for tests
-export MICRO_URL=http://localhost:9090
 
 # Run tests with any arguments passed to this script
 busted "$@"

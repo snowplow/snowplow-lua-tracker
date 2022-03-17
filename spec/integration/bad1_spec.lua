@@ -16,7 +16,7 @@
 -- License:     Apache License Version 2.0
 
 local snowplow = require("snowplow")
-local MICRO_URL = os.getenv("MICRO_URL")
+local MICRO_URL = require("spec.micro.micro_url")
 
 describe("Integration tests with bad config", function()
   it("should throw an error on a bad configuration option", function()
