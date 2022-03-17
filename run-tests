@@ -18,7 +18,7 @@ if [ ! -f "$MICRO_PATH" ]; then
 fi
 
 # Bring up Micro and store PID
-java -jar "$MICRO_PATH" --collector-config micro/micro.conf --iglu micro/iglu.json &
+java -jar "$MICRO_PATH" --collector-config spec/micro/micro.conf --iglu spec/micro/iglu.json &
 MICRO_PID=$!
 
 # Wait until Micro is ready
