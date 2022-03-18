@@ -1,0 +1,29 @@
+#!/bin/sh
+
+cleanup() {
+  # We don't need to clean up on GH actions
+  if [ -z "$GITHUB_ACTION" ]; then
+    kill "$MICRO_PID"
+  fi
+}
+
+# Capture SIGINT (Ctrl+C) to run `cleanup` before exit
+trap cleanup EXIT
+
+# Get Micro if it doesn't exist
+MICRO_PATH=/tmp/micro.jar
+if [ ! -f "$MICRO_PATH" ]; then
+  curl -o "$MICRO_PATH" -L https://github.com/snowplow-incubator/snowplow-micro/releases/download/micro-1.1.2/snowplow-micro-1.1.2.jar
+fi
+
+# Bring up Micro and store PID
+java -jar "$MICRO_PATH" --collector-config spec/micro/micro.conf --iglu spec/micro/iglu.json &
+MICRO_PID=$!
+
+# Wait until Micro is ready
+until nc -z '0.0.0.0' 9090; do
+  sleep 1
+done
+
+# Run tests with any arguments passed to this script
+busted "$@"

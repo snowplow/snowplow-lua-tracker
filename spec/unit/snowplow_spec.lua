@@ -48,24 +48,24 @@ describe("snowplow", function()
   -- Verify constructed tracker tables
 
   it("new_tracker() should correctly create a tracker", function()
-    local t = snowplow.new_tracker("c.snplow.com")
-    assert_tracker(t, "https://c.snplow.com/i")
+    local t = snowplow.new_tracker("test.invalid")
+    assert_tracker(t, "https://test.invalid/i")
   end)
 
   it("new_tracker_for_uri() should correctly assign default protocol https", function()
-    local t = snowplow.new_tracker("invalid.com")
+    local t = snowplow.new_tracker("test.invalid")
     assert.is_equal(t.collector_uri:sub(1, 5), "https")
   end)
 
   it("new_tracker_for_uri() should correctly create url with default protocol from url with port", function()
-    local t = snowplow.new_tracker("http://invalid.com:9090")
-    assert.is_equal("http://invalid.com:9090/i", t.collector_uri)
+    local t = snowplow.new_tracker("http://test.invalid:9090")
+    assert.is_equal("http://test.invalid:9090/i", t.collector_uri)
   end)
 
   it("new_tracker() should assign correct passed protocol", function()
     local protocols = { "http", "https" }
     for _, protocol in ipairs(protocols) do
-      local t = snowplow.new_tracker(protocol .. "://invalid.com")
+      local t = snowplow.new_tracker(protocol .. "://test.invalid")
       assert.is_equal(t.collector_uri:sub(1, protocol:len()), protocol)
     end
   end)
@@ -74,7 +74,7 @@ describe("snowplow", function()
     local protocols = { "ftp", "file" }
     for _, protocol in ipairs(protocols) do
       local f = function()
-        snowplow.new_tracker(protocol .. "://invalid.com")
+        snowplow.new_tracker(protocol .. "://test.invalid")
       end
       assert.has_error(f, "protocol must be a string from the set {http, https}, not [" .. protocol .. "]")
     end

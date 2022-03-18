@@ -29,6 +29,10 @@ jobs:
           luaVersion: "5.4"
       - uses: leafo/gh-actions-luarocks@v4
 
+      - name: Specify Git protocol
+        run: |
+          git config --global url."https://".insteadOf git://
+
       - name: Install libcurl4
         run: |
           sudo apt-get update && sudo apt-get install libcurl4-gnutls-dev
@@ -54,6 +58,10 @@ jobs:
           luaVersion: ${{ matrix.luaVersion }}
       - uses: leafo/gh-actions-luarocks@v4
 
+      - name: Specify Git protocol
+        run: |
+          git config --global url."https://".insteadOf git://
+
       - name: Install libcurl4
         run: |
           sudo apt-get update && sudo apt-get install libcurl4-gnutls-dev
@@ -62,6 +70,8 @@ jobs:
         run: |
           luarocks install snowplowtracker-scm-1.rockspec --only-deps CURL_INCDIR=/usr/include/x86_64-linux-gnu && luarocks build
 
-      - name: Run Busted
-        run: |
-          luarocks install busted && busted
+      - name: Install Busted
+        run: luarocks install busted
+
+      - name: Run Tests
+        run: ./run-tests

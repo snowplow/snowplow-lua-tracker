@@ -29,7 +29,7 @@ describe("Integration tests with HTTP/collector problems", function()
   end)
 
   it("should return false and an error message if a collector cannot be found", function()
-    local t = snowplow.new_tracker("c.snplow.com") -- Doesn't exist
+    local t = snowplow.new_tracker("test.invalid") -- Doesn't exist
     t:platform("tv")
     t:set_screen_resolution(1068, 720)
     t:set_app_id("wow-ext-1")
@@ -38,7 +38,7 @@ describe("Integration tests with HTTP/collector problems", function()
     assert.is_false(s)
     assert.are.equal(
       msg,
-      "Host [https://c.snplow.com/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv="
+      "Host [https://test.invalid/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv="
         .. t.config.version
         .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000"
         .. "&aid=wow%2Dext%2D1&res=1068x720] not found (possible connectivity error)"
