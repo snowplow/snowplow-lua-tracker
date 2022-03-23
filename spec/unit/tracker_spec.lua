@@ -248,33 +248,6 @@ describe("tracker", function()
     )
   end)
 
-  it("track_unstruct_event() should error unless name is a non-empty string", function()
-    local f = function()
-      t:track_unstruct_event(nil, {})
-    end
-    assert.has_error(f, "ue_na is required and must be a non-empty string, not [<nil>]")
-  end)
-
-  it("track_unstruct_event() should error unless properties is a non-empty table", function()
-    local f = function()
-      t:track_unstruct_event("save-game", {})
-    end
-    assert.has_error(f, "ue_px|ue_pr is required and must be a non-empty table, not [{}]")
-
-    local f2 = function()
-      t:track_unstruct_event("save-game", 23)
-    end
-
-    assert.has_error(f2, "ue_px|ue_pr is required and must be a non-empty table, not [23]")
-  end)
-
-  it("track_unstruct_event() should error unless tstamp is a positive integer", function()
-    local f = function()
-      t:track_unstruct_event("save-game", { save_id = 23 }, 23.232312)
-    end
-    assert.has_error(f, "dtm is required and must be a positive integer, not [23232.312]")
-  end)
-
   it("track_unstruct_event() should call http_get() with the correct URL-encoded payload in the querystring", function()
     stub(t, "_http_get")
     t:encode_base64(false)
