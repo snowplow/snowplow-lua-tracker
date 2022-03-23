@@ -247,9 +247,9 @@ end
 function Tracker:track_unstruct_event(name, properties, tstamp)
   local pb = payload.new_payload_builder(self.config.encode_base64)
   pb.add_raw("e", "ue")
-  pb.add("ue_na", name, validate.is_non_empty_string)
-  pb.add_props("ue_px", "ue_pr", properties, validate.is_non_empty_table)
-  pb.add("dtm", get_timestamp(tstamp), validate.is_positive_integer)
+  pb.add("ue_na", name)
+  pb.add_props("ue_px", "ue_pr", properties)
+  pb.add("dtm", get_timestamp(tstamp))
 
   return track(self, pb)
 end
