@@ -56,21 +56,6 @@ end
 -- --------------------------------------------------------------
 -- Private static methods
 
--- Gets the current timestamp as total milliseconds since epoch.
--- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
--- @return number: The timestamp
-local function get_timestamp(tstamp)
-  local timestamp
-  if tstamp == nil then
-    timestamp = os.time()
-  elseif type(tstamp) == "number" then
-    timestamp = tstamp * 1000
-  else
-    timestamp = tstamp -- Hope the calling code deals with the error
-  end
-  return timestamp
-end
-
 -- GETs the given URI: this is how our event data is transmitted to the Snowplow collector.
 -- @param uri string: The URI (including querystring) to GET
 -- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
@@ -111,6 +96,7 @@ end
 -- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
 local function track(self, pb)
   -- Add the standard name-value pairs
+  pb.add("dtm", os.time())
   pb.add("p", self.config.platform)
   pb.add_raw("tv", self.config.version)
   pb.add("eid", uuid())
@@ -207,12 +193,11 @@ end
 -- @param id string: Optional unique identifier for this screen. Could be e.g. a GUID or identifier from a game CMS
 -- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return boolean: whether event was successfully collected; and the reason for failure if not
-function Tracker:track_screen_view(name, id, tstamp)
+function Tracker:track_screen_view(name, id)
   local pb = payload.new_payload_builder(self.config.encode_base64)
   pb.add_raw("e", "sv")
   pb.add("sv_na", name, validate.is_non_empty_string)
   pb.add("sv_id", id, validate.is_string_or_nil)
-  pb.add("dtm", get_timestamp(tstamp), validate.is_positive_integer)
 
   return track(self, pb)
 end
@@ -226,7 +211,7 @@ end
 -- @param value string: A value that you can use to provide numerical data about the user event
 -- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return boolean whether event was successfully collected; and the reason for failure if not
-function Tracker:track_struct_event(category, action, label, property, value, tstamp)
+function Tracker:track_struct_event(category, action, label, property, value)
   local pb = payload.new_payload_builder(self.config.encode_base64)
   pb.add_raw("e", "se")
   pb.add("se_ca", category, validate.is_non_empty_string)
@@ -234,7 +219,6 @@ function Tracker:track_struct_event(category, action, label, property, value, ts
   pb.add("se_la", label, validate.is_string_or_nil)
   pb.add("se_pr", property, validate.is_string_or_nil)
   pb.add("se_va", value, validate.is_number_or_nil)
-  pb.add("dtm", get_timestamp(tstamp), validate.is_positive_integer)
 
   return track(self, pb)
 end
@@ -244,12 +228,11 @@ end
 -- @param properties string: The properties of the event
 -- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return: boolean whether event was successfully collected; and the reason for failure if not
-function Tracker:track_unstruct_event(name, properties, tstamp)
+function Tracker:track_unstruct_event(name, properties)
   local pb = payload.new_payload_builder(self.config.encode_base64)
   pb.add_raw("e", "ue")
   pb.add("ue_na", name)
   pb.add_props("ue_px", "ue_pr", properties)
-  pb.add("dtm", get_timestamp(tstamp))
 
   return track(self, pb)
 end

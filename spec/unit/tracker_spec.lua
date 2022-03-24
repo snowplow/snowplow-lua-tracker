@@ -23,6 +23,7 @@ local TRACKER_VERSION = require("constants").TRACKER_VERSION
 describe("tracker", function()
   setup(function()
     _G._TEST = true
+    _G.os = require("spec/mocks/mock_os")
     package.loaded["lua_uuid"] = require("spec/mocks/mock_uuid")
     tracker = require("tracker")
   end)
@@ -163,13 +164,6 @@ describe("tracker", function()
     assert.has_error(f, "sv_id must be a string or nil, not [23]")
   end)
 
-  it("track_screen_view() should error unless tstamp is a positive integer", function()
-    local f = function()
-      t:track_screen_view("Game HUD", "Load Save Game", false)
-    end
-    assert.has_error(f, "dtm is required and must be a positive integer, not [false]")
-  end)
-
   it("track_screen_view() should call http_get() with the correct payload in the querystring", function()
     stub(t, "_http_get")
     t:set_user_id("user123")
@@ -179,9 +173,9 @@ describe("tracker", function()
     t:set_screen_resolution(1068, 720)
     t:set_viewport(420, 360)
 
-    t:track_screen_view("Game HUD 2", nil, 1369330916)
+    t:track_screen_view("Game HUD 2", nil)
     assert.stub(t._http_get).was_called_with(
-      "http://test.invalid/i?e=sv&sv_na=Game+HUD+2&dtm=1369330916000&p=tv&tv="
+      "http://test.invalid/i?e=sv&sv_na=Game+HUD+2&dtm=1000000000000&p=tv&tv="
         .. t.config.version
         .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000"
         .. "&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
@@ -223,13 +217,6 @@ describe("tracker", function()
     assert.has_error(f, "se_va must be a number or nil, not [212]")
   end)
 
-  it("track_screen_event() should error unless tstamp is a positive integer", function()
-    local f = function()
-      t:track_struct_event("shop", "add-to-basket", nil, "units", 212, {})
-    end
-    assert.has_error(f, "dtm is required and must be a positive integer, not [{}]")
-  end)
-
   it("track_struct_event() should call http_get() with the correct payload in the querystring", function()
     stub(t, "_http_get")
     t:set_user_id("user123")
@@ -238,10 +225,10 @@ describe("tracker", function()
     t:set_color_depth(32)
     t:set_screen_resolution(1068, 720)
     t:set_viewport(420, 360)
-    t:track_struct_event("shop", "add-to-basket", nil, "units", 2, 1369330909)
+    t:track_struct_event("shop", "add-to-basket", nil, "units", 2)
     assert.stub(t._http_get).was_called_with(
       "http://test.invalid/i?e=se&se_ca=shop&se_ac=add%2Dto%2Dbasket&se_pr=units&se_va=2"
-        .. "&dtm=1369330909000&p=tv&tv="
+        .. "&dtm=1000000000000&p=tv&tv="
         .. t.config.version
         .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360"
         .. "&cd=32"
@@ -259,12 +246,11 @@ describe("tracker", function()
     t:set_viewport(420, 360)
     t:track_unstruct_event(
       "save-game",
-      { save_id = "4321", level_INT = 23, difficultyLevel = "HARD", dl_content = true },
-      1369330929
+      { save_id = "4321", level_INT = 23, difficultyLevel = "HARD", dl_content = true }
     )
     assert.stub(t._http_get).was_called_with(
       "http://test.invalid/i?e=ue&ue_na=save%2Dgame&ue_pr=%7B%22difficultyLevel%22%3A%22HARD%22%2C%22"
-        .. "dl%5Fcontent%22%3Atrue%2C%22level%24int%22%3A23%2C%22save%5Fid%22%3A%224321%22%7D&dtm=1369330929000&p=tv"
+        .. "dl%5Fcontent%22%3Atrue%2C%22level%24int%22%3A23%2C%22save%5Fid%22%3A%224321%22%7D&dtm=1000000000000&p=tv"
         .. "&tv="
         .. t.config.version
         .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000&"
@@ -285,12 +271,11 @@ describe("tracker", function()
       t:set_viewport(420, 360)
       t:track_unstruct_event(
         "load-game",
-        { save_id = "4321", level_INT = 23, difficultyLevel = "HARD", dl_content = true },
-        1369330929
+        { save_id = "4321", level_INT = 23, difficultyLevel = "HARD", dl_content = true }
       )
       assert.stub(t._http_get).was_called_with(
         "http://test.invalid/i?e=ue&ue_na=load%2Dgame&ue_px=eyJkaWZmaWN1bHR5TGV2ZWwiOiJIQVJEIiwiZGxfY2"
-          .. "9udGVudCI6dHJ1ZSwibGV2ZWwkaW50IjoyMywic2F2ZV9pZCI6IjQzMjEifQ==&dtm=1369330929000&p=tv&tv="
+          .. "9udGVudCI6dHJ1ZSwibGV2ZWwkaW50IjoyMywic2F2ZV9pZCI6IjQzMjEifQ==&dtm=1000000000000&p=tv&tv="
           .. t.config.version
           .. "&eid=00000000%2D0000%2D0000%2D0000%2D000000000000"
           .. "&uid=user123&aid=wow%2Dext%2D1&res=1068x720&vp=420x360&cd=32"
