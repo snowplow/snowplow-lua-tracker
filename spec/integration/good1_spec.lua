@@ -25,8 +25,7 @@ describe("Integration tests with no issues", function()
     t:set_screen_resolution(1068, 720)
     local s, msg = t:track_unstruct_event(
       "save-game",
-      { save_id = "4321", level = 23, difficultyLevel = "HARD", dl_content = true },
-      1369330929
+      { save_id = "4321", level = 23, difficultyLevel = "HARD", dl_content = true }
     )
 
     assert.is_true(s)
