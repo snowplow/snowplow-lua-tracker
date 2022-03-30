@@ -16,11 +16,11 @@
 -- License:     Apache License Version 2.0
 
 local snowplow = require("snowplow")
-local MICRO_URL = require("spec.micro.micro_url")
+local micro = require("spec.micro.micro")
 
 describe("Integration tests with no issues", function()
   it("should return true for a valid collector", function()
-    local t = snowplow.new_tracker(MICRO_URL)
+    local t = snowplow.new_tracker(micro.get_url())
     t:encode_base64(false)
     t:set_screen_resolution(1068, 720)
     local s, msg = t:track_unstruct_event(

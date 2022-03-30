@@ -16,11 +16,11 @@
 -- License:     Apache License Version 2.0
 
 local snowplow = require("snowplow")
-local MICRO_URL = require("spec.micro.micro_url")
+local micro = require("spec.micro.micro")
 
 describe("Integration tests with bad config", function()
   it("should throw an error on a bad configuration option", function()
-    local t = snowplow.new_tracker(MICRO_URL)
+    local t = snowplow.new_tracker(micro.get_url())
     t:encode_base64(false)
     t:platform("tv")
 
@@ -31,7 +31,7 @@ describe("Integration tests with bad config", function()
   end)
 
   it("should throw an error without impacting another tracker", function()
-    local t1 = snowplow.new_tracker(MICRO_URL)
+    local t1 = snowplow.new_tracker(micro.get_url())
     t1:platform("tv")
     assert.has_no.errors(function()
       t1:track_screen_view("Game HUD", "23")
@@ -62,7 +62,7 @@ describe("Integration tests with bad config", function()
   end)
 
   it("should be reusable if the error is caught", function()
-    local t1 = snowplow.new_tracker(MICRO_URL)
+    local t1 = snowplow.new_tracker(micro.get_url())
     t1:encode_base64(false)
     local status, err = pcall(t1.platform, t1, false)
     assert.are.equal(status, false)
