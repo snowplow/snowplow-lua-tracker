@@ -17,35 +17,26 @@
 
 local validate = require("validate")
 local tracker = require("tracker")
+local emitter = require("emitter")
 local set = require("lib.set")
 
 local snowplow = {}
-local VALID_PROTOCOLS = set.new_set({ "http", "https" })
-
--- --------------------------------------------------------------
--- Static methods
-
--- Helper to generate the collector url from a given url.
--- Example: as_collector_url("snplow.myshop.com") => "https://snplow.myshop.com/i"
--- @param url string: The url of the collector
--- @return string: The full collector URL
-local function as_collector_url(url)
-  if url:find("://") then
-    local _, _, protocol = url:find("^(%a[^:]*)")
-    validate.is_string_from_set(VALID_PROTOCOLS, "protocol", protocol)
-    return url .. "/i"
-  end
-
-  return "https://" .. url .. "/i"
-end
+local VALID_REQUEST_TYPES = set.new_set({ "GET", "POST" })
 
 -- Builds our new tracker using the supplied URL.
 -- @param url string: The full url to the Snowplow collector
+-- @param request_type string: The request type to use (GET or POST)
 -- @return tracker table: The new tracker
-function snowplow.new_tracker(url)
+function snowplow.new_tracker(url, request_type, encode_base64)
   validate.is_non_empty_string("url", url)
-  local collector_url = as_collector_url(url)
-  return tracker.new_tracker(collector_url)
+
+  if request_type ~= nil then
+    validate.is_string_from_set(VALID_REQUEST_TYPES, "VALID_REQUEST_TYPES", request_type)
+  end
+  request_type = request_type or "POST"
+
+  local tracker_emitter = emitter.new(url, request_type)
+  return tracker.new_tracker(tracker_emitter, encode_base64)
 end
 
 -- --------------------------------------------------------------

@@ -18,8 +18,9 @@ dependencies = {
   "lua >= 5.1",
   "lua-curl >= 0.3.13-1",
   "base64 >= 1.5-2",
-  "lua_uuid >= 0.2.0-2",
-  "lunajson >= 1.2.3-1"
+  "uuid >= 0.3-1",
+  "lunajson >= 1.2.3-1",
+  "urlencode >= 0.0.2-0"
 }
 build = {
   type = "builtin",

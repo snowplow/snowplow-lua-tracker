@@ -1,6 +1,6 @@
 --- payload.lua
 --
--- Copyright (c) 2013 Snowplow Analytics Ltd. All rights reserved.
+-- Copyright (c) 2022 Snowplow Analytics Ltd. All rights reserved.
 --
 -- This program is licensed to you under the Apache License Version 2.0,
 -- and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -12,123 +12,93 @@
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 --
 -- Authors:     Alex Dean
--- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
+-- Copyright:   Copyright (c) 2022 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local escape = require("lib.escape")
-local json = require("lib.json")
+local json = require("lunajson")
+local validate = require("validate")
 local base64 = require("base64")
+local urlencode = require("urlencode")
 
+local Payload = {}
 local payload = {}
 
 -- --------------------------------------------------------------
--- Factory to create a payload builder closure
+-- Private methods
 
-payload.new_payload_builder = function(encode_base64)
-  -- Closure provides a fluent interface to building a new payload for Snowplow.
-  -- @param encode_base64 boolean: Whether properties and custom variables should be sent Base64 encoded or not
-  -- @return table: The new payload
-
-  local new_payload = "?" -- What we're closing over
-
-  -- Helper to add a &name=value pair to our payload aka querystring. Closes around payload
-  -- @param key string: The name of the property
-  -- @param value string: The value to add to the payload
-  -- @param esc boolean: If true, value will be escaped
-  local add_nv_pair = function(key, value, esc)
-    local a, v
-
-    if value ~= nil and value ~= "" then
-      if new_payload:len() > 1 then
-        a = "&"
-      else
-        a = ""
-      end
-      if esc then
-        v = escape.escapeUri(value)
-      else
-        v = value
-      end
-      new_payload = new_payload .. a .. key .. "=" .. v
-    end
+-- Builds a querystring payload
+-- @param payload_table table: The payload table
+-- @return string: The querystring payload
+local function build_querystring(payload_table)
+  local querystring = "?"
+  for k, v in pairs(payload_table) do
+    querystring = querystring .. tostring(k) .. "=" .. urlencode.encode_url(tostring(v)) .. "&"
   end
+  -- Remove trailing '&'
+  return querystring:sub(1, -2)
+end
 
-  -- Converts a _non-nested_ Lua table into a JSON of properties.
-  -- @param properties table: A non-nested Lua table of properties, to be converted to JSON format
-  -- TODO: add validation: check for nesting etc
-  -- TODO: check data types
-  local to_properties_json = function(properties)
-    local props_json = json:encode(properties)
+-- Builds a JSON payload
+-- @param payload_table table: The payload table
+-- @return string: The JSON payload
+local function build_json(payload_table)
+  return json.encode({
+    schema = "iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-4",
+    data = { payload_table },
+  })
+end
 
-    -- Now we need to rename our type suffixes to fit
-    -- the format expected by Snowplow
-    local types = { "int", "flt", "geo", "dt", "tm", "tms" }
-    for _, t in ipairs(types) do
-      local suffix = '":' -- To lower risk of error
-      local old = "_" .. t:upper() .. suffix
-      local new = "$" .. t .. suffix
-      props_json = props_json:gsub(old, new)
-    end
+-- --------------------------------------------------------------
+-- Public methods
 
-    return props_json
+-- Adds a key, value pair to the payload table
+-- @param key string: The key to add
+-- @param value string: The value to add
+function Payload:add(key, value)
+  validate.is_type({ "string", "number", "boolean" }, "value", value)
+  self.nv_pairs[key] = tostring(value)
+end
+
+-- Adds a named table to the payload table
+-- @param name string: The name of the table to add
+-- @param tbl table: The table to add
+function Payload:add_table(name, tbl)
+  if self.encode_base64 then
+    self:add(name, base64.encode(json.encode(tbl)))
+  else
+    self:add(name, json.encode(tbl))
   end
+end
 
-  -- Add a &name=value pair with the value encoded
-  -- @param key string: The name of the property
-  -- @param value string: The value to add to the payload
-  -- @param validate function or nil: If present, will be called with value to validate it
-  local add = function(key, value, validate)
-    if type(validate) == "function" then
-      validate(key, value)
-    end
-    add_nv_pair(key, value, true)
+-- Gets the payload table
+-- @return table: The payload table
+function Payload:get()
+  return self.nv_pairs
+end
+
+-- Builds the appropriate payload
+-- @param request_method string: The request method that will determine the payload type
+-- @return string: The built payload
+function Payload:build(request_method)
+  if request_method == "POST" then
+    return build_json(self:get())
+  else
+    return build_querystring(self:get())
   end
+end
 
-  -- Add a &name=value pair with the value not encoded.
-  -- @param key string: The name of the property
-  -- @param value string: The value to add to the payload
-  -- @param validate function or nil: If present, will be called with value to validate it
-  local add_raw = function(key, value, validate)
-    if type(validate) == "function" then
-      validate(key, value)
-    end
-    add_nv_pair(key, value, false)
-  end
-
-  -- Add a &name=value pair with the value base64 encoded,
-  -- unless encode_base64 is set to false (in which case URI escape).
-  -- @param key_if_enc string: The key name if the value is encoded - ue_pr: Unencoded, ue_px: Encoded
-  -- @param key string: The name of the property
-  -- @param value string: The value to add to the payload
-  -- @param validate function or nil: If present, will be called with value to validate it
-  local add_props = function(key_if_enc, key, value, validate)
-    if type(validate) == "function" then
-      validate((key_if_enc .. "|" .. key), value)
-    end
-    local props = to_properties_json(value)
-
-    if encode_base64 then
-      if #props <= 0 then
-        error("Props cannot be an empty table")
-      end
-      add_nv_pair(key_if_enc, base64.encode(props), false) -- Base64 encode, no URL-encoding
-    else
-      add_nv_pair(key, props, true) -- URL-encoding
-    end
-  end
-
-  -- Our "builder" returns the payload string.
-  -- @return string
-  local build = function()
-    return new_payload
-  end
-
-  return {
-    add = add,
-    add_raw = add_raw,
-    add_props = add_props,
-    build = build,
+-- Creates a new Payload object
+-- @param request_method string: The request method
+-- @param encode_base64 boolean: Whether to base64 encode the payload
+-- @return Payload: The new Payload object
+function payload.new_payload_builder(encode_base64)
+  validate.is_boolean("encode_base64", encode_base64)
+  local p = {
+    nv_pairs = {},
+    encode_base64 = encode_base64,
   }
+  setmetatable(p, { __index = Payload })
+  return p
 end
 
 -- --------------------------------------------------------------

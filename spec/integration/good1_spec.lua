@@ -15,20 +15,79 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local snowplow = require("snowplow")
 local micro = require("spec.micro.micro")
+local snowplow = require("snowplow")
 
 describe("Integration tests with no issues", function()
+  before_each(function()
+    micro.clear_cache()
+  end)
+
   it("should return true for a valid collector", function()
-    local t = snowplow.new_tracker(micro.get_url())
+    local t = snowplow.new_tracker(micro.get_url(), "GET")
     t:encode_base64(false)
     t:set_screen_resolution(1068, 720)
-    local s, msg = t:track_unstruct_event(
-      "save-game",
-      { save_id = "4321", level = 23, difficultyLevel = "HARD", dl_content = true }
-    )
+    local s, msg = t:track_struct_event("name", "id")
 
     assert.is_true(s)
     assert.is_nil(msg)
   end)
+
+  for _, request_type in ipairs({ "GET", "POST" }) do
+    local t = snowplow.new_tracker(micro.get_url(), request_type, true)
+
+    it("can track a screen view using " .. request_type, function()
+      local expected_id, expected_name = "test_id", "test_name"
+      local ok, err = t:track_screen_view(expected_name, expected_id)
+      assert.is_true(ok)
+      assert.is_nil(err)
+
+      local micro_event = micro.get_good_events()
+      local event = micro_event[1].event.unstruct_event.data.data
+      assert.are.equal(event.name, expected_name)
+      assert.are.equal(event.id, expected_id)
+    end)
+
+    it("can track a struct event using " .. request_type, function()
+      local expected = {
+        action = "test_action",
+        category = "test_category",
+        label = "test_label",
+        property = "test_property",
+        value = 5.0,
+      }
+
+      local ok, err = t:track_struct_event(
+        expected.category,
+        expected.action,
+        expected.label,
+        expected.property,
+        expected.value
+      )
+      assert.is_true(ok)
+      assert.is_nil(err)
+
+      local micro_event = micro.get_good_events()
+
+      for parameter, expected_value in pairs(expected) do
+        assert.are.equal(expected_value, micro_event[1].event["se_" .. parameter])
+      end
+    end)
+
+    it("can track an unstruct event using " .. request_type, function()
+      local ok, err = t:track_unstruct_event({
+        schema = "iglu:com.snowplowanalytics.snowplow/add_to_cart/jsonschema/1-0-0",
+        data = { sku = "ASO01043", unitPrice = 49.95, quantity = 1000 },
+      })
+      assert.is_true(ok)
+      assert.is_nil(err)
+
+      local micro_event = micro.get_good_events()
+      local event = micro_event[1].event.unstruct_event.data.data
+
+      assert.are.equal(event.sku, "ASO01043")
+      assert.are.equal(event.unitPrice, 49.95)
+      assert.are.equal(event.quantity, 1000)
+    end)
+  end
 end)

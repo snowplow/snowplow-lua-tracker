@@ -19,8 +19,8 @@ local snowplow = require("snowplow")
 local ss = require("lib.utils").safe_string -- Alias
 local TRACKER_VERSION = require("constants").TRACKER_VERSION
 
-local function assert_tracker(tracker, collector_uri)
-  assert.are.equal(tracker.collector_uri, collector_uri)
+local function assert_tracker(tracker, collector_url)
+  assert.are.equal(tracker.emitter:get_collector_url(), collector_url)
   assert.are.equal(tracker.config.encode_base64, true)
   assert.are.equal(tracker.config.platform, "pc")
   assert.are.equal(tracker.config.version, TRACKER_VERSION)
@@ -48,25 +48,25 @@ describe("snowplow", function()
   -- Verify constructed tracker tables
 
   it("new_tracker() should correctly create a tracker", function()
-    local t = snowplow.new_tracker("test.invalid")
+    local t = snowplow.new_tracker("test.invalid", "GET")
     assert_tracker(t, "https://test.invalid/i")
   end)
 
   it("new_tracker_for_uri() should correctly assign default protocol https", function()
     local t = snowplow.new_tracker("test.invalid")
-    assert.is_equal(t.collector_uri:sub(1, 5), "https")
+    assert.is_equal(t.emitter:get_collector_url():sub(1, 5), "https")
   end)
 
   it("new_tracker_for_uri() should correctly create url with default protocol from url with port", function()
-    local t = snowplow.new_tracker("http://test.invalid:9090")
-    assert.is_equal("http://test.invalid:9090/i", t.collector_uri)
+    local t = snowplow.new_tracker("http://test.invalid:9090", "GET")
+    assert.is_equal("http://test.invalid:9090/i", t.emitter:get_collector_url())
   end)
 
   it("new_tracker() should assign correct passed protocol", function()
     local protocols = { "http", "https" }
     for _, protocol in ipairs(protocols) do
       local t = snowplow.new_tracker(protocol .. "://test.invalid")
-      assert.is_equal(t.collector_uri:sub(1, protocol:len()), protocol)
+      assert.is_equal(t.emitter:get_collector_url():sub(1, protocol:len()), protocol)
     end
   end)
 

@@ -52,6 +52,16 @@ validate.is_non_empty_string = function(name, value)
   end
 end
 
+validate.is_non_empty_string_or_nil = function(name, value)
+  local allowed_types = {
+    ["nil"] = true,
+    ["string"] = true,
+  }
+  if not allowed_types[type(value)] or value == "" then
+    error(name .. " must be a non-empty string or nil, not [" .. ss(value) .. "]")
+  end
+end
+
 validate.is_string_or_nil = function(name, value)
   if type(value) ~= "string" and value ~= nil then
     error(name .. " must be a string or nil, not [" .. ss(value) .. "]")
@@ -87,5 +97,15 @@ validate.is_positive_integer = function(name, value)
 end
 
 -- --------------------------------------------------------------
+-- Generic validations
+
+validate.is_type = function(expected_types, name, value)
+  for _, expected_type in ipairs(expected_types) do
+    if type(value) == expected_type then
+      return
+    end
+  end
+  error(name .. " must be of type " .. table.unpack(expected_types) .. ", not [" .. type(value) .. "]")
+end
 
 return validate
