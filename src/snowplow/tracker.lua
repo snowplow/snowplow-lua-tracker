@@ -15,12 +15,10 @@
 -- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
 -- License:     Apache License Version 2.0
 
-local curl = require("cURL")
 local validate = require("validate")
 local payload = require("payload")
 local set = require("lib.set")
-local ss = require("lib.utils").safe_string -- Alias
-local uuid = require("lua_uuid")
+local uuid = require("uuid")
 local TRACKER_VERSION = require("constants").TRACKER_VERSION
 
 local tracker = {} -- The module
@@ -38,52 +36,23 @@ local SUPPORTED_PLATFORMS = set.new_set({ "pc", "tv", "mob", "cnsl", "iot" })
 -- Factory to create a new Tracker
 
 -- Creates a new tracker.
--- @param collector_uri string: the full URI to the Snowplow collector
+-- @param emitter table: The emitter to use to send the payloads
+-- @param encode_base64 boolean: Whether to base64 encode the payloads
 -- @return table: The new tracker
-function tracker.new_tracker(collector_uri)
+function tracker.new_tracker(emitter, encode_base64)
   local trck = {}
   setmetatable(trck, Tracker)
-  trck.collector_uri = collector_uri
+  if encode_base64 == nil then
+    encode_base64 = DEFAULT_ENCODE_BASE64
+  end
+  trck.emitter = emitter
   trck.config = {
-    encode_base64 = DEFAULT_ENCODE_BASE64,
+    encode_base64 = encode_base64,
     platform = DEFAULT_PLATFORM,
     version = TRACKER_VERSION,
   }
 
   return trck
-end
-
--- --------------------------------------------------------------
--- Private static methods
-
--- GETs the given URI: this is how our event data is transmitted to the Snowplow collector.
--- @param uri string: The URI (including querystring) to GET
--- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
-local function http_get(uri)
-  -- `resp` is the table `:getinfo` reads from
-  local resp = {}
-  local c = curl.easy({
-    url = uri,
-  }):setopt_writefunction(table.insert, resp)
-  local _, err = pcall(function()
-    c:perform()
-  end)
-  local status_code = c:getinfo(curl.INFO_RESPONSE_CODE)
-
-  if err ~= nil then
-    return false, "Host [" .. uri .. "] not found (possible connectivity error)"
-  else
-    local code = tonumber(status_code)
-    if code == nil or code ~= math.floor(code) or code < 0 or code >= 600 then
-      return false, "Unrecognised status code [" .. ss(status_code) .. "]"
-    elseif code >= 400 and code < 500 then
-      return false, "HTTP status code [" .. ss(status_code) .. "] is a client error"
-    elseif code >= 500 then
-      return false, "HTTP status code [" .. ss(status_code) .. "] is a server error"
-    end
-  end
-
-  return true
 end
 
 -- --------------------------------------------------------------
@@ -94,30 +63,31 @@ end
 -- @param pb table: A partially populated payload_builder closure. We will finish populating it in this method, then
 -- build() it
 -- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
-local function track(self, pb)
+local function track(tracker_instance, pb)
   -- Add the standard name-value pairs
-  pb.add("dtm", os.time())
-  pb.add("p", self.config.platform)
-  pb.add_raw("tv", self.config.version)
-  pb.add("eid", uuid())
+  pb:add("p", tracker_instance.config.platform)
+  pb:add("tv", tracker_instance.config.version)
+  pb:add("eid", uuid())
+  pb:add("dtm", tostring(os.time()))
 
-  -- Add the fields which may have been set
-  pb.add("uid", self.user_id)
-  pb.add("aid", self.app_id)
-  pb.add_raw("res", self.screen_resolution)
-  pb.add_raw("vp", self.viewport)
-  pb.add_raw("cd", self.color_depth)
+  -- Fields which may have been set
+  local tracker_fields = {
+    uid = "user_id",
+    aid = "app_id",
+    res = "screen_resolution",
+    vp = "viewport",
+    cd = "color_depth",
+  }
 
-  -- Now build the payload_builder
-  local uri = self.collector_uri .. pb.build()
-
-  -- For mocking
-  if _TEST then
-    self._http_get(uri)
+  for k, v in pairs(tracker_fields) do
+    v = tracker_instance[v]
+    if v ~= nil then
+      pb:add(k, v)
+    end
   end
 
-  -- Finally send to Snowplow
-  return http_get(uri)
+  local built_payload = pb:build(tracker_instance.emitter:get_request_method())
+  return tracker_instance.emitter:send(built_payload)
 end
 
 -- --------------------------------------------------------------
@@ -191,15 +161,20 @@ end
 -- Sends a screen view event to SnowPlow. A screen view must have a `name` and can have an optional `id`.
 -- @param name string: Human-readable name for this screen (e.g. "HUD > Save Game").
 -- @param id string: Optional unique identifier for this screen. Could be e.g. a GUID or identifier from a game CMS
--- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return boolean: whether event was successfully collected; and the reason for failure if not
 function Tracker:track_screen_view(name, id)
-  local pb = payload.new_payload_builder(self.config.encode_base64)
-  pb.add_raw("e", "sv")
-  pb.add("sv_na", name, validate.is_non_empty_string)
-  pb.add("sv_id", id, validate.is_string_or_nil)
+  validate.is_non_empty_string("name", name)
+  validate.is_non_empty_string_or_nil("id", id)
 
-  return track(self, pb)
+  local screen_view = {
+    schema = "iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0",
+    data = {
+      name = name,
+      id = id,
+    },
+  }
+
+  return self:track_unstruct_event(screen_view)
 end
 
 -- Sends a custom structured event to SnowPlow.
@@ -209,40 +184,43 @@ end
 -- @param label string: An optional string to provide additional dimensions to the event data
 -- @param property string: An optional string describing the objector the action performed on it.
 -- @param value string: A value that you can use to provide numerical data about the user event
--- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return boolean whether event was successfully collected; and the reason for failure if not
 function Tracker:track_struct_event(category, action, label, property, value)
   local pb = payload.new_payload_builder(self.config.encode_base64)
-  pb.add_raw("e", "se")
-  pb.add("se_ca", category, validate.is_non_empty_string)
-  pb.add("se_ac", action, validate.is_non_empty_string)
-  pb.add("se_la", label, validate.is_string_or_nil)
-  pb.add("se_pr", property, validate.is_string_or_nil)
-  pb.add("se_va", value, validate.is_number_or_nil)
+  pb:add("e", "se")
+
+  local fields = {
+    { "se_ca", "category", category, validate.is_non_empty_string },
+    { "se_ac", "action", action, validate.is_non_empty_string },
+    { "se_la", "label", label, validate.is_string_or_nil },
+    { "se_pr", "property", property, validate.is_string_or_nil },
+    { "se_va", "value", value, validate.is_number_or_nil },
+  }
+
+  for _, field in ipairs(fields) do
+    local parameter, name, var, validator = table.unpack(field)
+    validator(name, var)
+    -- The value is allowed to be nil, but we don't want to send it as a field if so
+    if var ~= nil then
+      pb:add(parameter, var)
+    end
+  end
 
   return track(self, pb)
 end
 
 -- Sends a custom unstructured event to Snowplow.
--- @param name string: The name of the event
 -- @param properties string: The properties of the event
--- @param tstamp number: Optional time (in seconds since epoch) at which event occurred
 -- @return: boolean whether event was successfully collected; and the reason for failure if not
-function Tracker:track_unstruct_event(name, properties)
+function Tracker:track_unstruct_event(properties)
+  local wrapper = {
+    schema = "iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",
+    data = properties,
+  }
   local pb = payload.new_payload_builder(self.config.encode_base64)
-  pb.add_raw("e", "ue")
-  pb.add("ue_na", name)
-  pb.add_props("ue_px", "ue_pr", properties)
-
+  pb:add("e", "ue")
+  pb:add_table(self.config.encode_base64 and "ue_px" or "ue_pr", wrapper)
   return track(self, pb)
-end
-
--- --------------------------------------------------------------
--- Mocks
-
-if _TEST then
-  -- A mock on the table to be checked by Busted. Does nothing - we will simply inspect the uri argument.
-  function Tracker._http_get(uri) end -- luacheck: ignore
 end
 
 -- --------------------------------------------------------------

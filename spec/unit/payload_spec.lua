@@ -16,56 +16,140 @@
 -- License:     Apache License Version 2.0
 
 local payload = require("payload")
-local validate = require("validate")
+local json = require("lunajson")
 
-describe("payload", function()
-  it("should correctly assemble a payload", function()
-    local pb = payload.new_payload_builder(true)
-    pb.add_raw("e", "sv")
-    pb.add("sv_na", "Welcome")
-    pb.add("sv_id", "231", validate.is_string_or_nil)
+describe("payload builder", function()
+  local p
 
-    assert.are.equal(pb.build(), "?e=sv&sv_na=Welcome&sv_id=231")
+  before_each(function()
+    p = payload.new_payload_builder(false)
   end)
 
-  it("should correctly assemble another payload", function()
-    local pb = payload.new_payload_builder(true)
-    pb.add_raw("e", "hello")
-    pb.add_raw("hello_test", "test")
-
-    pb.add("ev_ca", "2  spaces", validate.is_non_empty_string)
-    pb.add("ev_va", -23.34, validate.is_number_or_nil)
-
-    assert.are.equal(pb.build(), "?e=hello&hello_test=test&ev_ca=2++spaces&ev_va=%2D23%2E34")
+  it("returns a new payload builder", function()
+    assert.is_true(type(p.nv_pairs) == "table")
+    assert.is_true(#p.nv_pairs == 0)
+    assert.is_equal(p.encode_base64, false)
   end)
 
-  it("should correctly assemble a payload with typed properties", function()
-    local pb = payload.new_payload_builder(false) -- Don't Base64-encode
-    local props = {
-      min_x_INT = 0,
-      max_x_FLT = 960,
-      min_y_GEO = -12,
-      max_y_DT = 1080,
-      time_TM = 56565,
-      time_TMS = 56565,
-    } -- Test all the suffixes
-
-    pb.add_props("ue_px", "ue_pr", props, validate.is_non_empty_table)
-
-    assert.are.equal(
-      pb.build(),
-      "?ue_pr=%7B%22max%5Fx%24flt%22%3A960%2C%22max%5Fy%24dt%22%3A1080%2C%22min%5Fx%24int%22%3A0%2C%22min%5Fy%24geo%22%"
-        .. "3A%2D12%2C%22time%24tm%22%3A56565%2C%22time%24tms%22%3A56565%7D"
-    )
+  it("gets the current nv_pairs", function()
+    p.nv_pairs = {
+      a = "b",
+      c = "d",
+    }
+    local data = p:get()
+    assert.is_equal("b", data.a)
+    assert.is_equal("d", data.c)
   end)
 
-  it("should error when a validation on an add_raw() fails", function()
-    local pb = payload.new_payload_builder(false)
-    pb.add("ev_la", nil, validate.is_string_or_nil)
-    local f = function()
-      pb.add_raw("flag", "falsy", validate.is_boolean)
+  it("adds a key-value pair to the payload", function()
+    p:add("k", "v")
+    assert.is_equal("v", p:get()["k"])
+  end)
+
+  it("adds a named table to the payload", function()
+    p:add_table("table_name", { k = "v" })
+    assert.is_equal('{"k":"v"}', p:get()["table_name"])
+  end)
+
+  it("builds a querystring payload", function()
+    p = payload.new_payload_builder(false)
+    p:add("k", "v")
+    p:add("num", 5)
+    p:add("bool", true)
+    p:add_table("table_name", { k = "v" })
+    local built_payload = p:build("GET")
+
+    local expected = {
+      -- table_name is expected to be URL encoded
+      table_name = "%7B%22k%22%3A%22v%22%7D",
+      k = "v",
+      num = "5",
+      bool = "true",
+    }
+
+    -- Split on '&', ignoring the '?'
+    for token in string.gmatch(built_payload:sub(2), "[^&]+") do
+      local k, v = string.match(token, "([^=]+)=([^=]+)")
+      assert.is_equal(expected[k], v)
     end
+  end)
 
-    assert.has_error(f, "flag is required and must be a boolean, not [falsy]")
+  it("builds a JSON payload", function()
+    p = payload.new_payload_builder(false)
+    p:add("k", "v")
+    p:add("num", 5)
+    p:add("bool", true)
+    p:add_table("table_name", { k = "v" })
+    local built_payload = json.decode(p:build("POST"))
+
+    assert.is_equal(built_payload.schema, "iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-4")
+
+    local expected_data = {
+      table_name = '{"k":"v"}',
+      k = "v",
+      num = "5",
+      bool = "true",
+    }
+
+    for k, v in pairs(expected_data) do
+      assert.is_equal(v, built_payload.data[1][k])
+    end
+  end)
+end)
+
+describe("base64-encoded payload builder", function()
+  local p
+
+  before_each(function()
+    p = payload.new_payload_builder(true)
+  end)
+
+  it("returns a new payload builder", function()
+    assert.is_true(type(p.nv_pairs) == "table")
+    assert.is_true(#p.nv_pairs == 0)
+    assert.is_equal(p.encode_base64, true)
+  end)
+
+  it("builds a querystring payload", function()
+    p:add("k", "v")
+    p:add("num", 5)
+    p:add("bool", true)
+    p:add_table("table_name", { k = "v" })
+    local built_payload = p:build("GET")
+    local expected = {
+      table_name = "eyJrIjoidiJ9",
+      k = "v",
+      num = "5",
+      bool = "true",
+    }
+
+    -- Split on '&', ignoring the '?'
+    for token in string.gmatch(built_payload:sub(2), "[^&]+") do
+      local k, v = string.match(token, "([^=]+)=([^=]+)")
+      assert.is_equal(expected[k], v)
+    end
+  end)
+
+  it("builds a JSON payload", function()
+    p = payload.new_payload_builder(true)
+    p:add("k", "v")
+    p:add("num", 5)
+    p:add("bool", true)
+    p:add_table("table_name", { k = "v" })
+    local built_payload = p:build("POST")
+    local json_payload = json.decode(built_payload)
+
+    assert.is_equal(json_payload.schema, "iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-4")
+
+    local expected_data = {
+      table_name = "eyJrIjoidiJ9",
+      k = "v",
+      num = "5",
+      bool = "true",
+    }
+
+    for k, v in pairs(expected_data) do
+      assert.is_equal(v, json_payload.data[1][k])
+    end
   end)
 end)

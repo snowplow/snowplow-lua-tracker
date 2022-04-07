@@ -48,7 +48,7 @@ local function get_good_events(filter_table)
   if filter_table then
     c:setopt_post(true)
     c:setopt_httpheader({
-      "Content-Type: application/json",
+      "Content-Type: application/json; charset=utf-8",
     })
     c:setopt_postfields(json.encode(filter_table))
   end

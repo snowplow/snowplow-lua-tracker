@@ -216,4 +216,58 @@ describe("validate", function()
 
     assert_data_table(data_table, validate.is_positive_integer)
   end)
+
+  it("is_non_empty_string_or_nil() should validate correctly", function()
+    local err = function(value)
+      return field_name .. " must be a non-empty string or nil, not [" .. ss(value) .. "]"
+    end
+
+    local data_table = {
+      { "INPUT", "EXPECTED" },
+      { "a string", nil },
+      { "another", nil },
+      { "", err("") },
+      { nil, nil },
+      { {}, err("{}") },
+      { { a = 1, b = "c" }, err("<table>") },
+      { 23.3, err(23.3) },
+    }
+
+    assert_data_table(data_table, validate.is_non_empty_string_or_nil)
+  end)
+
+  it("is_type() should validate correctly", function()
+    local err = function(expected_types, value)
+      return field_name .. " must be of type " .. table.unpack(expected_types) .. ", not [" .. ss(type(value)) .. "]"
+    end
+
+    local data_table = {
+      -- Valid
+      { { "string" }, "a_valid_string", nil },
+      { { "number" }, 23, nil },
+      { { "boolean" }, true, nil },
+      { { "table" }, { a = 1, b = "c" }, nil },
+      { { "function" }, function() end, nil },
+      -- Invalid
+      { { "string" }, 23, err({ "string" }, 23) },
+      { { "number" }, "not_a_number", err({ "number" }, "not_a_number") },
+      { { "boolean" }, "not_a_bool", err({ "boolean" }, "not_a_bool") },
+      { { "table" }, "not_a_table", err({ "table" }, "not_a_table") },
+      { { "function" }, "not_a_function", err({ "function" }, "not_a_function") },
+      -- Multiple types
+      { { "string", "number" }, { a = 1 }, err({ "string", "number" }, { a = 1 }) },
+    }
+
+    for _, data in ipairs(data_table) do
+      local allowed_types, test_value, expected = table.unpack(data)
+      local f = function()
+        validate.is_type(allowed_types, field_name, test_value)
+      end
+      if expected == nil then
+        assert.has_no.errors(f)
+      else
+        assert.has_error(f, expected)
+      end
+    end
+  end)
 end)
