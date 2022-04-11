@@ -1,4 +1,4 @@
---- constants.lua
+-- constants.lua
 --
 -- Copyright (c) 2022 Snowplow Analytics Ltd. All rights reserved.
 --

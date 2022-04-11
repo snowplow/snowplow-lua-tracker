@@ -1,4 +1,4 @@
---- emitter.lua
+-- emitter.lua
 --
 -- Copyright (c) 2022 Snowplow Analytics Ltd. All rights reserved.
 --
@@ -10,15 +10,24 @@
 -- software distributed under the Apache License Version 2.0 is distributed on an
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
---
--- Authors:     Greg Leonard
--- Copyright:   Copyright (c) 2022 Snowplow Analytics Ltd
--- License:     Apache License Version 2.0
+
+--- An 'Emitter' is a class that can be used to send payloads to a Snowplow collector
+-- attached to a 'tracker' instance.
+-- @module Emitter
+-- @author Greg Leonard
+-- @copyright Snowplow Analytics Ltd
+-- @license Apache License Version 2.0
 
 local curl = require("cURL")
 local ss = require("lib.utils").safe_string -- Alias
 local set = require("lib.set")
 local validate = require("validate")
+
+--- The Emitter table.
+-- @func get_request_method
+-- @func get_collector_url
+-- @func send
+-- @table Emitter
 
 local Emitter = {}
 local emitter = {}
@@ -28,9 +37,10 @@ local VALID_PROTOCOLS = set.new_set({ "http", "https" })
 -- --------------------------------------------------------------
 -- Private methods
 
--- Helper to generate the collector url from a given url.
--- @param url string: The url of the collector
--- @return string: The full collector URL
+--- Helper to generate the collector url from a given url.
+-- @string url The url of the collector
+-- @string request_type The request type
+-- @treturn string The full collector URL
 local function as_collector_url(url, request_type)
   local path = ({
     ["GET"] = "/i",
@@ -46,9 +56,10 @@ local function as_collector_url(url, request_type)
   return "https://" .. url .. path
 end
 
--- Decides if a given status code is considered a success.
--- @param status_code number: The HTTP status code
--- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
+--- Decides if a given status code is considered a success.
+-- @tparam number status_code The HTTP status code
+-- @treturn boolean Whether event was successfully collected
+-- @treturn ?string The reason for failure if not
 local function handle_status_code(status_code)
   local code = tonumber(status_code)
   if code == nil or code ~= math.floor(code) or code < 0 or code >= 600 then
@@ -62,9 +73,11 @@ local function handle_status_code(status_code)
   return true
 end
 
--- Performs a GET request with a given payload to the collector.
--- @param uri string: The URI (including querystring) to GET
--- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
+--- Performs a GET request with a given payload to the collector.
+-- @tparam Emitter self The emitter
+-- @tparam string payload The payload to send
+-- @treturn boolean Whether event was successfully collected
+-- @treturn ?string The reason for failure if not
 local function _get(self, payload)
   local url = self.collector_url .. payload
   -- `resp` is the table `:getinfo` reads from
@@ -84,10 +97,11 @@ local function _get(self, payload)
   return handle_status_code(c:getinfo(curl.INFO_RESPONSE_CODE))
 end
 
--- Performs a POST request with a given payload to the collector.
--- @param uri string: The URI (including querystring) to GET
--- @param method string: The HTTP method to use
--- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
+--- Performs a POST request with a given payload to the collector.
+-- @tparam Emitter self The emitter
+-- @tparam string payload The payload to send
+-- @treturn boolean Whether event was successfully collected
+-- @treturn ?string The reason for failure if not
 local function _post(self, payload)
   -- `resp` is the table `:getinfo` reads from
   local resp = {}
@@ -114,35 +128,34 @@ end
 -- --------------------------------------------------------------
 -- Public methods
 
--- Returns the request method
--- @return string: The request method
+----
+-- @treturn string The Emitter instance request method
 function Emitter:get_request_method()
   return self.request_method
 end
 
--- Returns the collector url
--- @return string: The collector url
+----
+-- @treturn string The Emitter instance collector url
 function Emitter:get_collector_url()
   return self.collector_url
 end
 
--- Sends a payload to the collector
--- @param payload string: The payload to send
--- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
+--- Sends a payload to the collector with the configured request method.
+-- @tparam string payload The payload to send
+-- @treturn boolean Whether event was successfully collected
+-- @treturn ?string The reason for failure if not
 function Emitter:send(payload)
   return self.request_func(self, payload)
 end
 
--- Builds a new emitter instance
--- @param collector_url string: The url of the collector
--- @param request_method string: The request method to use
--- @return Emitter: The new emitter instance
+--- Builds a new emitter instance.
+-- @string collector_url The url of the collector
+-- @string[opt="POST"] request_method The request method to use
+-- @treturn Emitter The new emitter instance
 function emitter.new(collector_url, request_method)
   local e = {}
   setmetatable(e, { __index = Emitter })
 
-  -- The HTTP method to use if request_method is present
-  -- otherwise, POST is used
   e.request_method = request_method or "POST"
   e.request_func = ({
     ["GET"] = _get,

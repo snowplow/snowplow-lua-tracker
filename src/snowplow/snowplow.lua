@@ -1,4 +1,4 @@
---- snowplow.lua
+-- snowplow.lua
 --
 -- Copyright (c) 2013 Snowplow Analytics Ltd. All rights reserved.
 --
@@ -10,10 +10,12 @@
 -- software distributed under the Apache License Version 2.0 is distributed on an
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
---
--- Authors:     Alex Dean
--- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
--- License:     Apache License Version 2.0
+
+--- The main Snowplow module.
+-- @module Snowplow
+-- @author Alex Dean
+-- @copyright Copyright (c) 2013 Snowplow Analytics Ltd
+-- @license Apache License Version 2.0
 
 local validate = require("validate")
 local tracker = require("tracker")
@@ -23,10 +25,11 @@ local set = require("lib.set")
 local snowplow = {}
 local VALID_REQUEST_TYPES = set.new_set({ "GET", "POST" })
 
--- Builds our new tracker using the supplied URL.
--- @param url string: The full url to the Snowplow collector
--- @param request_type string: The request type to use (GET or POST)
--- @return tracker table: The new tracker
+--- Creates a tracker instance.
+-- @string url The url to the Snowplow collector
+-- @string[opt="POST"] request_type The request type to use ("GET" or "POST")
+-- @bool[opt=true] encode_base64 Whether to base64 encode the payloads
+-- @treturn Tracker The new tracker
 function snowplow.new_tracker(url, request_type, encode_base64)
   validate.is_non_empty_string("url", url)
 
