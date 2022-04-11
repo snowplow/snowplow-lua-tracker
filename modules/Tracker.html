@@ -1,0 +1,456 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Tables">Tables</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/snowplow.constants.html">snowplow.constants</a></li>
+  <li><a href="../modules/Emitter.html">Emitter</a></li>
+  <li><a href="../modules/snowplow.lib.escape.html">snowplow.lib.escape</a></li>
+  <li><a href="../modules/Set.html">Set</a></li>
+  <li><a href="../modules/Utils.html">Utils</a></li>
+  <li><a href="../modules/Payload.html">Payload</a></li>
+  <li><a href="../modules/Snowplow.html">Snowplow</a></li>
+  <li><strong>Tracker</strong></li>
+  <li><a href="../modules/Validate.html">Validate</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>Tracker</code></h1>
+<p>The Snowplow tracker</p>
+<p></p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Copyright</strong>: Copyright (c) 2013 Snowplow Analytics Ltd</li>
+        <li><strong>License</strong>: Apache License Version 2.0</li>
+        <li><strong>Author</strong>: Alex Dean</li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#tracker.new_tracker">tracker.new_tracker (emitter[, encode_base64=true])</a></td>
+	<td class="summary">Creates a new tracker instance.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#platform">platform (platform)</a></td>
+	<td class="summary">The default platform for Lua is "pc".</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_app_id">set_app_id (app_id)</a></td>
+	<td class="summary">Sets the application ID to record against each event.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_user_id">set_user_id (user_id)</a></td>
+	<td class="summary">Sets the business user ID.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_screen_resolution">set_screen_resolution (width, height)</a></td>
+	<td class="summary">If you have access to a graphics library which can tell you screen width and height, then set it here.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_viewport">set_viewport (width, height)</a></td>
+	<td class="summary">If you have access to a graphics library which can tell you the width and height of the viewport (i.e.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#track_screen_view">track_screen_view (name, id)</a></td>
+	<td class="summary">Sends a screen view event to Snowplow.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#track_struct_event">track_struct_event (category, action[, label[, property[, value]]])</a></td>
+	<td class="summary">Sends a custom structured event to SnowPlow.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#track_unstruct_event">track_unstruct_event (properties)</a></td>
+	<td class="summary">Sends a custom unstructured event to Snowplow.</td>
+	</tr>
+</table>
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Tracker">Tracker</a></td>
+	<td class="summary">The Payload table.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "tracker.new_tracker"></a>
+    <strong>tracker.new_tracker (emitter[, encode_base64=true])</strong>
+    </dt>
+    <dd>
+    Creates a new tracker instance.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">emitter</span>
+            <span class="types"><span class="type">Emitter</span></span>
+         The emitter to use to send the payloads
+        </li>
+        <li><span class="parameter">encode_base64</span>
+            <span class="types"><span class="type">bool</span></span>
+         Whether to base64 encode the payloads
+         (<em>default</em> true)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../modules/Tracker.html#Tracker">Tracker</a></span>
+        The new tracker
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "platform"></a>
+    <strong>platform (platform)</strong>
+    </dt>
+    <dd>
+    The default platform for Lua is "pc".  If you are using Lua on another platform,
+ (e.g. as part of a console videogame), you can change the platform here.
+ For details on the different platforms, see:
+ https://github.com/snowplow/snowplow/wiki/SnowPlow-Tracker-Protocol#wiki-appid
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">platform</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The short-form name of the platform to set. Can be "pc", "tv", "mob", "csl" or "iot".
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_app_id"></a>
+    <strong>set_app_id (app_id)</strong>
+    </dt>
+    <dd>
+    Sets the application ID to record against each event.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">app_id</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The application ID to set
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_user_id"></a>
+    <strong>set_user_id (user_id)</strong>
+    </dt>
+    <dd>
+    Sets the business user ID.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">user_id</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The business user ID to set.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_screen_resolution"></a>
+    <strong>set_screen_resolution (width, height)</strong>
+    </dt>
+    <dd>
+    If you have access to a graphics library which can tell you screen width and height, then set it here.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         The screen width
+        </li>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">number</span></span>
+         The screen height
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_viewport"></a>
+    <strong>set_viewport (width, height)</strong>
+    </dt>
+    <dd>
+    If you have access to a graphics library which can tell you the width and height of the viewport (i.e.
+ the screen space taken up by this app), then set it here.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">width</span>
+            <span class="types"><span class="type">number</span></span>
+         The viewport width
+        </li>
+        <li><span class="parameter">height</span>
+            <span class="types"><span class="type">number</span></span>
+         The viewport height
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "track_screen_view"></a>
+    <strong>track_screen_view (name, id)</strong>
+    </dt>
+    <dd>
+    Sends a screen view event to Snowplow.  A screen view must have a `name` and can have an optional `id`.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         Human-readable name for this screen (e.g. "HUD > Save Game").
+        </li>
+        <li><span class="parameter">id</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         Optional unique identifier for this screen. Could be e.g. a GUID or identifier from a game CMS
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">boolean</span></span>
+        Whether event was successfully collected</li>
+        <li>
+           <span class="types">optional <a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The reason for failure if not</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "track_struct_event"></a>
+    <strong>track_struct_event (category, action[, label[, property[, value]]])</strong>
+    </dt>
+    <dd>
+    Sends a custom structured event to SnowPlow.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">category</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The category of event
+        </li>
+        <li><span class="parameter">action</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The action / event itself
+        </li>
+        <li><span class="parameter">label</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The ‘object’ the action is performed on
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">property</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         A property associated with either the action or the object
+         (<em>optional</em>)
+        </li>
+        <li><span class="parameter">value</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         A value associated with the user action
+         (<em>optional</em>)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">boolean</span></span>
+        Whether event was successfully collected</li>
+        <li>
+           <span class="types">optional <a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The reason for failure if not</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "track_unstruct_event"></a>
+    <strong>track_unstruct_event (properties)</strong>
+    </dt>
+    <dd>
+    Sends a custom unstructured event to Snowplow.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">properties</span>
+            <span class="types"><span class="type">tab</span></span>
+         A key-value table of properties to send with the event
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">boolean</span></span>
+        Whether event was successfully collected</li>
+        <li>
+           <span class="types">optional <a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The reason for failure if not</li>
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Tracker"></a>
+    <strong>Tracker</strong>
+    </dt>
+    <dd>
+    The Payload table.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">encode_base64</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">platform</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">set_app_id</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">set_user_id</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">set_screen_resolution</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">set_viewport</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">set_color_depth</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">track_screen_view</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">track_struct_event</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">track_unstruct_event</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-04-11 14:08:07 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

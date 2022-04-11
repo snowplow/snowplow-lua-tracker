@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Tables">Tables</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/snowplow.constants.html">snowplow.constants</a></li>
+  <li><strong>Emitter</strong></li>
+  <li><a href="../modules/snowplow.lib.escape.html">snowplow.lib.escape</a></li>
+  <li><a href="../modules/Set.html">Set</a></li>
+  <li><a href="../modules/Utils.html">Utils</a></li>
+  <li><a href="../modules/Payload.html">Payload</a></li>
+  <li><a href="../modules/Snowplow.html">Snowplow</a></li>
+  <li><a href="../modules/Tracker.html">Tracker</a></li>
+  <li><a href="../modules/Validate.html">Validate</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>Emitter</code></h1>
+<p>An 'Emitter' is a class that can be used to send payloads to a Snowplow collector
+ attached to a 'tracker' instance.</p>
+<p></p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Copyright</strong>: Snowplow Analytics Ltd</li>
+        <li><strong>License</strong>: Apache License Version 2.0</li>
+        <li><strong>Author</strong>: Greg Leonard</li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#get_request_method">get_request_method ()</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#get_collector_url">get_collector_url ()</a></td>
+	<td class="summary"></td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#send">send (payload)</a></td>
+	<td class="summary">Sends a payload to the collector with the configured request method.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#emitter.new">emitter.new (collector_url[, request_method="POST"])</a></td>
+	<td class="summary">Builds a new emitter instance.</td>
+	</tr>
+</table>
+<h2><a href="#Tables">Tables</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Emitter">Emitter</a></td>
+	<td class="summary">The Emitter table.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "get_request_method"></a>
+    <strong>get_request_method ()</strong>
+    </dt>
+    <dd>
+
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The Emitter instance request method
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "get_collector_url"></a>
+    <strong>get_collector_url ()</strong>
+    </dt>
+    <dd>
+
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The Emitter instance collector url
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "send"></a>
+    <strong>send (payload)</strong>
+    </dt>
+    <dd>
+    Sends a payload to the collector with the configured request method.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">payload</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The payload to send
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+        <li>
+           <span class="types"><span class="type">boolean</span></span>
+        Whether event was successfully collected</li>
+        <li>
+           <span class="types">optional <a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+        The reason for failure if not</li>
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "emitter.new"></a>
+    <strong>emitter.new (collector_url[, request_method="POST"])</strong>
+    </dt>
+    <dd>
+    Builds a new emitter instance.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">collector_url</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The url of the collector
+        </li>
+        <li><span class="parameter">request_method</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The request method to use
+         (<em>default</em> "POST")
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><a class="type" href="../modules/Emitter.html#Emitter">Emitter</a></span>
+        The new emitter instance
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Tables"></a>Tables</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "Emitter"></a>
+    <strong>Emitter</strong>
+    </dt>
+    <dd>
+    The Emitter table.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">get_request_method</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">get_collector_url</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+        <li><span class="parameter">send</span>
+            <span class="types"><span class="type">func</span></span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-04-11 14:08:07 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

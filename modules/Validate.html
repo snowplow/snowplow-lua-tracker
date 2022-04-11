@@ -1,0 +1,474 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+<ul>
+  <li><a href="../index.html">Index</a></li>
+</ul>
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><a href="../modules/snowplow.constants.html">snowplow.constants</a></li>
+  <li><a href="../modules/Emitter.html">Emitter</a></li>
+  <li><a href="../modules/snowplow.lib.escape.html">snowplow.lib.escape</a></li>
+  <li><a href="../modules/Set.html">Set</a></li>
+  <li><a href="../modules/Utils.html">Utils</a></li>
+  <li><a href="../modules/Payload.html">Payload</a></li>
+  <li><a href="../modules/Snowplow.html">Snowplow</a></li>
+  <li><a href="../modules/Tracker.html">Tracker</a></li>
+  <li><strong>Validate</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>Validate</code></h1>
+<p>Validation functions</p>
+<p></p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Copyright</strong>: Copyright (c) 2013 Snowplow Analytics Ltd</li>
+        <li><strong>License</strong>: Apache License Version 2.0</li>
+        <li><strong>Author</strong>: Alex Dean</li>
+    </ul>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_boolean">validate.is_boolean (name, value)</a></td>
+	<td class="summary">Validates that a value is a boolean.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_non_empty_table">validate.is_non_empty_table (name, value)</a></td>
+	<td class="summary">Validates that a value is a table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_table_or_nil">validate.is_table_or_nil (name, value)</a></td>
+	<td class="summary">Validates that a value is a table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_non_empty_string">validate.is_non_empty_string (name, value)</a></td>
+	<td class="summary">Validates that a value is a non-empty string.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_non_empty_string_or_nil">validate.is_non_empty_string_or_nil (name, value)</a></td>
+	<td class="summary">Validates that a value is a non-empty string, or nil.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_string_or_nil">validate.is_string_or_nil (name, value)</a></td>
+	<td class="summary">Validates that a value is a string, or nil.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_string_from_set">validate.is_string_from_set (set, name, value)</a></td>
+	<td class="summary">Validates that a value is a string from a Set.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_number">validate.is_number (name, value)</a></td>
+	<td class="summary">Validates that a value is a number.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_number_or_nil">validate.is_number_or_nil (name, value)</a></td>
+	<td class="summary">Validates that a value is a number, or nil.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_positive_integer">validate.is_positive_integer (name, value)</a></td>
+	<td class="summary">Validates that a value is a a positive integer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#validate.is_type">validate.is_type (expected_types, name, value)</a></td>
+	<td class="summary">Validates that a value is of a given type.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "validate.is_boolean"></a>
+    <strong>validate.is_boolean (name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is a boolean.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is a boolean
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "validate.is_non_empty_table"></a>
+    <strong>validate.is_non_empty_table (name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is a table.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is a table
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "validate.is_table_or_nil"></a>
+    <strong>validate.is_table_or_nil (name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is a table.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is a table
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "validate.is_non_empty_string"></a>
+    <strong>validate.is_non_empty_string (name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is a non-empty string.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is a non-empty string
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "validate.is_non_empty_string_or_nil"></a>
+    <strong>validate.is_non_empty_string_or_nil (name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is a non-empty string, or nil.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is a non-empty string or nil
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "validate.is_string_or_nil"></a>
+    <strong>validate.is_string_or_nil (name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is a string, or nil.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is a string or nil
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "validate.is_string_from_set"></a>
+    <strong>validate.is_string_from_set (set, name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is a string from a Set.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">set</span>
+            <span class="types"><span class="type">Set</span></span>
+         The set to check against
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is a string from the set
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "validate.is_number"></a>
+    <strong>validate.is_number (name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is a number.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span></span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is a number
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "validate.is_number_or_nil"></a>
+    <strong>validate.is_number_or_nil (name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is a number, or nil.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span></span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is a number or nil
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "validate.is_positive_integer"></a>
+    <strong>validate.is_positive_integer (name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is a a positive integer.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+            <span class="types"><span class="type">number</span></span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is a positive integer
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "validate.is_type"></a>
+    <strong>validate.is_type (expected_types, name, value)</strong>
+    </dt>
+    <dd>
+    Validates that a value is of a given type.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">expected_types</span>
+            <span class="types"><span class="type">tab</span></span>
+         The expected types
+        </li>
+        <li><span class="parameter">name</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         The name of the value to validate
+        </li>
+        <li><span class="parameter">value</span>
+         The value to validate
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        Whether the value is any of the given types
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-04-11 14:08:07 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>
