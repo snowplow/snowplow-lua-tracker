@@ -75,13 +75,17 @@ end
 
 --- Performs a GET request with a given payload to the collector.
 -- @tparam Emitter self The emitter
--- @tparam string payload The payload to send
+-- @tparam Payload payload The payload to send
 -- @treturn boolean Whether event was successfully collected
 -- @treturn ?string The reason for failure if not
 local function _get(self, payload)
-  local url = self.collector_url .. payload
   -- `resp` is the table `:getinfo` reads from
   local resp = {}
+
+  -- Add dvce_sent_tstamp
+  payload:add("stm", os.time())
+  local url = self.collector_url .. payload:build(self.request_method)
+
   local c = curl.easy({
     url = url,
   }):setopt_writefunction(table.insert, resp)
@@ -91,7 +95,7 @@ local function _get(self, payload)
   end)
 
   if err ~= nil then
-    return false, "Host [" .. self.collector_url .. payload .. "] not found (possible connectivity error)"
+    return false, "Host [" .. url .. "] not found (possible connectivity error)"
   end
 
   return handle_status_code(c:getinfo(curl.INFO_RESPONSE_CODE))
@@ -99,19 +103,23 @@ end
 
 --- Performs a POST request with a given payload to the collector.
 -- @tparam Emitter self The emitter
--- @tparam string payload The payload to send
+-- @tparam Payload payload The payload to send
 -- @treturn boolean Whether event was successfully collected
 -- @treturn ?string The reason for failure if not
 local function _post(self, payload)
   -- `resp` is the table `:getinfo` reads from
   local resp = {}
+
+  -- Add dvce_sent_tstamp
+  payload:add("stm", os.time())
+
   local c = curl.easy({
     url = self.collector_url,
     post = true,
     httpheader = {
       "Content-Type: application/json; charset=utf-8",
     },
-    postfields = payload,
+    postfields = payload:build(self.request_method),
   }):setopt_writefunction(table.insert, resp)
 
   local _, err = pcall(function()
