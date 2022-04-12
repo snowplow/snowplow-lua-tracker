@@ -1,4 +1,4 @@
---- set.lua
+-- set.lua
 --
 -- Copyright (c) 2013 Snowplow Analytics Ltd. All rights reserved.
 --
@@ -10,10 +10,18 @@
 -- software distributed under the Apache License Version 2.0 is distributed on an
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
---
--- Authors:     Alex Dean
--- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
--- License:     Apache License Version 2.0
+
+--- A simple set implementation.
+-- @module Set
+-- @author Alex Dean
+-- @copyright Copyright (c) 2013 Snowplow Analytics Ltd
+-- @license Apache License Version 2.0
+
+--- The set table.
+-- @func new_set
+-- @func contains
+-- @func to_string
+-- @table Set
 
 local set = {} -- The module
 local Set = {} -- The class
@@ -22,10 +30,10 @@ Set.__index = Set
 -- --------------------------------------------------------------
 -- Factory to create a Set
 
--- Creates a new set from the supplied table.
+--- Creates a new set from the supplied table.
 -- Source: http://www.lua.org/pil/13.1.html
--- @param t table: The table containing the values for this set
--- @return Set: The new set
+-- @tab t The table containing the values for this set
+-- @treturn Set The new set
 function set.new_set(t)
   local s = {}
   setmetatable(s, Set)
@@ -39,8 +47,8 @@ end
 -- Private methods
 
 -- Creates an iterator over the set in key-sorted order.
--- @param s Set: The set to iterate over
--- @return function: The iterator function
+-- @Set s The set to iterate over
+-- @t func The iterator function
 local function pairs_by_keys(s)
   local a = {}
   for n in pairs(s) do
@@ -62,9 +70,9 @@ end
 -- --------------------------------------------------------------
 -- Class methods
 
--- @param self Set: The set to check
--- @param value any: The value to look for in our set
--- @return boolean: If the set contains the value
+--- Checks if a value is in the set.
+-- @param value The value to look for in our set
+-- @treturn bool If the set contains the value
 function Set:contains(value)
   local c
   if self[value] == true then
@@ -76,10 +84,9 @@ function Set:contains(value)
   return c
 end
 
--- Convert a set to a string key-sorted string representation
+--- Convert a set to a string key-sorted string representation
 -- Source: http://www.lua.org/pil/13.1.html
--- @param self Set: The set to convert
--- @return string: The string representation of the set
+-- @treturn string The string representation of the set
 function Set:to_string()
   local s = "{"
   local sep = ""

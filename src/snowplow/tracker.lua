@@ -1,4 +1,4 @@
---- tracker.lua
+-- tracker.lua
 --
 -- Copyright (c) 2013 Snowplow Analytics Ltd. All rights reserved.
 --
@@ -10,10 +10,12 @@
 -- software distributed under the Apache License Version 2.0 is distributed on an
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
---
--- Authors:     Alex Dean
--- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
--- License:     Apache License Version 2.0
+
+--- The Snowplow tracker
+-- @module Tracker
+-- @author Alex Dean
+-- @copyright Copyright (c) 2013 Snowplow Analytics Ltd
+-- @license Apache License Version 2.0
 
 local validate = require("validate")
 local payload = require("payload")
@@ -21,24 +23,33 @@ local set = require("lib.set")
 local uuid = require("uuid")
 local TRACKER_VERSION = require("constants").TRACKER_VERSION
 
+--- The Tracker table.
+-- @func encode_base64
+-- @func platform
+-- @func set_app_id
+-- @func set_user_id
+-- @func set_screen_resolution
+-- @func set_viewport
+-- @func set_color_depth
+-- @func track_screen_view
+-- @func track_struct_event
+-- @func track_unstruct_event
+-- @table Tracker
+
 local tracker = {} -- The module
 local Tracker = {} -- The class
 Tracker.__index = Tracker
 
--- --------------------------------------------------------------
 -- Constants & config
 
 local DEFAULT_ENCODE_BASE64 = true
 local DEFAULT_PLATFORM = "pc"
 local SUPPORTED_PLATFORMS = set.new_set({ "pc", "tv", "mob", "cnsl", "iot" })
 
--- --------------------------------------------------------------
--- Factory to create a new Tracker
-
--- Creates a new tracker.
--- @param emitter table: The emitter to use to send the payloads
--- @param encode_base64 boolean: Whether to base64 encode the payloads
--- @return table: The new tracker
+--- Creates a new tracker instance.
+-- @tparam Emitter emitter The emitter to use to send the payloads
+-- @bool[opt=true] encode_base64 Whether to base64 encode the payloads
+-- @treturn Tracker The new tracker
 function tracker.new_tracker(emitter, encode_base64)
   local trck = {}
   setmetatable(trck, Tracker)
@@ -55,14 +66,10 @@ function tracker.new_tracker(emitter, encode_base64)
   return trck
 end
 
--- --------------------------------------------------------------
--- Private methods
-
--- Tracks any given SnowPlow event, by sending the specific event_pairs to the SnowPlow collector.
--- @param: self table: The Tracker instance
--- @param pb table: A partially populated payload_builder closure. We will finish populating it in this method, then
--- build() it
--- @return boolean, string: Whether event was successfully collected; and the reason for failure if not
+--- Tracks any given Snowplow event, by sending the specific event_pairs to the Snowplow collector.
+-- @tparam Tracker tracker_instance
+-- @tparam Payload pb A partially populated payload_builder closure.
+-- @return boolean, string Whether event was successfully collected; and the reason for failure if not
 local function track(tracker_instance, pb)
   -- Add the standard name-value pairs
   pb:add("p", tracker_instance.config.platform)
@@ -96,17 +103,17 @@ end
 -- Configuration setting: whether to Base64-encode the properties of unstructured events and custom variables.
 -- Encoding means a circa~25% space saving.
 -- Defaults to true.
--- @param encode boolean: whether to base64-encode or not
+-- @bool encode Whether to base64-encode or not
 function Tracker:encode_base64(encode)
   validate.is_boolean("encode", encode)
   self.config.encode_base64 = encode
 end
 
--- The default platform for Lua is "pc". If you are using Lua on another platform,
+--- The default platform for Lua is "pc". If you are using Lua on another platform,
 -- (e.g. as part of a console videogame), you can change the platform here.
 -- For details on the different platforms, see:
 -- https://github.com/snowplow/snowplow/wiki/SnowPlow-Tracker-Protocol#wiki-appid
--- @param platform string: The short-form name of the platform to set. Can be "pc", "tv", "mob", "csl" or "iot".
+-- @string platform The short-form name of the platform to set. Can be "pc", "tv", "mob", "csl" or "iot".
 function Tracker:platform(platform)
   validate.is_string_from_set(SUPPORTED_PLATFORMS, "platform", platform)
   self.config.platform = platform
@@ -115,33 +122,33 @@ end
 -- --------------------------------------------------------------
 -- Data setters
 
--- Sets the application ID to record against each event.
--- @param app_id string: The application ID to set
+--- Sets the application ID to record against each event.
+-- @string app_id The application ID to set
 function Tracker:set_app_id(app_id)
   validate.is_non_empty_string("app_id", app_id)
   self.app_id = app_id
 end
 
--- Sets the business user ID.
--- @param user_id string The business user ID to set.
+--- Sets the business user ID.
+-- @string user_id The business user ID to set.
 function Tracker:set_user_id(user_id)
   validate.is_non_empty_string("user_id", user_id)
   self.user_id = user_id
 end
 
--- If you have access to a graphics library which can tell you screen width and height, then set it here.
--- @param width number: The screen width
--- @param height number: The screen height
+--- If you have access to a graphics library which can tell you screen width and height, then set it here.
+-- @number width The screen width
+-- @number height The screen height
 function Tracker:set_screen_resolution(width, height)
   validate.is_positive_integer("width", width)
   validate.is_positive_integer("height", height)
   self.screen_resolution = width .. "x" .. height
 end
 
--- If you have access to a graphics library which can tell you the width and height of the viewport (i.e.
+--- If you have access to a graphics library which can tell you the width and height of the viewport (i.e.
 -- the screen space taken up by this app), then set it here.
--- @param width number: The viewport width
--- @param height number: The viewport height as a number
+-- @number width The viewport width
+-- @number height The viewport height
 function Tracker:set_viewport(width, height)
   validate.is_positive_integer("width", width)
   validate.is_positive_integer("height", height)
@@ -149,7 +156,7 @@ function Tracker:set_viewport(width, height)
 end
 
 -- If you have access to a graphics library which can tell you screen width and height, then set it here.
--- @param depth number: The color depth on this computer
+-- @number depth The color depth on this computer
 function Tracker:set_color_depth(depth)
   validate.is_positive_integer("depth", depth)
   self.color_depth = depth
@@ -158,10 +165,11 @@ end
 -- --------------------------------------------------------------
 -- Track methods
 
--- Sends a screen view event to SnowPlow. A screen view must have a `name` and can have an optional `id`.
--- @param name string: Human-readable name for this screen (e.g. "HUD > Save Game").
--- @param id string: Optional unique identifier for this screen. Could be e.g. a GUID or identifier from a game CMS
--- @return boolean: whether event was successfully collected; and the reason for failure if not
+--- Sends a screen view event to Snowplow. A screen view must have a `name` and can have an optional `id`.
+-- @string name Human-readable name for this screen (e.g. "HUD > Save Game").
+-- @string id Optional unique identifier for this screen. Could be e.g. a GUID or identifier from a game CMS
+-- @treturn boolean Whether event was successfully collected
+-- @treturn ?string The reason for failure if not
 function Tracker:track_screen_view(name, id)
   validate.is_non_empty_string("name", name)
   validate.is_non_empty_string_or_nil("id", id)
@@ -177,14 +185,14 @@ function Tracker:track_screen_view(name, id)
   return self:track_unstruct_event(screen_view)
 end
 
--- Sends a custom structured event to SnowPlow.
--- @param category string: The name you supply for the group of objects you want to track
--- @param action string: A string that is uniquely paired with each category e.g. the type of user interaction for
--- the object
--- @param label string: An optional string to provide additional dimensions to the event data
--- @param property string: An optional string describing the objector the action performed on it.
--- @param value string: A value that you can use to provide numerical data about the user event
--- @return boolean whether event was successfully collected; and the reason for failure if not
+--- Sends a custom structured event to Snowplow.
+-- @string category The category of event
+-- @string action The action / event itself
+-- @string[opt] label The ‘object’ the action is performed on
+-- @string[opt] property A property associated with either the action or the object
+-- @string[opt] value A value associated with the user action
+-- @treturn boolean Whether event was successfully collected
+-- @treturn ?string The reason for failure if not
 function Tracker:track_struct_event(category, action, label, property, value)
   local pb = payload.new_payload_builder(self.config.encode_base64)
   pb:add("e", "se")
@@ -209,9 +217,10 @@ function Tracker:track_struct_event(category, action, label, property, value)
   return track(self, pb)
 end
 
--- Sends a custom unstructured event to Snowplow.
--- @param properties string: The properties of the event
--- @return: boolean whether event was successfully collected; and the reason for failure if not
+--- Sends a custom unstructured event to Snowplow.
+-- @tab properties A key-value table of properties to send with the event
+-- @treturn boolean Whether event was successfully collected
+-- @treturn ?string The reason for failure if not
 function Tracker:track_unstruct_event(properties)
   local wrapper = {
     schema = "iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",

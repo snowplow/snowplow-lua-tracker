@@ -1,4 +1,4 @@
---- payload.lua
+-- payload.lua
 --
 -- Copyright (c) 2022 Snowplow Analytics Ltd. All rights reserved.
 --
@@ -10,15 +10,25 @@
 -- software distributed under the Apache License Version 2.0 is distributed on an
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
---
--- Authors:     Alex Dean
--- Copyright:   Copyright (c) 2022 Snowplow Analytics Ltd
--- License:     Apache License Version 2.0
+
+--- A builder for a Snowplow payload, can be used to construct either
+-- a querystring for a GET request, or to create a JSON body for a POST request.
+-- @module Payload
+-- @author Alex Dean
+-- @copyright Copyright (c) 2013 Snowplow Analytics Ltd
+-- @license Apache License Version 2.0
 
 local json = require("lunajson")
 local validate = require("validate")
 local base64 = require("base64")
 local urlencode = require("urlencode")
+
+--- The Payload table.
+-- @func add
+-- @func add_table
+-- @func get
+-- @func build
+-- @table Payload
 
 local Payload = {}
 local payload = {}
@@ -27,8 +37,8 @@ local payload = {}
 -- Private methods
 
 -- Builds a querystring payload
--- @param payload_table table: The payload table
--- @return string: The querystring payload
+-- @tab payload_table The payload table
+-- @treturn string The querystring payload
 local function build_querystring(payload_table)
   local querystring = "?"
   for k, v in pairs(payload_table) do
@@ -39,8 +49,8 @@ local function build_querystring(payload_table)
 end
 
 -- Builds a JSON payload
--- @param payload_table table: The payload table
--- @return string: The JSON payload
+-- @tab payload_table The payload table
+-- @treturn string The JSON payload
 local function build_json(payload_table)
   return json.encode({
     schema = "iglu:com.snowplowanalytics.snowplow/payload_data/jsonschema/1-0-4",
@@ -51,17 +61,17 @@ end
 -- --------------------------------------------------------------
 -- Public methods
 
--- Adds a key, value pair to the payload table
--- @param key string: The key to add
--- @param value string: The value to add
+--- Adds a key, value pair to the payload table
+-- @tparam string|number|bool key The key to add
+-- @string value The value to add
 function Payload:add(key, value)
   validate.is_type({ "string", "number", "boolean" }, "value", value)
   self.nv_pairs[key] = tostring(value)
 end
 
--- Adds a named table to the payload table
--- @param name string: The name of the table to add
--- @param tbl table: The table to add
+--- Adds a named table to the payload table
+-- @string name The name of the table to add
+-- @tparam table tbl The table to add
 function Payload:add_table(name, tbl)
   if self.encode_base64 then
     self:add(name, base64.encode(json.encode(tbl)))
@@ -70,15 +80,15 @@ function Payload:add_table(name, tbl)
   end
 end
 
--- Gets the payload table
--- @return table: The payload table
+--- Gets the payload table
+-- @treturn table The payload table
 function Payload:get()
   return self.nv_pairs
 end
 
--- Builds the appropriate payload
--- @param request_method string: The request method that will determine the payload type
--- @return string: The built payload
+--- Builds the appropriate payload
+-- @string request_method The request method that will determine the payload type ("POST" or "GET")
+-- @treturn string The built payload
 function Payload:build(request_method)
   if request_method == "POST" then
     return build_json(self:get())
@@ -87,10 +97,9 @@ function Payload:build(request_method)
   end
 end
 
--- Creates a new Payload object
--- @param request_method string: The request method
--- @param encode_base64 boolean: Whether to base64 encode the payload
--- @return Payload: The new Payload object
+--- Creates a new Payload object
+-- @bool encode_base64 Whether to base64 encode the payload
+-- @treturn Payload The new Payload Builder instance
 function payload.new_payload_builder(encode_base64)
   validate.is_boolean("encode_base64", encode_base64)
   local p = {
