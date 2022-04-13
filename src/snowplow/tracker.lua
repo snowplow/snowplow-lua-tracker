@@ -93,8 +93,7 @@ local function track(tracker_instance, pb)
     end
   end
 
-  local built_payload = pb:build(tracker_instance.emitter:get_request_method())
-  return tracker_instance.emitter:send(built_payload)
+  return tracker_instance.emitter:send(pb, tracker_instance)
 end
 
 -- --------------------------------------------------------------

@@ -19,12 +19,14 @@ local micro = require("spec.micro.micro")
 local snowplow = require("snowplow")
 
 describe("Integration tests with no issues", function()
+  local t
+
   before_each(function()
     micro.clear_cache()
+    t = snowplow.new_tracker(micro.get_url(), "GET")
   end)
 
   it("should return true for a valid collector", function()
-    local t = snowplow.new_tracker(micro.get_url(), "GET")
     t:encode_base64(false)
     t:set_screen_resolution(1068, 720)
     local s, msg = t:track_struct_event("name", "id")
@@ -34,7 +36,7 @@ describe("Integration tests with no issues", function()
   end)
 
   for _, request_type in ipairs({ "GET", "POST" }) do
-    local t = snowplow.new_tracker(micro.get_url(), request_type, true)
+    t = snowplow.new_tracker(micro.get_url(), request_type, true)
 
     it("can track a screen view using " .. request_type, function()
       local expected_id, expected_name = "test_id", "test_name"
@@ -90,4 +92,14 @@ describe("Integration tests with no issues", function()
       assert.are.equal(event.quantity, 1000)
     end)
   end
+
+  it("creates a dvce_sent_tstamp not less than dvce_created_tstamp", function()
+    local s, msg = t:track_struct_event("name", "id")
+    assert.is_true(s)
+    assert.is_nil(msg)
+
+    local micro_event = micro.get_good_events()
+    local event = micro_event[1].event
+    assert.is_true(event.dvce_created_tstamp <= event.dvce_sent_tstamp)
+  end)
 end)

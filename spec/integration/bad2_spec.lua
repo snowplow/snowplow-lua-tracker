@@ -35,17 +35,19 @@ describe("Integration tests with HTTP/collector problems", function()
     local _, msg = t:track_screen_view("Game HUD 2", nil)
 
     -- time returned by os.time when called in track_screen_view
-    local time = time_spy.returnvals[1].refs[1]
+    local dtm = time_spy.returnvals[1].refs[1]
+    local stm = time_spy.returnvals[2].refs[1]
 
     local expected = {
       "Host %[https://test%.invalid/i%?",
       "e=ue",
-      "dtm=" .. time,
+      "dtm=" .. dtm,
       "p=tv",
       "tv=" .. t.config.version:gsub("%.", "%%."):gsub("%-", "%%-"),
       "eid=%x%x%x%x%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%-%x%x%x%x%x%x%x%x%x%x%x%x", -- UUID pattern match
       "aid=wow%-ext%-1",
       "res=1068x720",
+      "stm=" .. stm,
       "] not found %(possible connectivity error%)",
     }
 
