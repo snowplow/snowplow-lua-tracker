@@ -54,7 +54,7 @@ jobs:
       - name: Get LDoc and generate docs
         run: |
           wget https://github.com/lunarmodules/LDoc/archive/refs/tags/1.4.6.tar.gz &&
-          tar xf 1.4.6.tar.gz &&
+          tar xf 1.4.6.tar.gz --directory ./src/ &&
           cd ./src/
           lua ./LDoc-1.4.6/ldoc.lua .
 
@@ -65,7 +65,7 @@ jobs:
           publish_dir: ./src/doc/
 
   publish:
-    needs: "version_check"
+    needs: ["version_check", "docs"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
