@@ -1,6 +1,6 @@
 -- payload.lua
 --
--- Copyright (c) 2022 Snowplow Analytics Ltd. All rights reserved.
+-- Copyright (c) 2013 - 2022 Snowplow Analytics Ltd. All rights reserved.
 --
 -- This program is licensed to you under the Apache License Version 2.0,
 -- and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -15,7 +15,7 @@
 -- a querystring for a GET request, or to create a JSON body for a POST request.
 -- @module Payload
 -- @author Alex Dean
--- @copyright Copyright (c) 2013 Snowplow Analytics Ltd
+-- @copyright Copyright (c) 2013 - 2022 Snowplow Analytics Ltd
 -- @license Apache License Version 2.0
 
 local json = require("lunajson")

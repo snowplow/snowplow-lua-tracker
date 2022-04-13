@@ -1,6 +1,6 @@
 -- tracker.lua
 --
--- Copyright (c) 2013 Snowplow Analytics Ltd. All rights reserved.
+-- Copyright (c) 2013 - 2022 Snowplow Analytics Ltd. All rights reserved.
 --
 -- This program is licensed to you under the Apache License Version 2.0,
 -- and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -14,7 +14,7 @@
 --- The Snowplow tracker
 -- @module Tracker
 -- @author Alex Dean
--- @copyright Copyright (c) 2013 Snowplow Analytics Ltd
+-- @copyright Copyright (c) 2013 - 2022 Snowplow Analytics Ltd
 -- @license Apache License Version 2.0
 
 local validate = require("validate")
