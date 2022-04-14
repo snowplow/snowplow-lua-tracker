@@ -73,10 +73,10 @@ describe("Integration tests with no issues", function()
     end)
 
     it("can track an unstruct event using " .. request_type, function()
-      local ok, err = t:track_unstruct_event({
-        schema = "iglu:com.snowplowanalytics.snowplow/add_to_cart/jsonschema/1-0-0",
-        data = { sku = "ASO01043", unitPrice = 49.95, quantity = 1000 },
-      })
+      local ok, err = t:track_self_describing_event(
+        "iglu:com.snowplowanalytics.snowplow/add_to_cart/jsonschema/1-0-0",
+        { sku = "ASO01043", unitPrice = 49.95, quantity = 1000 }
+      )
       assert.is_true(ok)
       assert.is_nil(err)
 

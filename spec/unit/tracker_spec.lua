@@ -16,6 +16,7 @@ local tracker
 local collector_url = "http://test.invalid/i"
 local TRACKER_VERSION = require("constants").TRACKER_VERSION
 local emitter = require("emitter")
+local ss = require("lib.utils").safe_string
 
 describe("tracker", function()
   local t
@@ -196,5 +197,42 @@ describe("tracker", function()
       t:track_struct_event("shop", "add-to-basket", nil, "units", "212")
     end
     assert.has_error(f, "value must be a number or nil, not [212]")
+  end)
+
+  it("track_self_describing_event() should error if schema is not a non-empty string", function()
+    local f = function(schema, data)
+      t:track_self_describing_event(schema, data)
+    end
+
+    local incorrect_schemas = {
+      { "", { key = "value" } },
+      { 1, { key = "value" } },
+      { true, { key = "value" } },
+      { {}, { key = "value" } },
+    }
+    for _, args in ipairs(incorrect_schemas) do
+      assert.has_error(function()
+        f(args[1], args[2])
+      end, "schema is required and must be a non-empty string, not [" .. ss(args[1]) .. "]")
+    end
+  end)
+
+  it("track_self_describing_event() should error if data is not a non-empty table", function()
+    local f = function(schema, data)
+      t:track_self_describing_event(schema, data)
+    end
+
+    local incorrect_data = {
+      { "iglu:example/schema", "" },
+      { "iglu:example/schema", 1 },
+      { "iglu:example/schema", true },
+      { "iglu:example/schema", {} },
+    }
+
+    for _, args in ipairs(incorrect_data) do
+      assert.has_error(function()
+        f(args[1], args[2])
+      end, "data is required and must be a non-empty table, not [" .. ss(args[2]) .. "]")
+    end
   end)
 end)
