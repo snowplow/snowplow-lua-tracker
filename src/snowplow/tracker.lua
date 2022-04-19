@@ -33,7 +33,7 @@ local TRACKER_VERSION = require("constants").TRACKER_VERSION
 -- @func set_color_depth
 -- @func track_screen_view
 -- @func track_struct_event
--- @func track_unstruct_event
+-- @func track_self_describing_event
 -- @table Tracker
 
 local tracker = {} -- The module
@@ -173,15 +173,10 @@ function Tracker:track_screen_view(name, id)
   validate.is_non_empty_string("name", name)
   validate.is_non_empty_string_or_nil("id", id)
 
-  local screen_view = {
-    schema = "iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0",
-    data = {
-      name = name,
-      id = id,
-    },
-  }
-
-  return self:track_unstruct_event(screen_view)
+  return self:track_self_describing_event("iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0", {
+    name = name,
+    id = id,
+  })
 end
 
 --- Sends a custom structured event to Snowplow.
@@ -217,13 +212,20 @@ function Tracker:track_struct_event(category, action, label, property, value)
 end
 
 --- Sends a custom unstructured event to Snowplow.
--- @tab properties A key-value table of properties to send with the event
+-- @tab schema The schema for this event
+-- @tab data The key, value pairs to send with the event
 -- @treturn boolean Whether event was successfully collected
 -- @treturn ?string The reason for failure if not
-function Tracker:track_unstruct_event(properties)
+function Tracker:track_self_describing_event(schema, data)
+  validate.is_non_empty_string("schema", schema)
+  validate.is_non_empty_table("data", data)
+
   local wrapper = {
     schema = "iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",
-    data = properties,
+    data = {
+      schema = schema,
+      data = data,
+    },
   }
   local pb = payload.new_payload_builder(self.config.encode_base64)
   pb:add("e", "ue")
