@@ -99,7 +99,7 @@ end
 -- --------------------------------------------------------------
 -- Configuration methods
 
--- Configuration setting: whether to Base64-encode the properties of unstructured events and custom variables.
+--- Configuration setting: whether to Base64-encode the properties of unstructured events and custom variables.
 -- Encoding means a circa~25% space saving.
 -- Defaults to true.
 -- @bool encode Whether to base64-encode or not
@@ -121,7 +121,7 @@ end
 -- --------------------------------------------------------------
 -- Data setters
 
---- Sets the application ID to record against each event.
+--- Sets the application ID.
 -- @string app_id The application ID to set
 function Tracker:set_app_id(app_id)
   validate.is_non_empty_string("app_id", app_id)
@@ -135,7 +135,7 @@ function Tracker:set_user_id(user_id)
   self.user_id = user_id
 end
 
---- If you have access to a graphics library which can tell you screen width and height, then set it here.
+--- Sets the screen resolution.
 -- @number width The screen width
 -- @number height The screen height
 function Tracker:set_screen_resolution(width, height)
@@ -144,8 +144,7 @@ function Tracker:set_screen_resolution(width, height)
   self.screen_resolution = width .. "x" .. height
 end
 
---- If you have access to a graphics library which can tell you the width and height of the viewport (i.e.
--- the screen space taken up by this app), then set it here.
+--- Sets the viewport size.
 -- @number width The viewport width
 -- @number height The viewport height
 function Tracker:set_viewport(width, height)
@@ -154,7 +153,7 @@ function Tracker:set_viewport(width, height)
   self.viewport = width .. "x" .. height
 end
 
--- If you have access to a graphics library which can tell you screen width and height, then set it here.
+--- Sets the bit depth of the color palette.
 -- @number depth The color depth on this computer
 function Tracker:set_color_depth(depth)
   validate.is_positive_integer("depth", depth)
