@@ -1,4 +1,4 @@
---- utils_spec.lua
+--- mock_uuid.lua
 --
 -- Copyright (c) 2013 - 2022 Snowplow Analytics Ltd. All rights reserved.
 --
@@ -11,24 +11,7 @@
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
 
-local utils = require("src.snowplow..lib.utils")
-
-describe("utils", function()
-  it("safe_string() should work correctly", function()
-    local data_table = {
-      { "INPUT", "EXPECTED" },
-      { true, "true" },
-      { false, "false" },
-      { 23, "23" },
-      { nil, "<nil>" },
-      { {}, "{}" },
-      { { a = 1, b = "2" }, "<table>" },
-    }
-
-    for i, t in ipairs(data_table) do
-      if i > 1 then -- Skip header row
-        assert.are.equal(utils.safe_string(t[1]), t[2])
-      end
-    end
-  end)
-end)
+-- @return string: a known mock UUID for testing
+return function()
+  return "00000000-0000-0000-0000-000000000000"
+end

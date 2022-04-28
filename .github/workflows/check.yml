@@ -1,0 +1,77 @@
+name: ci
+
+on:
+  push:
+    # Prevents this workflow running on tag push, as it is called in publish.yml also
+    branches:
+      - '**'
+  workflow_call:
+
+jobs:
+  stylua:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Stylua Check
+        run: |
+          wget https://github.com/JohnnyMorganz/StyLua/releases/download/v0.12.4/stylua-0.12.4-linux.zip -O stylua.zip &&
+          unzip stylua.zip &&
+          chmod +x stylua &&
+          ./stylua --check .
+
+  luacheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: leafo/gh-actions-lua@v8.0.0
+        with:
+          luaVersion: "5.4"
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Specify Git protocol
+        run: |
+          git config --global url."https://".insteadOf git://
+
+      - name: Install libcurl4
+        run: |
+          sudo apt-get update && sudo apt-get install libcurl4-gnutls-dev
+      - name: Install Dependencies and Build
+        run: |
+          luarocks install snowplowtracker-scm-1.rockspec --only-deps CURL_INCDIR=/usr/include/x86_64-linux-gnu && luarocks build
+
+      - name: Luacheck
+        run: |
+          luarocks install luacheck && luacheck .
+
+  busted:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        luaVersion: ["5.1", "5.2", "5.3", "5.4", "luajit"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: leafo/gh-actions-lua@v8.0.0
+        with:
+          luaVersion: ${{ matrix.luaVersion }}
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Specify Git protocol
+        run: |
+          git config --global url."https://".insteadOf git://
+
+      - name: Install libcurl4
+        run: |
+          sudo apt-get update && sudo apt-get install libcurl4-gnutls-dev
+
+      - name: Install Dependencies and Build
+        run: |
+          luarocks install snowplowtracker-scm-1.rockspec --only-deps CURL_INCDIR=/usr/include/x86_64-linux-gnu && luarocks build
+
+      - name: Install Busted
+        run: luarocks install busted
+
+      - name: Run Tests
+        run: ./run-tests

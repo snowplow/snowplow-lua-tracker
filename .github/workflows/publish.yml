@@ -1,0 +1,118 @@
+name: publish
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+jobs:
+  check:
+    uses: ./.github/workflows/check.yml
+
+  version_check:
+    needs: "check"
+    runs-on: ubuntu-latest
+    outputs:
+      TRACKER_VERSION: ${{ steps.version.outputs.TRACKER_VERSION }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get version from tracker
+        id: version
+        run: |
+          echo "##[set-output name=TRACKER_VERSION;]$(grep 'constants.TRACKER_VERSION =' ./src/snowplow/constants.lua | cut -d '-' -f 2)"
+
+      - name: Check against pushed tag
+        env:
+          TRACKER_VERSION: ${{ steps.version.outputs.TRACKER_VERSION }}
+          TAG_VERSION: ${{ github.ref_name }}
+        run: |
+          if [ "$TAG_VERSION" != "$TRACKER_VERSION" ]; then
+            echo "Tag: $TAG_VERSION does not match tracker.lua version: $TRACKER_VERSION"
+            exit 1
+          fi
+
+  docs:
+    needs: "version_check"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - uses: leafo/gh-actions-lua@v8.0.0
+        with:
+          luaVersion: "5.4"
+
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Get LDoc dependencies
+        run: |
+          luarocks install penlight
+
+      - name: Get LDoc and generate docs
+        run: |
+          wget https://github.com/lunarmodules/LDoc/archive/refs/tags/1.4.6.tar.gz &&
+          tar xf 1.4.6.tar.gz --directory ./src/ &&
+          cd ./src/
+          lua ./LDoc-1.4.6/ldoc.lua .
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./src/doc/
+
+  publish:
+    needs: ["version_check", "docs"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: leafo/gh-actions-lua@v8.0.0
+        with:
+          luaVersion: "5.4"
+
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Publish to LuaRocks
+        env:
+          LUAROCKS_APIKEY: ${{ secrets.LUAROCKS_APIKEY }}
+          TAG_VERSION: ${{ github.ref_name }}
+        run: |
+          # LuaRocks accepts a versioned .rockspec file, then mirrors the code of that tag from github
+          # LuaRocks also requires the version number to be present in both the .rockspec filename and the version field in the .rockspec file
+          # This script generates a versioned .rockspec from a tag pushed to github
+
+          VERSIONED_ROCKSPEC=snowplowtracker-"$TAG_VERSION"-1.rockspec
+          cp snowplowtracker-scm-1.rockspec "$VERSIONED_ROCKSPEC"
+
+          # Replace the version number in the versioned rockspec with the release tag
+          sed -i 's|version = \"scm-1\"|version = \"'"$TAG_VERSION"'-1\"|g' "$VERSIONED_ROCKSPEC"
+
+          # Set the github tag in the new rockspec
+          sed -i 's|TAG_SET_BY_GITHUB_ACTIONS_DO_NOT_MANUALLY_SET|'"$TAG_VERSION"'|g' "$VERSIONED_ROCKSPEC"
+
+          # Install the requirements for `luarocks upload`
+          luarocks install dkjson --check-lua-versions
+          luarocks install luasec --check-lua-versions
+
+          # Publish the rockspec to LuaRocks
+          luarocks upload "$VERSIONED_ROCKSPEC" --api-key="$LUAROCKS_APIKEY"
+
+  release:
+    needs: ["publish"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          name: Version ${{ github.ref_name }}
+          draft: false

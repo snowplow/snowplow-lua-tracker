@@ -1,6 +1,6 @@
 --- json_spec.lua
 --
--- Copyright (c) 2013 Snowplow Analytics Ltd. All rights reserved.
+-- Copyright (c) 2013 - 2022 Snowplow Analytics Ltd. All rights reserved.
 --
 -- This program is licensed to you under the Apache License Version 2.0,
 -- and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -10,52 +10,64 @@
 -- software distributed under the Apache License Version 2.0 is distributed on an
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
---
--- Authors:     Alex Dean
--- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
--- License:     Apache License Version 2.0
 
 local json = require("src.snowplow..lib.json")
 
 describe("json", function()
-
   it("should JSON-encode Lua tables correctly", function()
-
-    local dataTable = {
-      { "INPUT"                                                              , "EXPECTED"                                                                                           },
-      { {}                                                                   , "[]"                                                                                                 },
-      { { name = "John", age = 23 }                                          , '{"age":23,"name":"John"}'                                                                           },
-      { { myTemp = 23.3, myUnit = "celsius"}                                 , '{"myTemp":23.3,"myUnit":"celsius"}'                                                                 },
-      { { event      = "page_ping",
-          mobile     = true,
-          properties = { min_x_INT = 0, max_x = 960, min_y = -12, max_y = 1080 }
-        }                                                                    , '{"event":"page_ping","mobile":true,"properties":{"max_x":960,"max_y":1080,"min_x_INT":0,"min_y":-12}}'  },
-      { { event      = "basket_change",
+    local data_table = {
+      {
+        "INPUT",
+        "EXPECTED",
+      },
+      {
+        {},
+        "[]",
+      },
+      {
+        { name = "John", age = 23 },
+        '{"age":23,"name":"John"}',
+      },
+      {
+        { my_temp = 23.3, my_unit = "celsius" },
+        '{"my_temp":23.3,"my_unit":"celsius"}',
+      },
+      {
+        {
+          event = "page_ping",
+          mobile = true,
+          properties = { min_x_INT = 0, max_x = 960, min_y = -12, max_y = 1080 },
+        },
+        '{"event":"page_ping","mobile":true,"properties":{"max_x":960,"max_y":1080,"min_x_INT":0,"min_y":-12}}',
+      },
+      {
+        {
+          event = "basket_change",
           product_id = "PBZ000345",
-          price      = 23.39,
-          quantity   = -2,
-          visitor    = nil, -- Sadly this doesn't make it through as "visitor": null
-          tstamp_TM  = 1678023000
-        }                                                                    , '{"event":"basket_change","price":23.39,"product_id":"PBZ000345","quantity":-2,"tstamp_TM":1678023000}' }
+          price = 23.39,
+          quantity = -2,
+          visitor = nil, -- Sadly this doesn't make it through as "visitor": null
+          tstamp_TM = 1678023000,
+        },
+        '{"event":"basket_change","price":23.39,"product_id":"PBZ000345","quantity":-2,"tstamp_TM":1678023000}',
+      },
     }
 
-    for i, v in ipairs(dataTable) do
+    for i, v in ipairs(data_table) do
       if i > 1 then
         local expected = json:encode(v[1])
         assert.are.equal(v[2], expected)
       end
     end
-
   end)
 
   it("should error on nil or other datatypes", function()
+    local bad_values = { nil, "", 1, "temp => 23.C", true, false, 34.5 }
 
-    local badValues = { nil, "", 1, "temp => 23.C", true, false, 34.5 }
-
-    for i, v in ipairs(badValues) do
-      assert.has_error(function() json:encode(v) end)
-    end   
-
+    for _, v in ipairs(bad_values) do
+      assert.has_error(function()
+        json:encode(v)
+      end)
+    end
   end)
-
 end)

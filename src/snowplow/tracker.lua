@@ -1,6 +1,6 @@
---- tracker.lua
+-- tracker.lua
 --
--- Copyright (c) 2013 Snowplow Analytics Ltd. All rights reserved.
+-- Copyright (c) 2013 - 2022 Snowplow Analytics Ltd. All rights reserved.
 --
 -- This program is licensed to you under the Apache License Version 2.0,
 -- and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -10,392 +10,226 @@
 -- software distributed under the Apache License Version 2.0 is distributed on an
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
---
--- Authors:     Alex Dean
--- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
--- License:     Apache License Version 2.0
 
-local http     = require( "socket.http" )
-local validate = require( "validate" )
-local payload  = require( "payload" )
-local set      = require( "lib.set" )
-local ss       = require( "lib.utils" ).safeString -- Alias
+--- The Snowplow tracker
+-- @module Tracker
+-- @author Alex Dean
+-- @copyright Copyright (c) 2013 - 2022 Snowplow Analytics Ltd
+-- @license Apache License Version 2.0
+
+local validate = require("validate")
+local payload = require("payload")
+local set = require("lib.set")
+local uuid = require("uuid")
+local TRACKER_VERSION = require("constants").TRACKER_VERSION
+
+--- The Tracker table.
+-- @func encode_base64
+-- @func platform
+-- @func set_app_id
+-- @func set_user_id
+-- @func set_screen_resolution
+-- @func set_viewport
+-- @func set_color_depth
+-- @func track_screen_view
+-- @func track_struct_event
+-- @func track_self_describing_event
+-- @table Tracker
 
 local tracker = {} -- The module
 local Tracker = {} -- The class
 Tracker.__index = Tracker
 
--- --------------------------------------------------------------
 -- Constants & config
 
-local VERSION = "lua-0.1.0-1"
 local DEFAULT_ENCODE_BASE64 = true
 local DEFAULT_PLATFORM = "pc"
-local SUPPORTED_PLATFORMS = set.newSet { "pc", "tv", "mob", "cnsl", "iot" }
-local HTTP_ERRORS = set.newSet { "host not found",
-                                 "No address associated with name",
-                                 "No address associated with hostname"
-                               }
+local SUPPORTED_PLATFORMS = set.new_set({ "pc", "tv", "mob", "cnsl", "iot" })
 
--- --------------------------------------------------------------
--- Factory to create a new Tracker
-
-function tracker.newTracker(collectorUri)
-  --[[--
-  Creates a new tracker.
-
-  @Parameter: collectorUri
-    String: the full URI to the Snowplow collector
-  --]]--
-
+--- Creates a new tracker instance.
+-- @tparam Emitter emitter The emitter to use to send the payloads
+-- @bool[opt=true] encode_base64 Whether to base64 encode the payloads
+-- @treturn Tracker The new tracker
+function tracker.new_tracker(emitter, encode_base64)
   local trck = {}
-  setmetatable( trck, Tracker )
-  trck.collectorUri = collectorUri
+  setmetatable(trck, Tracker)
+  if encode_base64 == nil then
+    encode_base64 = DEFAULT_ENCODE_BASE64
+  end
+  trck.emitter = emitter
   trck.config = {
-    encodeBase64 = DEFAULT_ENCODE_BASE64,
-    platform     = DEFAULT_PLATFORM,
-    version      = VERSION
+    encode_base64 = encode_base64,
+    platform = DEFAULT_PLATFORM,
+    version = TRACKER_VERSION,
   }
 
   return trck
 end
 
--- --------------------------------------------------------------
--- Private static methods
+--- Tracks any given Snowplow event, by sending the specific event_pairs to the Snowplow collector.
+-- @tparam Tracker tracker_instance
+-- @tparam Payload pb A partially populated payload_builder closure.
+-- @return boolean, string Whether event was successfully collected; and the reason for failure if not
+local function track(tracker_instance, pb)
+  -- Add the standard name-value pairs
+  pb:add("p", tracker_instance.config.platform)
+  pb:add("tv", tracker_instance.config.version)
+  pb:add("eid", uuid())
+  pb:add("dtm", tostring(os.time()))
 
-function getTransactionId()
-  --[[--
-  Generates a moderately-unique six-digit transaction ID
-  - essentially a nonce to make sure this event isn't
-  recorded twice.
-  --]]--
+  -- Fields which may have been set
+  local tracker_fields = {
+    uid = "user_id",
+    aid = "app_id",
+    res = "screen_resolution",
+    vp = "viewport",
+    cd = "color_depth",
+  }
 
-  local tid
-  math.randomseed( os.time() )
-  local rand = math.random(100000, 999999)
-  tid = tostring( rand )
-
-  -- To handle testing
-  -- TODO: is there a cleaner way of doing this? DI or a mock or something?
-  if _TEST then
-    tid = "100000"
-  end
-
-  return tid
-end
-
-function getTimestamp( tstamp )
-  --[[--
-  Returns the current timestamp as total milliseconds
-  since epoch.
-
-  @Parameter: tstamp
-    Optional time (in seconds since epoch) at which
-    event occurred
-  --]]--
-
-  local timestamp
-  if tstamp == nil then
-    timestamp = os.time()
-  elseif type(tstamp) == "number" then
-    timestamp = tstamp * 1000
-  else
-    timestamp = tstamp -- Hope the calling code deals with the error
-  end
-
-  return timestamp
-end
-
-function httpGet(uri)
-  --[[--
-  GETs the given URI: this is how our event data
-  is transmitted to the Snowplow collector.
-
-  @Parameter: uri
-    The URI (including querystring) to GET
-
-  @Return: true/false for whether event was successfully collected; if false, the error message
-  --]]--
-
-  result, statusCode, content = http.request( uri )
-
-  if HTTP_ERRORS:contains(statusCode) then
-    return false, "Host [" .. uri .. "] not found (possible connectivity error)"
-  else
-    local code = tonumber(statusCode)
-    if code == nil or code ~= math.floor(code) or code < 0 or code >= 600 then
-      return false, "Unrecognised status code [" .. ss(statusCode) .. "]"
-    elseif code >= 400 and code < 500 then
-      return false, "HTTP status code [" .. ss(statusCode) .. "] is a client error"
-    elseif code >= 500 then
-      return false, "HTTP status code [" .. ss(statusCode) .. "] is a server error"
+  for k, v in pairs(tracker_fields) do
+    v = tracker_instance[v]
+    if v ~= nil then
+      pb:add(k, v)
     end
   end
 
-  return true
-end
-
--- --------------------------------------------------------------
--- Private methods
-
-function track(self, pb)
-  --[[--
-  Tracks any given SnowPlow event, by sending the specific
-  event_pairs to the SnowPlow collector.
-
-  @Parameter: self
-    The Tracker table holding our configuration etc
-
-  @Parameter: pb
-    A partially populated payloadBuilder closure. We will
-    finish populating it in this method, then build() it
-
-  @Return: true/false for whether event was successfully collected; if false, the error message
-  --]]--
-
-  -- Add the standard name-value pairs
-  pb.add( "p",  self.config.platform )
-  pb.addRaw( "tv", self.config.version )
-  pb.add( "tid", getTransactionId() )
-
-  -- Add the fields which may have been set
-  pb.add( "uid", self.userId )
-  pb.add( "aid", self.appId )
-  pb.addRaw( "res", self.screenResolution )
-  pb.addRaw( "vp",  self.viewport )
-  pb.addRaw( "cd",  self.colorDepth )
-
-  -- Now build the payloadBuilder
-  local uri = self.collectorUri .. pb.build()
-
-  -- For mocking
-  if _TEST then
-    self._httpGet( uri )
-  end
-
-  -- Finally send to Snowplow
-  return httpGet( uri )
+  return tracker_instance.emitter:send(pb, tracker_instance)
 end
 
 -- --------------------------------------------------------------
 -- Configuration methods
 
-function Tracker:encodeBase64(encode)
-  --[[--
-  Configuration setting: whether to Base64-encode the
-  properties of unstructured events and custom
-  variables.
-  Encoding means a circa~25% space saving.
-
-  Defaults to true.
-
-  @Parameter: encode
-    Boolean: whether to base64-encode or not
-  --]]--
-
-  validate.isBoolean( "encode", encode )
-  self.config.encodeBase64 = encode
+--- Configuration setting: whether to Base64-encode the properties of unstructured events and custom variables.
+-- Encoding means a circa~25% space saving.
+-- Defaults to true.
+-- @bool encode Whether to base64-encode or not
+function Tracker:encode_base64(encode)
+  validate.is_boolean("encode", encode)
+  self.config.encode_base64 = encode
 end
 
+--- The default platform for Lua is "pc". If you are using Lua on another platform,
+-- (e.g. as part of a console videogame), you can change the platform here.
+-- For details on the different platforms, see:
+-- https://github.com/snowplow/snowplow/wiki/SnowPlow-Tracker-Protocol#wiki-appid
+-- @string platform The short-form name of the platform to set. Can be "pc", "tv", "mob", "csl" or "iot".
 function Tracker:platform(platform)
-  --[[--
-  The default platform for Lua is "pc". If you are using Lua on
-  another platform (e.g. as part of a console videogame), you
-  can change the platform here.
-
-  For details on the different platforms, see:
-  https://github.com/snowplow/snowplow/wiki/SnowPlow-Tracker-Protocol#wiki-appid
-
-  @Parameter: platform
-    The short-form name of the platform to set. Can be "pc",
-    "tv", "mob", "csl" or "iot".
-  --]]--
-
-  validate.isStringFromSet( SUPPORTED_PLATFORMS, "platform", platform )
+  validate.is_string_from_set(SUPPORTED_PLATFORMS, "platform", platform)
   self.config.platform = platform
 end
 
 -- --------------------------------------------------------------
 -- Data setters
 
-function Tracker:setAppId(appId)
-  --[[--
-  Sets the application ID to record against
-  each event.
-
-  @Parameter: appId
-    The application ID to set
-  --]]--
-
-  validate.isNonEmptyString( "appId", appId )
-  self.appId = appId
+--- Sets the application ID.
+-- @string app_id The application ID to set
+function Tracker:set_app_id(app_id)
+  validate.is_non_empty_string("app_id", app_id)
+  self.app_id = app_id
 end
 
-function Tracker:setUserId(userId)
-  --[[--
-  Sets the business user ID.
-
-  @Parameter; userId
-    The business user ID to set.
-  --]]--
-
-  validate.isNonEmptyString( "userId", userId )
-  self.userId = userId
+--- Sets the business user ID.
+-- @string user_id The business user ID to set.
+function Tracker:set_user_id(user_id)
+  validate.is_non_empty_string("user_id", user_id)
+  self.user_id = user_id
 end
 
-function Tracker:setScreenResolution(width, height)
-  --[[--
-  If you have access to a graphics library which can
-  tell you screen width and height, then set it here.
-
-  @Parameter: width
-    The screen width as a number
-  @Parameter: height
-    The screen height as a number
-  --]]--
-
-  validate.isPositiveInteger( "width", width )
-  validate.isPositiveInteger( "height", height )
-  self.screenResolution = width .. "x" .. height
+--- Sets the screen resolution.
+-- @number width The screen width
+-- @number height The screen height
+function Tracker:set_screen_resolution(width, height)
+  validate.is_positive_integer("width", width)
+  validate.is_positive_integer("height", height)
+  self.screen_resolution = width .. "x" .. height
 end
 
-function Tracker:setViewport(width, height)
-  --[[--
-  If you have access to a graphics library which can
-  tell you the width and height of the viewport (i.e.
-  the screen space taken up by this app), then set it
-  here.
-
-  @Parameter: width
-    The viewport width as a number
-  @Parameter: height
-    The viewport height as a number
-  --]]--
-
-  validate.isPositiveInteger( "width", width )
-  validate.isPositiveInteger( "height", height )
+--- Sets the viewport size.
+-- @number width The viewport width
+-- @number height The viewport height
+function Tracker:set_viewport(width, height)
+  validate.is_positive_integer("width", width)
+  validate.is_positive_integer("height", height)
   self.viewport = width .. "x" .. height
 end
 
-function Tracker:setColorDepth(depth)
-  --[[--
-  If you have access to a graphics library which can
-  tell you screen width and height, then set it here.
-  
-  @Parameter: depth
-    The color depth on this computer
-  --]]--
-
-  validate.isPositiveInteger( "depth", depth )
-  self.colorDepth = depth
+--- Sets the bit depth of the color palette.
+-- @number depth The color depth on this computer
+function Tracker:set_color_depth(depth)
+  validate.is_positive_integer("depth", depth)
+  self.color_depth = depth
 end
 
 -- --------------------------------------------------------------
 -- Track methods
 
-function Tracker:trackScreenView(name, id, tstamp)
-  --[[--
-  Sends a screen view event to SnowPlow. A screen view
-  must have a `name` and can have an optional `id`.
+--- Sends a screen view event to Snowplow. A screen view must have a `name` and can have an optional `id`.
+-- @string name Human-readable name for this screen (e.g. "HUD > Save Game").
+-- @string id Optional unique identifier for this screen. Could be e.g. a GUID or identifier from a game CMS
+-- @treturn boolean Whether event was successfully collected
+-- @treturn ?string The reason for failure if not
+function Tracker:track_screen_view(name, id)
+  validate.is_non_empty_string("name", name)
+  validate.is_non_empty_string_or_nil("id", id)
 
-  @Parameter: name
-    Human-readable name for this screen (e.g.
-    "HUD > Save Game"). String
-  @Parameter: id
-    Optional unique identifier for this screen. Could be e.g.
-    a GUID or identifier from a game CMS. String
-  @Parameter: tstamp
-    Optional time (in seconds since epoch) at which event
-    occurred
-
-  @Return: true/false for whether event was successfully collected; if false, the error message
-  --]]--
-
-  local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
-  pb.addRaw( "e", "sv" )
-  pb.add( "sv_na", name, validate.isNonEmptyString )
-  pb.add( "sv_id", id, validate.isStringOrNil )
-  pb.add( "dtm", getTimestamp( tstamp ), validate.isPositiveInteger )
-
-  return track( self, pb )
+  return self:track_self_describing_event("iglu:com.snowplowanalytics.snowplow/screen_view/jsonschema/1-0-0", {
+    name = name,
+    id = id,
+  })
 end
 
-function Tracker:trackStructEvent(category, action, label, property, value, tstamp)
-  --[[--
-  Sends a custom structured event to SnowPlow.
+--- Sends a custom structured event to Snowplow.
+-- @string category The category of event
+-- @string action The action / event itself
+-- @string[opt] label The ‘object’ the action is performed on
+-- @string[opt] property A property associated with either the action or the object
+-- @string[opt] value A value associated with the user action
+-- @treturn boolean Whether event was successfully collected
+-- @treturn ?string The reason for failure if not
+function Tracker:track_struct_event(category, action, label, property, value)
+  local pb = payload.new_payload_builder(self.config.encode_base64)
+  pb:add("e", "se")
 
-  @Parameter: category
-    The name you supply for the group of
-    objects you want to track
-  @Parameter: action
-    A string that is uniquely paired with each
-    category, and commonly used to define the
-    type of user interaction for the object
-  @Parameter: label
-    An optional string to provide additional
-    dimensions to the event data
-  @Parameter: property
-    An optional string describing the object
-    or the action performed on it. This might
-    be the quantity of an item added to basket
-  @Parameter: value
-    A value that you can use to provide
-    numerical data about the user event
-  @Parameter: tstamp
-    Optional time (in seconds since epoch) at which
-    event occurred
+  local fields = {
+    { "se_ca", "category", category, validate.is_non_empty_string },
+    { "se_ac", "action", action, validate.is_non_empty_string },
+    { "se_la", "label", label, validate.is_string_or_nil },
+    { "se_pr", "property", property, validate.is_string_or_nil },
+    { "se_va", "value", value, validate.is_number_or_nil },
+  }
 
-  @Return: true/false for whether event was successfully collected; if false, the error message
-  --]]--
-
-  local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
-  pb.addRaw( "e", "se" )
-  pb.add( "se_ca", category, validate.isNonEmptyString )
-  pb.add( "se_ac", action, validate.isNonEmptyString )
-  pb.add( "se_la", label, validate.isStringOrNil )
-  pb.add( "se_pr", property, validate.isStringOrNil )
-  pb.add( "se_va", value, validate.isNumberOrNil )
-  pb.add( "dtm", getTimestamp( tstamp ), validate.isPositiveInteger )
-
-  return track( self, pb )
-end
-
-function Tracker:trackUnstructEvent(name, properties, tstamp)
-  --[[--
-  Sends a custom unstructured event to Snowplow.
-
-  @Parameter: name
-    The name of the event
-  @Parameter: properties
-    The properties of the event
-  @Parameter: tstamp
-    Optional time (in seconds since epoch) at which
-    event occurred
-
-  @Return: true/false for whether event was successfully collected; if false, the error message
-  --]]--
-
-  local pb = payload.newPayloadBuilder( self.config.encodeBase64 )
-  pb.addRaw("e", "ue")
-  pb.add( "ue_na", name, validate.isNonEmptyString )
-  pb.addProps( "ue_px", "ue_pr", properties, validate.isNonEmptyTable )
-  pb.add( "dtm", getTimestamp( tstamp ), validate.isPositiveInteger )
-
-  return track( self, pb )
-end
-
--- --------------------------------------------------------------
--- Mocks
-
-if _TEST then
-  function Tracker._httpGet(uri)
-  --[[--
-  A mock on the table to be checked by Busted.
-  Does nothing - we will simply inspect the uri
-  argument.
-  --]]--
+  for _, field in ipairs(fields) do
+    local parameter, name, var, validator = table.unpack(field)
+    validator(name, var)
+    -- The value is allowed to be nil, but we don't want to send it as a field if so
+    if var ~= nil then
+      pb:add(parameter, var)
+    end
   end
 
+  return track(self, pb)
+end
+
+--- Sends a custom unstructured event to Snowplow.
+-- @tab schema The schema for this event
+-- @tab data The key, value pairs to send with the event
+-- @treturn boolean Whether event was successfully collected
+-- @treturn ?string The reason for failure if not
+function Tracker:track_self_describing_event(schema, data)
+  validate.is_non_empty_string("schema", schema)
+  validate.is_non_empty_table("data", data)
+
+  local wrapper = {
+    schema = "iglu:com.snowplowanalytics.snowplow/unstruct_event/jsonschema/1-0-0",
+    data = {
+      schema = schema,
+      data = data,
+    },
+  }
+  local pb = payload.new_payload_builder(self.config.encode_base64)
+  pb:add("e", "ue")
+  pb:add_table(self.config.encode_base64 and "ue_px" or "ue_pr", wrapper)
+  return track(self, pb)
 end
 
 -- --------------------------------------------------------------

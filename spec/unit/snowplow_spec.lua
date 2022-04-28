@@ -1,6 +1,6 @@
 --- snowplow_spec.lua
 --
--- Copyright (c) 2013 Snowplow Analytics Ltd. All rights reserved.
+-- Copyright (c) 2013 - 2022 Snowplow Analytics Ltd. All rights reserved.
 --
 -- This program is licensed to you under the Apache License Version 2.0,
 -- and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -10,45 +10,30 @@
 -- software distributed under the Apache License Version 2.0 is distributed on an
 -- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
---
--- Authors:     Alex Dean
--- Copyright:   Copyright (c) 2013 Snowplow Analytics Ltd
--- License:     Apache License Version 2.0
 
 local snowplow = require("snowplow")
-local validate = require("validate")
-local ss       = require("lib.utils").safeString -- Alias
+local ss = require("lib.utils").safe_string -- Alias
+local TRACKER_VERSION = require("constants").TRACKER_VERSION
 
-local function assertTracker(tracker, collectorUri)
-  assert.are.equal(tracker.collectorUri, collectorUri)
-  assert.are.equal(tracker.config.encodeBase64, true)
+local function assert_tracker(tracker, collector_url)
+  assert.are.equal(tracker.emitter:get_collector_url(), collector_url)
+  assert.are.equal(tracker.config.encode_base64, true)
   assert.are.equal(tracker.config.platform, "pc")
-  assert.are.equal(tracker.config.version, "lua-0.1.0-1")
+  assert.are.equal(tracker.config.version, TRACKER_VERSION)
 end
 
 describe("snowplow", function()
-  
   -- --------------------------------------------------------------
   -- Test error handling on constructors
 
-  it("newTrackerForUri() should error unless passed a non-empty string", function()
+  it("new_tracker() should error unless passed a non-empty string", function()
     local f = function(host)
-      return function() snowplow.newTrackerForUri(host) end
+      return function()
+        snowplow.new_tracker(host)
+      end
     end
     local err = function(value)
-      return "host is required and must be a non-empty string, not [" .. ss(value) .. "]"
-    end
-    assert.has_error(f(""), err(""))
-    assert.has_error(f({}), err("{}"))
-    assert.has_error(f(-23.04), err("-23.04"))
-  end)
-
-  it("newTrackerForCf() should error unless passed a non-empty string", function()
-    local f = function(cfSubdomain)
-      return function() snowplow.newTrackerForCf(cfSubdomain) end
-    end
-    local err = function(value)
-      return "cfSubdomain is required and must be a non-empty string, not [" .. ss(value) .. "]"
+      return "url is required and must be a non-empty string, not [" .. ss(value) .. "]"
     end
     assert.has_error(f(""), err(""))
     assert.has_error(f({}), err("{}"))
@@ -58,16 +43,36 @@ describe("snowplow", function()
   -- --------------------------------------------------------------
   -- Verify constructed tracker tables
 
-  it("newTrackerForUri() should correctly create a tracker", function()
-
-    local t = snowplow.newTrackerForUri("c.snplow.com")
-    assertTracker(t, "http://c.snplow.com/i")
+  it("new_tracker() should correctly create a tracker", function()
+    local t = snowplow.new_tracker("test.invalid", "GET")
+    assert_tracker(t, "https://test.invalid/i")
   end)
 
-  it("newTrackerForCf() should correctly create a tracker", function()
-
-    local t = snowplow.newTrackerForCf("d3rkrsqld9gmqf")
-    assertTracker(t, "http://d3rkrsqld9gmqf.cloudfront.net/i")
+  it("new_tracker_for_uri() should correctly assign default protocol https", function()
+    local t = snowplow.new_tracker("test.invalid")
+    assert.is_equal(t.emitter:get_collector_url():sub(1, 5), "https")
   end)
 
+  it("new_tracker_for_uri() should correctly create url with default protocol from url with port", function()
+    local t = snowplow.new_tracker("http://test.invalid:9090", "GET")
+    assert.is_equal("http://test.invalid:9090/i", t.emitter:get_collector_url())
+  end)
+
+  it("new_tracker() should assign correct passed protocol", function()
+    local protocols = { "http", "https" }
+    for _, protocol in ipairs(protocols) do
+      local t = snowplow.new_tracker(protocol .. "://test.invalid")
+      assert.is_equal(t.emitter:get_collector_url():sub(1, protocol:len()), protocol)
+    end
+  end)
+
+  it("new_tracker() should error if passed an invalid protocol", function()
+    local protocols = { "ftp", "file" }
+    for _, protocol in ipairs(protocols) do
+      local f = function()
+        snowplow.new_tracker(protocol .. "://test.invalid")
+      end
+      assert.has_error(f, "protocol must be a string from the set {http, https}, not [" .. protocol .. "]")
+    end
+  end)
 end)

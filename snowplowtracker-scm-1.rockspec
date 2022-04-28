@@ -1,7 +1,8 @@
 package = "SnowplowTracker"
-version = "0.1.0-1"
+version = "scm-1"
 source = {
-  url = "http://snowplow-hosted-assets.s3.amazonaws.com/1-trackers/lua-tracker/snowplowtracker-0.1.0.tar.gz"
+  url = "git://github.com/snowplow/snowplow-lua-tracker",
+  tag = "TAG_SET_BY_GITHUB_ACTIONS_DO_NOT_MANUALLY_SET"
 }
 description = {
   summary = "Snowplow event tracker for Lua",
@@ -14,8 +15,12 @@ description = {
   license = "Apache License 2.0"
 }
 dependencies = {
-  "lua ~> 5.1",
-  "luasocket >= 2.0.2"
+  "lua >= 5.1",
+  "lua-curl >= 0.3.13-1",
+  "base64 >= 1.5-2",
+  "uuid >= 0.3-1",
+  "lunajson >= 1.2.3-1",
+  "urlencode >= 0.0.2-0"
 }
 build = {
   type = "builtin",
