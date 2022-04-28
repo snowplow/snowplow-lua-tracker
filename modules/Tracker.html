@@ -56,7 +56,7 @@
 <p></p>
     <h3>Info:</h3>
     <ul>
-        <li><strong>Copyright</strong>: Copyright (c) 2013 Snowplow Analytics Ltd</li>
+        <li><strong>Copyright</strong>: Copyright (c) 2013 - 2022 Snowplow Analytics Ltd</li>
         <li><strong>License</strong>: Apache License Version 2.0</li>
         <li><strong>Author</strong>: Alex Dean</li>
     </ul>
@@ -69,12 +69,16 @@
 	<td class="summary">Creates a new tracker instance.</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#encode_base64">encode_base64 (encode)</a></td>
+	<td class="summary">Configuration setting: whether to Base64-encode the properties of unstructured events and custom variables.</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#platform">platform (platform)</a></td>
 	<td class="summary">The default platform for Lua is "pc".</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#set_app_id">set_app_id (app_id)</a></td>
-	<td class="summary">Sets the application ID to record against each event.</td>
+	<td class="summary">Sets the application ID.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#set_user_id">set_user_id (user_id)</a></td>
@@ -82,11 +86,15 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#set_screen_resolution">set_screen_resolution (width, height)</a></td>
-	<td class="summary">If you have access to a graphics library which can tell you screen width and height, then set it here.</td>
+	<td class="summary">Sets the screen resolution.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#set_viewport">set_viewport (width, height)</a></td>
-	<td class="summary">If you have access to a graphics library which can tell you the width and height of the viewport (i.e.</td>
+	<td class="summary">Sets the viewport size.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#set_color_depth">set_color_depth (depth)</a></td>
+	<td class="summary">Sets the bit depth of the color palette.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#track_screen_view">track_screen_view (name, id)</a></td>
@@ -97,7 +105,7 @@
 	<td class="summary">Sends a custom structured event to Snowplow.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#track_unstruct_event">track_unstruct_event (properties)</a></td>
+	<td class="name" nowrap><a href="#track_self_describing_event">track_self_describing_event (schema, data)</a></td>
 	<td class="summary">Sends a custom unstructured event to Snowplow.</td>
 	</tr>
 </table>
@@ -149,6 +157,29 @@
 
 </dd>
     <dt>
+    <a name = "encode_base64"></a>
+    <strong>encode_base64 (encode)</strong>
+    </dt>
+    <dd>
+    Configuration setting: whether to Base64-encode the properties of unstructured events and custom variables.
+ Encoding means a circa~25% space saving.
+ Defaults to true.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">encode</span>
+            <span class="types"><span class="type">bool</span></span>
+         Whether to base64-encode or not
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
     <a name = "platform"></a>
     <strong>platform (platform)</strong>
     </dt>
@@ -177,7 +208,7 @@
     <strong>set_app_id (app_id)</strong>
     </dt>
     <dd>
-    Sets the application ID to record against each event.
+    Sets the application ID.
 
 
     <h3>Parameters:</h3>
@@ -219,7 +250,7 @@
     <strong>set_screen_resolution (width, height)</strong>
     </dt>
     <dd>
-    If you have access to a graphics library which can tell you screen width and height, then set it here.
+    Sets the screen resolution.
 
 
     <h3>Parameters:</h3>
@@ -244,8 +275,7 @@
     <strong>set_viewport (width, height)</strong>
     </dt>
     <dd>
-    If you have access to a graphics library which can tell you the width and height of the viewport (i.e.
- the screen space taken up by this app), then set it here.
+    Sets the viewport size.
 
 
     <h3>Parameters:</h3>
@@ -257,6 +287,27 @@
         <li><span class="parameter">height</span>
             <span class="types"><span class="type">number</span></span>
          The viewport height
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "set_color_depth"></a>
+    <strong>set_color_depth (depth)</strong>
+    </dt>
+    <dd>
+    Sets the bit depth of the color palette.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">depth</span>
+            <span class="types"><span class="type">number</span></span>
+         The color depth on this computer
         </li>
     </ul>
 
@@ -349,8 +400,8 @@
 
 </dd>
     <dt>
-    <a name = "track_unstruct_event"></a>
-    <strong>track_unstruct_event (properties)</strong>
+    <a name = "track_self_describing_event"></a>
+    <strong>track_self_describing_event (schema, data)</strong>
     </dt>
     <dd>
     Sends a custom unstructured event to Snowplow.
@@ -358,9 +409,13 @@
 
     <h3>Parameters:</h3>
     <ul>
-        <li><span class="parameter">properties</span>
+        <li><span class="parameter">schema</span>
             <span class="types"><span class="type">tab</span></span>
-         A key-value table of properties to send with the event
+         The schema for this event
+        </li>
+        <li><span class="parameter">data</span>
+            <span class="types"><span class="type">tab</span></span>
+         The key, value pairs to send with the event
         </li>
     </ul>
 
@@ -428,7 +483,7 @@
             <span class="types"><span class="type">func</span></span>
 
         </li>
-        <li><span class="parameter">track_unstruct_event</span>
+        <li><span class="parameter">track_self_describing_event</span>
             <span class="types"><span class="type">func</span></span>
 
         </li>
@@ -446,7 +501,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-04-13 12:37:38 </i>
+<i style="float:right;">Last updated 2022-04-28 16:24:12 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
