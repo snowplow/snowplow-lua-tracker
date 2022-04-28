@@ -16,7 +16,7 @@ local constants = {}
 -- --------------------------------------------------------------
 -- Constants used throughout the library
 
-constants.TRACKER_VERSION = "lua-0.1.0-1"
+constants.TRACKER_VERSION = "lua-0.2.0-1"
 
 -- --------------------------------------------------------------
 

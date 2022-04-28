@@ -1,0 +1,23 @@
+VERSION 0.2.0 (2022-04-28)
+--------------------------
+Refurbish dependencies (#17)
+Fix tests (#21)
+Implement Luacheck (#26)
+Create CI (#28)
+Replace transaction_id with event_id (#29)
+Add HTTPS support (#31)
+Implement Micro for tests (#33)
+Remove unstructured event typing (#34)
+Remove ability for user to set dtm (#37)
+Extend micro functionality (#39)
+Add POST support (#41)
+Generate API docs with LDoc (#42)
+Add support for dvce_sent_tstamp (#43)
+Update copyright (#45)
+Simplify track_unstruct_event (#49)
+Fix missing tracker methods API docs (#51)
+Update README (#53)
+
+VERSION 0.1.0 (2013-06-19)
+--------------------------
+Initial Release
