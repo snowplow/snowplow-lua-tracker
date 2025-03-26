@@ -17,10 +17,10 @@
 -- @copyright Copyright (c) 2013 - 2022 Snowplow Analytics Ltd
 -- @license Apache License Version 2.0
 
-local validate = require("validate")
-local tracker = require("tracker")
-local emitter = require("emitter")
-local set = require("lib.set")
+local validate = require("snowplow.validate")
+local tracker = require("snowplow.tracker")
+local emitter = require("snowplow.emitter")
+local set = require("snowplow.lib.set")
 
 local snowplow = {}
 local VALID_REQUEST_TYPES = set.new_set({ "GET", "POST" })

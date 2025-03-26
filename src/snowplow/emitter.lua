@@ -19,9 +19,9 @@
 -- @license Apache License Version 2.0
 
 local curl = require("cURL")
-local ss = require("lib.utils").safe_string -- Alias
-local set = require("lib.set")
-local validate = require("validate")
+local ss = require("snowplow.lib.utils").safe_string -- Alias
+local set = require("snowplow.lib.set")
+local validate = require("snowplow.validate")
 
 --- The Emitter table.
 -- @func get_request_method

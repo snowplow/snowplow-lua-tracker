@@ -19,7 +19,7 @@
 -- @license Apache License Version 2.0
 
 local json = require("lunajson")
-local validate = require("validate")
+local validate = require("snowplow.validate")
 local base64 = require("base64")
 local urlencode = require("urlencode")
 

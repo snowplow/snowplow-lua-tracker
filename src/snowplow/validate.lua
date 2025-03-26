@@ -17,7 +17,7 @@
 -- @copyright Copyright (c) 2013 - 2022 Snowplow Analytics Ltd
 -- @license Apache License Version 2.0
 
-local ss = require("lib.utils").safe_string -- Alias
+local ss = require("snowplow.lib.utils").safe_string -- Alias
 
 local validate = {}
 

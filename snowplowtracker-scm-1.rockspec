@@ -25,6 +25,14 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
-     snowplow = "src/snowplow/snowplow.lua"
+     snowplow = "src/snowplow/snowplow.lua",
+     ["snowplow.constants"] = "src/snowplow/constants.lua",
+     ["snowplow.emitter"] = "src/snowplow/emitter.lua",
+     ["snowplow.payload"] = "src/snowplow/payload.lua",
+     ["snowplow.tracker"] = "src/snowplow/tracker.lua",
+     ["snowplow.validate"] = "src/snowplow/validate.lua",
+     ["snowplow.lib.json"] = "src/snowplow/lib/json.lua",
+     ["snowplow.lib.set"] = "src/snowplow/lib/set.lua",
+     ["snowplow.lib.utils"] = "src/snowplow/lib/utils.lua"
   }
 }

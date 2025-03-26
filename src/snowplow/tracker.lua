@@ -17,11 +17,11 @@
 -- @copyright Copyright (c) 2013 - 2022 Snowplow Analytics Ltd
 -- @license Apache License Version 2.0
 
-local validate = require("validate")
-local payload = require("payload")
-local set = require("lib.set")
+local validate = require("snowplow.validate")
+local payload = require("snowplow.payload")
+local set = require("snowplow.lib.set")
 local uuid = require("uuid")
-local TRACKER_VERSION = require("constants").TRACKER_VERSION
+local TRACKER_VERSION = require("snowplow.constants").TRACKER_VERSION
 
 --- The Tracker table.
 -- @func encode_base64
