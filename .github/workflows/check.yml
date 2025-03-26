@@ -40,6 +40,10 @@ jobs:
         run: |
           luarocks install snowplowtracker-scm-1.rockspec --only-deps CURL_INCDIR=/usr/include/x86_64-linux-gnu && luarocks build
 
+      - name: Check module importable
+        run: |
+          lua -e 'require("snowplow")'
+
       - name: Luacheck
         run: |
           luarocks install luacheck && luacheck .
