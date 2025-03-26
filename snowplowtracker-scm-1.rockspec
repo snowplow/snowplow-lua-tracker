@@ -18,7 +18,7 @@ dependencies = {
   "lua >= 5.1",
   "lua-curl >= 0.3.13-1",
   "base64 >= 1.5-2",
-  "uuid >= 0.3-1",
+  "uuid >= 0.3-1, < 1.0",
   "lunajson >= 1.2.3-1",
   "urlencode >= 0.0.2-0"
 }
