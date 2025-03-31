@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: leafo/gh-actions-lua@v8.0.0
+      - uses: leafo/gh-actions-lua@8aace3457a2fcf3f3c4e9007ecc6b869ff6d74d6 # v11
         with:
           luaVersion: "5.4"
       - uses: leafo/gh-actions-luarocks@v4
@@ -40,6 +40,10 @@ jobs:
         run: |
           luarocks install snowplowtracker-scm-1.rockspec --only-deps CURL_INCDIR=/usr/include/x86_64-linux-gnu && luarocks build
 
+      - name: Check module importable
+        run: |
+          lua -e 'require("snowplow")'
+
       - name: Luacheck
         run: |
           luarocks install luacheck && luacheck .
@@ -53,7 +57,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: leafo/gh-actions-lua@v8.0.0
+      - uses: leafo/gh-actions-lua@8aace3457a2fcf3f3c4e9007ecc6b869ff6d74d6 # v11
         with:
           luaVersion: ${{ matrix.luaVersion }}
       - uses: leafo/gh-actions-luarocks@v4

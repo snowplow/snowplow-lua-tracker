@@ -18,13 +18,21 @@ dependencies = {
   "lua >= 5.1",
   "lua-curl >= 0.3.13-1",
   "base64 >= 1.5-2",
-  "uuid >= 0.3-1",
+  "uuid >= 0.3-1, < 1.0",
   "lunajson >= 1.2.3-1",
   "urlencode >= 0.0.2-0"
 }
 build = {
   type = "builtin",
   modules = {
-     snowplow = "src/snowplow/snowplow.lua"
+     snowplow = "src/snowplow/snowplow.lua",
+     ["snowplow.constants"] = "src/snowplow/constants.lua",
+     ["snowplow.emitter"] = "src/snowplow/emitter.lua",
+     ["snowplow.payload"] = "src/snowplow/payload.lua",
+     ["snowplow.tracker"] = "src/snowplow/tracker.lua",
+     ["snowplow.validate"] = "src/snowplow/validate.lua",
+     ["snowplow.lib.json"] = "src/snowplow/lib/json.lua",
+     ["snowplow.lib.set"] = "src/snowplow/lib/set.lua",
+     ["snowplow.lib.utils"] = "src/snowplow/lib/utils.lua"
   }
 }
